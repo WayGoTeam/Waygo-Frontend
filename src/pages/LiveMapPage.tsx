@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { finishTrip, sendGpsPing } from '@/api/navigation'
 import type L from 'leaflet'
 import { useTrafficMap } from '@/hooks/useTrafficMap'
 import { useCityStats } from '@/hooks/useCityStats'
@@ -34,6 +35,10 @@ export default function LiveMapPage() {
   const [reportLocation, setReportLocation] = useState<{lat: number, lng: number} | null>(null)
 
   const { user } = useAuth()
+  
+  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null)
+  const watchIdRef = useRef<number | null>(null)
+  const lastPingTimeRef = useRef<number>(0)
 
   const trafficMap = useTrafficMap()
   const cityStats = useCityStats()
@@ -93,6 +98,76 @@ export default function LiveMapPage() {
     }
   }
 
+  function handleStartTrip() {
+    if (!navigator.geolocation) {
+      alert('Brauzeriniz GPS dəstəkləmir.')
+      return
+    }
+    planner.setTripActive(true)
+    const id = navigator.geolocation.watchPosition(
+      (pos) => {
+        const lat = pos.coords.latitude
+        const lng = pos.coords.longitude
+        const speedMs = pos.coords.speed || 0
+        const speedKmh = speedMs * 3.6
+        
+        setCurrentLocation({ lat, lng })
+        
+        // GpsPing telemetry: yalniz her 10 saniyeden bir gonder
+        const now = Date.now()
+        if (now - lastPingTimeRef.current > 10000) {
+          lastPingTimeRef.current = now
+          const deviceId = user?.username ?? 'anonymous-device'
+          sendGpsPing(deviceId, lat, lng, new Date().toISOString(), speedKmh).catch(() => {})
+        }
+      },
+      (err) => {
+        console.error('GPS error:', err)
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+    )
+    watchIdRef.current = id
+  }
+
+  async function handleEndTrip() {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current)
+      watchIdRef.current = null
+    }
+    planner.setTripActive(false)
+    
+    if (!planner.route?.tripId || !planner.destination || !currentLocation) {
+      alert('Səfər məlumatları tam deyil.')
+      return
+    }
+    
+    try {
+      const distanceKm = planner.route.distanceMeters / 1000
+      const savedMinutes = (planner.route.travelTimeSeconds / 60) * 0.2 // Mock 20% time savings for now
+      
+      const res = await finishTrip(
+        planner.route.tripId,
+        planner.destination.lat,
+        planner.destination.lng,
+        currentLocation.lat,
+        currentLocation.lng,
+        distanceKm,
+        savedMinutes
+      )
+      
+      if (res.success) {
+        if (res.ecoPointsEarned > 0) {
+          alert(res.message + `\n+${res.ecoPointsEarned} Eco-Points!`)
+        } else {
+          alert(res.message)
+        }
+      }
+    } catch (e: any) {
+      const msg = e.message || 'Xəta baş verdi.'
+      alert(msg)
+    }
+  }
+
   return (
     <div ref={wrapperRef} className="relative h-full w-full bg-slate-200">
       <LiveMap
@@ -105,6 +180,7 @@ export default function LiveMapPage() {
         onMapReady={setMapInstance}
         onMapClick={handleMapClick}
         reportLocation={reportLocation}
+        currentLocation={currentLocation}
       />
 
       <div className="pointer-events-none absolute inset-0 z-[1000] flex flex-col gap-3 p-3 sm:p-4">
@@ -126,6 +202,9 @@ export default function LiveMapPage() {
               onSwap={planner.swap}
               onClear={planner.clear}
               onShowOnMap={showOnMap}
+              tripActive={planner.tripActive}
+              onStartTrip={handleStartTrip}
+              onEndTrip={handleEndTrip}
             />
             {reportingMode && (
               <div className="mt-3">

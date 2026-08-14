@@ -47,7 +47,19 @@ export default function WalletPage() {
   }
 
   if (!user) {
-    return <Navigate to="/" replace />
+    return (
+      <div className="flex h-full flex-col overflow-y-auto bg-slate-50">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+          <Leaf className="mb-6 h-16 w-16 text-brand-300" />
+          <h2 className="mb-3 font-display text-2xl font-bold text-slate-900">
+            Eko-Cüzdana baxmaq üçün giriş etməlisiniz
+          </h2>
+          <p className="max-w-md text-slate-500">
+            Təbiətə verdiyiniz töhfələri izləmək, yığdığınız Eco-Points balansını görmək və topladığınız xalları SOCAR yanacaq vaoçerinə çevirmək üçün zəhmət olmasa sistemə daxil olun.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {

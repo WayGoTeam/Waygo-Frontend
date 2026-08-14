@@ -22,6 +22,7 @@ export interface RouteResult {
   ecoPointsEarned?: number
   verraHash?: string
   co2SavedKg?: number
+  tripId?: string
 }
 
 export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
@@ -31,6 +32,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
   const [route, setRoute] = useState<RouteResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [tripActive, setTripActive] = useState(false)
   const requestId = useRef(0)
   const { user } = useAuth()
 
@@ -65,6 +67,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
       let ecoPointsEarned: number | undefined
       let verraHash: string | undefined
       let co2SavedKg: number | undefined
+      let tripId: string | undefined
 
       if (user) {
         const raw = await getAiRoute(o.lat, o.lng, d.lat, d.lng, m, user.vehicleType)
@@ -74,6 +77,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         ecoPointsEarned = raw.ecoPointsEarned
         verraHash = raw.verraHash
         co2SavedKg = raw.co2SavedKg
+        tripId = raw.tripId
       } else {
         const raw = await getRoute(o.lat, o.lng, d.lat, d.lng, m)
         if (id !== requestId.current) return
@@ -121,6 +125,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         ecoPointsEarned,
         verraHash,
         co2SavedKg,
+        tripId,
       })
     } catch {
       if (id !== requestId.current) return
@@ -148,6 +153,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     setDestination(null)
     setRoute(null)
     setError(null)
+    setTripActive(false)
   }
 
   return {
@@ -162,5 +168,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     error,
     swap,
     clear,
+    tripActive,
+    setTripActive,
   }
 }

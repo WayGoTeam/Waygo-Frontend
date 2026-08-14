@@ -290,6 +290,9 @@ export interface VoucherResponse {
 
 export interface AiRouteResponse {
   routeJson: string
+  tripId?: string
+  routeDetails?: string
+  vehicleType?: string
   ecoPointsEarned?: number
   verraHash?: string
   co2SavedKg?: number

@@ -54,6 +54,7 @@ export function LiveMap({
   onMapReady,
   onMapClick,
   reportLocation,
+  currentLocation,
 }: {
   mapConfig: MapConfig | null
   segments: TrafficMapEntry[]
@@ -64,6 +65,7 @@ export function LiveMap({
   onMapReady: (map: L.Map) => void
   onMapClick?: (lat: number, lng: number) => void
   reportLocation?: { lat: number; lng: number } | null
+  currentLocation?: { lat: number; lng: number } | null
 }) {
   const { s } = useLocale()
   const { basemap, showTraffic, showIncidents, showLiveIncidents } = useMapLayers()
@@ -142,6 +144,9 @@ export function LiveMap({
       )}
       {reportLocation && (
         <Marker position={[reportLocation.lat, reportLocation.lng]} icon={incidentIcon('#f59e0b', true)} />
+      )}
+      {currentLocation && (
+        <Marker position={[currentLocation.lat, currentLocation.lng]} icon={dotIcon('#3b82f6')} zIndexOffset={1000} />
       )}
     </MapContainer>
   )

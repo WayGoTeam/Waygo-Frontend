@@ -17,3 +17,42 @@ export const getAiRoute = (
     currentLat: fromLat,
     currentLng: fromLng,
   })
+
+export const finishTrip = (
+  tripId: string,
+  destLat: number,
+  destLng: number,
+  currentLat: number,
+  currentLng: number,
+  distanceKm: number = 0,
+  savedMinutes: number = 0,
+) =>
+  api.post<{
+    success: boolean
+    ecoPointsEarned: number
+    co2SavedKg: number
+    message: string
+  }>('/navigation/trip/finish', {
+    tripId,
+    destLat,
+    destLng,
+    currentLat,
+    currentLng,
+    distanceKm,
+    savedMinutes,
+  })
+
+export const sendGpsPing = (
+  deviceId: string,
+  latitude: number,
+  longitude: number,
+  timestamp: string,
+  speedKmh: number,
+) =>
+  api.post<any>('/gps-ping', {
+    deviceId,
+    latitude,
+    longitude,
+    timestamp,
+    speedKmh,
+  })

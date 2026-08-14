@@ -22,6 +22,9 @@ interface Props {
   onSwap: () => void
   onClear: () => void
   onShowOnMap: () => void
+  tripActive?: boolean
+  onStartTrip?: () => void
+  onEndTrip?: () => void
 }
 
 export function RoutePlannerPanel({
@@ -40,6 +43,9 @@ export function RoutePlannerPanel({
   onSwap,
   onClear,
   onShowOnMap,
+  tripActive,
+  onStartTrip,
+  onEndTrip,
 }: Props) {
   const { s } = useLocale()
 
@@ -130,10 +136,26 @@ export function RoutePlannerPanel({
       </div>
 
       <div className="space-y-2 border-t border-slate-100 px-4 py-3.5">
+        {route && !tripActive && (
+          <button
+            onClick={onStartTrip}
+            className="w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700"
+          >
+            Səfərə Başla
+          </button>
+        )}
+        {route && tripActive && (
+          <button
+            onClick={onEndTrip}
+            className="w-full rounded-xl bg-red-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 animate-pulse"
+          >
+            Səfəri Bitir
+          </button>
+        )}
         <button
           disabled={!route}
           onClick={onShowOnMap}
-          className="w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl bg-slate-100 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {s.routePlanner.showOnMap}
         </button>

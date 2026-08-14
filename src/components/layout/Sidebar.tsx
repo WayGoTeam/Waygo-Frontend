@@ -4,7 +4,7 @@ import { useLocale } from '@/i18n/LocaleContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { LogoMark } from '@/components/common/LogoMark'
 import { WeatherMiniCard } from '@/components/weather/WeatherMiniCard'
-import { SystemStatusCard } from './SystemStatusCard'
+
 import { Badge } from '@/components/common/primitives'
 import { useAuth } from '@/context/AuthContext'
 
@@ -85,7 +85,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
 
         <div className="space-y-3 px-3 pb-3 pt-3">
           <WeatherMiniCard />
-          <SystemStatusCard />
+
         </div>
 
         {isAdmin && (
