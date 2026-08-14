@@ -1,0 +1,46 @@
+import { api, ApiError } from './client'
+import type { UserMeResponse } from '@/types/api'
+
+export interface LoginResponse {
+  accessToken: string
+  refreshToken: string
+  tokenType: string
+}
+
+/**
+ * Access + refresh tokens are also written as HttpOnly cookies by the backend
+ * (AuthCookieWriter), so the app never needs to touch localStorage for them —
+ * every subsequent request just needs `credentials: 'include'` (see client.ts).
+ */
+export const login = async (username: string, password: string) => {
+  const res = await api.post<{ token?: string }>('/auth/login', { username, password })
+  if (res.token) localStorage.setItem('waygo_token', res.token)
+  return res
+}
+
+export const logout = async () => {
+  localStorage.removeItem('waygo_token')
+  return api.post('/auth/logout')
+}
+
+/** Returns null (rather than throwing) when there is no active session — a 401 here is expected, not an error. */
+export async function getCurrentUser(): Promise<UserMeResponse | null> {
+  try {
+    return await api.get<UserMeResponse>('/auth/me')
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return null
+    throw err
+  }
+}
+
+export const sendOtp = (phone: string) =>
+  api.post<{ message: string }>('/auth/send-otp', { phoneNumber: phone })
+
+export const verifyOtp = async (phone: string, code: string) => {
+  const res = await api.post<{ token?: string }>('/auth/verify-otp', { phoneNumber: phone, otp: code })
+  if (res.token) localStorage.setItem('waygo_token', res.token)
+  return res
+}
+
+export const onboarding = (vehicleType: string, plateNumber: string) =>
+  api.post<UserMeResponse>('/auth/onboarding', { vehicleType, texpasportInfo: plateNumber })

@@ -1,0 +1,171 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand blue — primary actions, active nav, route lines */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dce9fe;
+  --color-brand-200: #bad6fd;
+  --color-brand-300: #8db9fc;
+  --color-brand-400: #5b95f9;
+  --color-brand-500: #3b76f6;
+  --color-brand-600: #2358eb;
+  --color-brand-700: #1b44c4;
+  --color-brand-800: #1a3899;
+  --color-brand-900: #182c74;
+
+  /* Traffic condition bands — shared between map, legend, badges, charts */
+  --color-flow: #22c55e;
+  --color-slow: #f5a623;
+  --color-heavy: #f97316;
+  --color-jam: #ef4444;
+  --color-incident: #f59e0b;
+
+  --shadow-panel: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 12px 28px -8px rgb(15 23 42 / 0.16);
+  --shadow-float: 0 2px 6px 0 rgb(15 23 42 / 0.08), 0 20px 40px -12px rgb(15 23 42 / 0.22);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-slate-100 text-slate-900 antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand-200 text-brand-900;
+  }
+
+  /* Slim, unobtrusive scrollbars for panels */
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme(--color-slate-300) transparent;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background-color: theme(--color-slate-300);
+    border-radius: 999px;
+  }
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ---- Leaflet overrides: fold the default control chrome into the app's own design ---- */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: #eef2f6;
+  outline: none;
+}
+.leaflet-control-attribution {
+  background: rgb(255 255 255 / 0.75) !important;
+  backdrop-filter: blur(4px);
+  font-size: 10px !important;
+  padding: 1px 6px !important;
+  border-radius: 6px 0 0 0 !important;
+}
+.leaflet-control-zoom,
+.leaflet-control-layers {
+  display: none; /* replaced by our own floating control panel */
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: var(--shadow-float);
+}
+.leaflet-popup-content {
+  margin: 10px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.leaflet-marker-icon.waygo-pulse-icon {
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.25));
+}
+
+@keyframes waygo-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.waygo-pulse-ring {
+  animation: waygo-pulse 1.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+@keyframes waygo-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: waygo-fade-up 0.35s ease-out both;
+}
+
+@keyframes waygo-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-pop {
+  animation: waygo-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes waygo-anomaly-pulse {
+  0%,
+  100% {
+    stroke-opacity: 0.55;
+  }
+  50% {
+    stroke-opacity: 1;
+  }
+}
+.waygo-anomaly-path {
+  animation: waygo-anomaly-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waygo-pulse-ring,
+  .animate-fade-up,
+  .animate-pop,
+  .waygo-anomaly-path {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.001ms !important;
+  }
+}
