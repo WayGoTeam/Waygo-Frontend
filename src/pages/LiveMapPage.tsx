@@ -124,7 +124,7 @@ export default function LiveMapPage() {
       (err) => {
         console.error('GPS error:', err)
       },
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
     )
     watchIdRef.current = id
   }

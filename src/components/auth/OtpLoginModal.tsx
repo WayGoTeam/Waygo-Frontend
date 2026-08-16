@@ -27,8 +27,12 @@ export function OtpLoginModal({ onClose }: Props) {
     try {
       await sendOtp(phone)
       setStep('OTP')
-    } catch {
-      setError('SMS göndərilərkən xəta baş verdi.')
+    } catch (err: any) {
+      if (err?.message) {
+        setError(err.message)
+      } else {
+        setError('SMS göndərilərkən xəta baş verdi.')
+      }
     } finally {
       setLoading(false)
     }
@@ -46,8 +50,12 @@ export function OtpLoginModal({ onClose }: Props) {
       // For now, we will just force onboarding for the demo if they just logged in.
       // Or let them optionally do it. We'll go to Onboarding step.
       setStep('ONBOARDING')
-    } catch {
-      setError('OTP yanlışdır və ya müddəti bitib.')
+    } catch (err: any) {
+      if (err?.message) {
+        setError(err.message)
+      } else {
+        setError('OTP yanlışdır və ya müddəti bitib.')
+      }
     } finally {
       setLoading(false)
     }
@@ -133,7 +141,8 @@ export function OtpLoginModal({ onClose }: Props) {
                   required
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  placeholder="1234"
+                  placeholder="123456"
+                  maxLength={6}
                   className="mt-1 block w-full rounded-xl border border-slate-200 px-4 py-2.5 text-center text-2xl tracking-widest text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
@@ -164,9 +173,10 @@ export function OtpLoginModal({ onClose }: Props) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700">Dövlət Nişanı (İstəyə bağlı)</label>
+                <label className="block text-sm font-medium text-slate-700">Dövlət Nişanı (Texpasport Nömrəsi)</label>
                 <input
                   type="text"
+                  required
                   value={plate}
                   onChange={(e) => setPlate(e.target.value)}
                   placeholder="99-XX-999"
@@ -175,18 +185,11 @@ export function OtpLoginModal({ onClose }: Props) {
               </div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !plate.trim()}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-70"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 Tamamla
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep('SUCCESS')}
-                className="w-full rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700"
-              >
-                İndi yox, sonra
               </button>
             </form>
           )}

@@ -53,7 +53,7 @@ export function MapZoomControls({
         setLocateError(true)
         setTimeout(() => setLocateError(false), 2500)
       },
-      { enableHighAccuracy: true, timeout: 8000 },
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 },
     )
   }
 

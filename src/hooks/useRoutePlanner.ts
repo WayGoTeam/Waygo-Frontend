@@ -89,8 +89,8 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         setError('no-route')
         return
       }
-      const points = chosen.legs.flatMap((leg) =>
-        leg.points.map((p) => ({ latitude: p.latitude, longitude: p.longitude })),
+      const points = chosen.legs.flatMap((leg: any) =>
+        leg.points.map((p: any) => ({ latitude: p.latitude, longitude: p.longitude })),
       )
 
       let forecast: ForecastPoint[] | null = null

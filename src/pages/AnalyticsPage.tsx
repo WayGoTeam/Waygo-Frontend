@@ -22,6 +22,7 @@ import { PageHeader } from '@/components/common/PageHeader'
 import { StatCard } from '@/components/common/StatCard'
 import { LoadingState, ErrorState } from '@/components/common/States'
 import { congestionColor } from '@/lib/congestion'
+import { AiPredictionPanel } from '@/components/traffic/AiPredictionPanel'
 import { formatBakuClock } from '@/lib/format'
 
 export default function AnalyticsPage() {
@@ -115,7 +116,13 @@ export default function AnalyticsPage() {
         )}
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-5">
+      <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {/* Left Column: AI Prediction */}
+        <div className="flex flex-col h-[600px] lg:col-span-1">
+          <AiPredictionPanel />
+        </div>
+
+        {/* Right Columns: Districts */}
         <div className="flex flex-col h-[600px] rounded-2xl border border-white/60 bg-white/60 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl sm:p-5 lg:col-span-2 transition-all hover:bg-white/80 duration-500">
           <div>
             <p className="text-sm font-bold tracking-wide text-slate-800">{s.analyticsPage.districts}</p>
