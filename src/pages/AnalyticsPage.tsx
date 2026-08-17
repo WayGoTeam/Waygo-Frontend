@@ -2,6 +2,7 @@ import { Activity, Car, Gauge } from 'lucide-react'
 import {
   BarChart,
   Bar,
+  CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
