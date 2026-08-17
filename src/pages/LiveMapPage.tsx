@@ -83,7 +83,7 @@ export default function LiveMapPage() {
     const finalDescription = description.trim() || `Reported: ${type}`
     try {
       await submitReport({
-        userId: user?.username ?? crypto.randomUUID(),
+        userId: crypto.randomUUID(),
         type,
         description: finalDescription,
         latitude: reportLocation.lat,
