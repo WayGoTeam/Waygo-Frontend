@@ -29,6 +29,9 @@ export function useDistrictsWeather() {
     try {
       setLoading(true)
       const results: DistrictWeather[] = []
+      // Wait a moment to allow other mount-time API calls to finish and avoid 10 req/s rate limit
+      await new Promise((resolve) => setTimeout(resolve, 800))
+      
       for (const d of DISTRICTS_COORDS) {
         const snapshot = await getWeather(d.lat, d.lng)
         results.push({
@@ -36,6 +39,8 @@ export function useDistrictsWeather() {
           districtId: d.id,
           districtName: d.name
         })
+        // Add small delay between requests
+        await new Promise((resolve) => setTimeout(resolve, 150))
       }
       setData(results)
       setError(null)
