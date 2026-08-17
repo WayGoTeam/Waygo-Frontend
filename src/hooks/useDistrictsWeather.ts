@@ -28,16 +28,15 @@ export function useDistrictsWeather() {
   const fetchDistrictsWeather = async () => {
     try {
       setLoading(true)
-      const results = await Promise.all(
-        DISTRICTS_COORDS.map(async (d) => {
-          const snapshot = await getWeather(d.lat, d.lng)
-          return {
-            ...snapshot,
-            districtId: d.id,
-            districtName: d.name
-          }
+      const results: DistrictWeather[] = []
+      for (const d of DISTRICTS_COORDS) {
+        const snapshot = await getWeather(d.lat, d.lng)
+        results.push({
+          ...snapshot,
+          districtId: d.id,
+          districtName: d.name
         })
-      )
+      }
       setData(results)
       setError(null)
     } catch (err) {
