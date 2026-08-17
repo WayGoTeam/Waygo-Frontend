@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bot, MessageCircle, Send, X } from 'lucide-react'
-import { sendChatMessage } from '@/api/chat'
+import { Bot, MessageCircle, Send, X, Mic } from 'lucide-react'
+import { sendChatMessage, sendChatVoiceMessage } from '@/api/chat'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useSocket } from '@/context/SocketContext'
 import type { ChatMessage } from '@/types/api'
@@ -22,18 +22,29 @@ export function ChatWidget() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, sending, open])
 
-  async function submit(text: string) {
+  async function submit(text: string, voice = false) {
     const trimmed = text.trim()
     if (!trimmed || sending) return
     setInput('')
     setMessages((prev) => [...prev, { id: makeId(), role: 'user', text: trimmed, createdAt: Date.now() }])
     setSending(true)
     try {
-      const res = await sendChatMessage(trimmed)
-      setMessages((prev) => [
-        ...prev,
-        { id: makeId(), role: 'assistant', text: res.reply, createdAt: Date.now() },
-      ])
+      if (voice) {
+        const res = await sendChatVoiceMessage(trimmed)
+        const url = URL.createObjectURL(res)
+        const audio = new Audio(url)
+        audio.play()
+        setMessages((prev) => [
+          ...prev,
+          { id: makeId(), role: 'assistant', text: "🔊 Səsli cavab səsləndirilir...", createdAt: Date.now() },
+        ])
+      } else {
+        const res = await sendChatMessage(trimmed)
+        setMessages((prev) => [
+          ...prev,
+          { id: makeId(), role: 'assistant', text: res.reply, createdAt: Date.now() },
+        ])
+      }
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -114,6 +125,15 @@ export function ChatWidget() {
           placeholder={s.chat.inputPlaceholder}
           className="min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100"
         />
+        <button
+          type="button"
+          onClick={() => submit(input, true)}
+          disabled={!input.trim() || sending}
+          aria-label="Send as Voice"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Mic className="h-4 w-4" />
+        </button>
         <button
           type="submit"
           disabled={!input.trim() || sending}

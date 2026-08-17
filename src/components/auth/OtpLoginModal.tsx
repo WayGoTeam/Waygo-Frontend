@@ -96,7 +96,15 @@ export function OtpLoginModal({ onClose }: Props) {
             </h2>
             <p className="mt-2 text-sm text-slate-500">
               {step === 'PHONE' && 'Davam etmək üçün mobil nömrənizi daxil edin.'}
-              {step === 'OTP' && `Kodu ${phone} nömrəsinə göndərdik.`}
+              {step === 'OTP' && (
+                <>
+                  Kodu almaq üçün Telegram-da{' '}
+                  <a href="https://t.me/waygo_login_bot" target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-600 hover:underline">
+                    @waygo_login_bot
+                  </a>{' '}
+                  botuna keçid edin və nömrənizi paylaşın.
+                </>
+              )}
               {step === 'ONBOARDING' && 'Eko-Xal qazanmaq üçün avtomobilinizi qeyd edin.'}
               {step === 'SUCCESS' && 'Siz artıq sistemə daxil olmusunuz.'}
             </p>
@@ -135,7 +143,7 @@ export function OtpLoginModal({ onClose }: Props) {
           {step === 'OTP' && (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700">SMS Kod</label>
+                <label className="block text-sm font-medium text-slate-700">Telegram-dan gələn 6 rəqəmli Kod</label>
                 <input
                   type="text"
                   required
@@ -146,9 +154,17 @@ export function OtpLoginModal({ onClose }: Props) {
                   className="mt-1 block w-full rounded-xl border border-slate-200 px-4 py-2.5 text-center text-2xl tracking-widest text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
+              <a 
+                href="https://t.me/waygo_login_bot" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-500 px-4 py-2.5 font-medium text-white transition-colors hover:bg-blue-600 mb-3"
+              >
+                Telegram-ı Aç
+              </a>
               <button
                 type="submit"
-                disabled={loading || !otp}
+                disabled={loading || !otp || otp.length < 6}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-70"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
