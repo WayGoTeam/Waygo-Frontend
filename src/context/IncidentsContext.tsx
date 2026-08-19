@@ -42,8 +42,7 @@ export function IncidentsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     load()
-    const timer = setInterval(load, POLL_MS)
-    return () => clearInterval(timer)
+    // Polling disabled as per request to prevent unnecessary backend queries
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

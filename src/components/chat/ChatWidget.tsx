@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Bot, MessageCircle, Send, X, Mic } from 'lucide-react'
-import { sendChatMessage, sendChatVoiceMessage } from '@/api/chat'
+import { sendChatMessageStream, sendChatVoiceMessage } from '@/api/chat'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useSocket } from '@/context/SocketContext'
 import type { ChatMessage } from '@/types/api'
@@ -39,11 +39,36 @@ export function ChatWidget() {
           { id: makeId(), role: 'assistant', text: "🔊 Səsli cavab səsləndirilir...", createdAt: Date.now() },
         ])
       } else {
-        const res = await sendChatMessage(trimmed)
+        const msgId = makeId()
         setMessages((prev) => [
           ...prev,
-          { id: makeId(), role: 'assistant', text: res.reply, createdAt: Date.now() },
+          { id: msgId, role: 'assistant', text: '', createdAt: Date.now() },
         ])
+        const res = await sendChatMessageStream(trimmed)
+        if (!res.ok) throw new Error('Stream failed')
+        const reader = res.body?.getReader()
+        if (!reader) throw new Error('No reader')
+        const decoder = new TextDecoder()
+        
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          const chunk = decoder.decode(value, { stream: true })
+          const lines = chunk.split('\n')
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              let text = line.substring(5)
+              if (text.startsWith(' ')) text = text.substring(1)
+              if (text) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === msgId ? { ...m, text: m.text + text } : m
+                  )
+                )
+              }
+            }
+          }
+        }
       }
     } catch {
       setMessages((prev) => [

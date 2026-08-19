@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart3, Bus, CloudSun, MapIcon, ShieldCheck, TriangleAlert, X, Wallet } from 'lucide-react'
+import { BarChart3, Bus, CloudSun, MapIcon, ShieldCheck, TriangleAlert, X, Wallet, LogOut } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { LogoMark } from '@/components/common/LogoMark'
@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext'
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { s } = useLocale()
   const { incidents } = useIncidentsContext()
-  const { isAdmin } = useAuth()
+  const { user, isAdmin } = useAuth()
   const incidentCount = incidents?.length ?? 0
 
   const navItems = [

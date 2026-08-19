@@ -33,6 +33,12 @@ export async function getCurrentUser(): Promise<UserMeResponse | null> {
   }
 }
 
+export const checkUser = (phone: string) =>
+  api.post<{ exists: boolean; hasPassword: boolean; vehicleType?: string }>('/auth/check-user', { phoneNumber: phone })
+
+export const setPassword = (newPassword: string) =>
+  api.post<{ message: string }>('/auth/set-password', { newPassword })
+
 export const sendOtp = (phone: string) =>
   api.post<{ message: string }>('/auth/send-otp', { phoneNumber: phone })
 

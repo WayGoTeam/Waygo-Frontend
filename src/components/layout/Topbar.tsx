@@ -128,6 +128,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             </div>
             <button
               onClick={() => logout()}
+              title="Çıxış"
               className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
             >
               <LogOut className="h-4 w-4" />

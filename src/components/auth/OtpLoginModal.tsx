@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Loader2, CheckCircle2 } from 'lucide-react'
-import { sendOtp, verifyOtp, onboarding } from '@/api/auth'
+import { sendOtp, verifyOtp, onboarding, checkUser, setPassword } from '@/api/auth'
 import { useAuth } from '@/context/AuthContext'
 import type { VehicleType } from '@/types/api'
 
@@ -8,31 +8,51 @@ interface Props {
   onClose: () => void
 }
 
-type Step = 'PHONE' | 'OTP' | 'ONBOARDING' | 'SUCCESS'
+type Step = 'PHONE' | 'PASSWORD' | 'OTP' | 'SET_PASSWORD' | 'ONBOARDING' | 'SUCCESS'
 
 export function OtpLoginModal({ onClose }: Props) {
-  const { refreshUser } = useAuth()
+  const { login, refreshUser } = useAuth()
   const [step, setStep] = useState<Step>('PHONE')
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
+  const [passwordInput, setPasswordInput] = useState('')
   const [vehicleType, setVehicleType] = useState<VehicleType>('PETROL')
   const [plate, setPlate] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function handleSendOtp(e: React.FormEvent) {
+  async function handleCheckUser(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError(null)
     try {
-      await sendOtp(phone)
-      setStep('OTP')
+      const res = await checkUser(phone)
+      if (res.exists && res.hasPassword) {
+        setStep('PASSWORD')
+      } else {
+        await sendOtp(phone)
+        setStep('OTP')
+      }
     } catch (err: any) {
       if (err?.message) {
         setError(err.message)
       } else {
-        setError('SMS göndərilərkən xəta baş verdi.')
+        setError('Sistem xətası baş verdi.')
       }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleLoginPassword(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      await login(phone, passwordInput)
+      setStep('SUCCESS')
+    } catch (err: any) {
+      setError('Parol yanlışdır.')
     } finally {
       setLoading(false)
     }
@@ -45,17 +65,31 @@ export function OtpLoginModal({ onClose }: Props) {
     try {
       await verifyOtp(phone, otp)
       await refreshUser()
-      // Ideally we would check if user already has a vehicle profile.
-      // If yes -> setStep('SUCCESS'). If no -> setStep('ONBOARDING').
-      // For now, we will just force onboarding for the demo if they just logged in.
-      // Or let them optionally do it. We'll go to Onboarding step.
-      setStep('ONBOARDING')
+      setStep('SET_PASSWORD')
     } catch (err: any) {
       if (err?.message) {
         setError(err.message)
       } else {
         setError('OTP yanlışdır və ya müddəti bitib.')
       }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleSetPassword(e: React.FormEvent) {
+    e.preventDefault()
+    if (passwordInput.length < 6) {
+      setError('Parol ən azı 6 simvol olmalıdır')
+      return
+    }
+    setLoading(true)
+    setError(null)
+    try {
+      await setPassword(passwordInput)
+      setStep('ONBOARDING')
+    } catch (err: any) {
+      setError('Parol təyin edilərkən xəta baş verdi.')
     } finally {
       setLoading(false)
     }
@@ -90,12 +124,15 @@ export function OtpLoginModal({ onClose }: Props) {
           <div className="mb-6">
             <h2 className="font-display text-2xl font-bold text-slate-900">
               {step === 'PHONE' && 'Giriş və ya Qeydiyyat'}
+              {step === 'PASSWORD' && 'Şifrənizi daxil edin'}
               {step === 'OTP' && 'Kodu Təsdiqləyin'}
+              {step === 'SET_PASSWORD' && 'Şifrə təyin edin'}
               {step === 'ONBOARDING' && 'Avtomobil Profiliniz'}
               {step === 'SUCCESS' && 'Uğurlu!'}
             </h2>
             <p className="mt-2 text-sm text-slate-500">
               {step === 'PHONE' && 'Davam etmək üçün mobil nömrənizi daxil edin.'}
+              {step === 'PASSWORD' && 'Hesabınıza daxil olmaq üçün parolunuzu yazın.'}
               {step === 'OTP' && (
                 <>
                   Kodu almaq üçün Telegram-da{' '}
@@ -105,6 +142,7 @@ export function OtpLoginModal({ onClose }: Props) {
                   botuna keçid edin və nömrənizi paylaşın.
                 </>
               )}
+              {step === 'SET_PASSWORD' && 'Növbəti dəfə rahat giriş etmək üçün yeni şifrə təyin edin.'}
               {step === 'ONBOARDING' && 'Eko-Xal qazanmaq üçün avtomobilinizi qeyd edin.'}
               {step === 'SUCCESS' && 'Siz artıq sistemə daxil olmusunuz.'}
             </p>
@@ -117,7 +155,7 @@ export function OtpLoginModal({ onClose }: Props) {
           )}
 
           {step === 'PHONE' && (
-            <form onSubmit={handleSendOtp} className="space-y-4">
+            <form onSubmit={handleCheckUser} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700">Mobil Nömrə</label>
                 <input
@@ -135,7 +173,44 @@ export function OtpLoginModal({ onClose }: Props) {
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-70"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                Kod Göndər
+                Davam Et
+              </button>
+            </form>
+          )}
+
+          {step === 'PASSWORD' && (
+            <form onSubmit={handleLoginPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Şifrə</label>
+                <input
+                  type="password"
+                  required
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="******"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading || !passwordInput}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-70"
+              >
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                Giriş
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setLoading(true)
+                  try {
+                    await sendOtp(phone)
+                    setStep('OTP')
+                  } catch {} finally { setLoading(false) }
+                }}
+                className="mt-2 w-full text-center text-sm font-medium text-brand-600 hover:underline"
+              >
+                Şifrəni unutmusunuz? (Telegram ilə giriş)
               </button>
             </form>
           )}
@@ -169,6 +244,38 @@ export function OtpLoginModal({ onClose }: Props) {
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 Təsdiqlə
+              </button>
+            </form>
+          )}
+
+          {step === 'SET_PASSWORD' && (
+            <form onSubmit={handleSetPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Yeni Şifrə</label>
+                <input
+                  type="password"
+                  required
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Ən azı 6 simvol"
+                  minLength={6}
+                  className="mt-1 block w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading || passwordInput.length < 6}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-70"
+              >
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                Təsdiqlə və Davam Et
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep('ONBOARDING')}
+                className="mt-2 w-full text-center text-sm font-medium text-slate-500 hover:text-slate-700 hover:underline"
+              >
+                Şifrə təyin etmədən davam et
               </button>
             </form>
           )}
