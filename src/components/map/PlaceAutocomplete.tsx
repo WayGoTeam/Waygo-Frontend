@@ -22,6 +22,7 @@ export function PlaceAutocomplete({
   onChange,
   placeholder,
   dotColor,
+  onPickOnMap,
 }: {
   value: PlaceResult | null
   onChange: (place: PlaceResult | null) => void
