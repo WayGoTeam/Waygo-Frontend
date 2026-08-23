@@ -25,6 +25,8 @@ interface Props {
   tripActive?: boolean
   onStartTrip?: () => void
   onEndTrip?: () => void
+  onPickOrigin?: () => void
+  onPickDestination?: () => void
 }
 
 export function RoutePlannerPanel({
@@ -46,6 +48,8 @@ export function RoutePlannerPanel({
   tripActive,
   onStartTrip,
   onEndTrip,
+  onPickOrigin,
+  onPickDestination,
 }: Props) {
   const { s } = useLocale()
 
@@ -81,6 +85,7 @@ export function RoutePlannerPanel({
           onChange={setOrigin}
           placeholder={s.routePlanner.originPlaceholder}
           dotColor="#22c55e"
+          onPickOnMap={onPickOrigin}
         />
 
         <div className="flex items-center justify-between pt-2.5">
@@ -100,6 +105,7 @@ export function RoutePlannerPanel({
             onChange={setDestination}
             placeholder={s.routePlanner.destinationPlaceholder}
             dotColor="#ef4444"
+            onPickOnMap={onPickDestination}
           />
         </div>
 

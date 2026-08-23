@@ -7,6 +7,7 @@ interface ReportIncidentPanelProps {
   onCancel: () => void
   onSubmit: (type: ReportType, description: string) => void
   hasLocation: boolean
+  onPickOnMap: () => void
 }
 
 const REPORT_TYPES: ReportType[] = [
@@ -19,7 +20,7 @@ const REPORT_TYPES: ReportType[] = [
   'OTHER',
 ]
 
-export function ReportIncidentPanel({ onCancel, onSubmit, hasLocation }: ReportIncidentPanelProps) {
+export function ReportIncidentPanel({ onCancel, onSubmit, hasLocation, onPickOnMap }: ReportIncidentPanelProps) {
   const { s } = useLocale()
   const [type, setType] = useState<ReportType>('ACCIDENT')
   const [description, setDescription] = useState('')
@@ -61,19 +62,24 @@ export function ReportIncidentPanel({ onCancel, onSubmit, hasLocation }: ReportI
         />
       </div>
 
-      {!hasLocation ? (
-        <div className="rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
-          {s.reportModal.useMapPin || 'Xəritədə klikləyərək məkanı seçin.'}
-        </div>
-      ) : (
+      <div className="flex flex-col gap-1.5">
+        <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{s.reportModal.location || 'Məkan'}</label>
         <button
-          onClick={() => onSubmit(type, description)}
-          className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 active:scale-[0.98]"
+          onClick={onPickOnMap}
+          className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         >
-          <Check className="h-4 w-4" />
-          {s.reportModal.submit}
+          {hasLocation ? 'Xəritədən seçildi (Dəyişdir)' : s.reportModal.useMapPin || 'Xəritədə klikləyərək məkanı seçin'}
         </button>
-      )}
+      </div>
+
+      <button
+        disabled={!hasLocation}
+        onClick={() => onSubmit(type, description)}
+        className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <Check className="h-4 w-4" />
+        {s.reportModal.submit}
+      </button>
     </div>
   )
 }

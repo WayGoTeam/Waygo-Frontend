@@ -27,6 +27,7 @@ export function PlaceAutocomplete({
   onChange: (place: PlaceResult | null) => void
   placeholder: string
   dotColor: string
+  onPickOnMap?: () => void
 }) {
   const { s } = useLocale()
   const [query, setQuery] = useState(value?.label ?? '')
@@ -91,6 +92,21 @@ export function PlaceAutocomplete({
           className="w-full min-w-0 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
         />
         {loading && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-slate-300" />}
+        {!loading && onPickOnMap && (
+          <button
+            type="button"
+            aria-label={s.common.pickOnMap}
+            title={s.common.pickOnMap}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => {
+              setOpen(false)
+              if (onPickOnMap) onPickOnMap()
+            }}
+            className="shrink-0 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-brand-600"
+          >
+            <MapPin className="h-4 w-4" />
+          </button>
+        )}
         {!loading && query && (
           <button
             type="button"

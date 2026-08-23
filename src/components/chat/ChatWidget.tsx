@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bot, MessageCircle, Send, X, Mic } from 'lucide-react'
+import { Bot, MessageCircle, Send, X, Mic, Trash2 } from 'lucide-react'
 import { sendChatMessageStream, sendChatVoiceMessage } from '@/api/chat'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useSocket } from '@/context/SocketContext'
@@ -106,6 +106,16 @@ export function ChatWidget() {
           <span className={`h-1.5 w-1.5 rounded-full ${connected ? 'bg-emerald-500' : 'bg-slate-300'}`} />
           {connected ? s.chat.online : s.chat.offline}
         </span>
+        {messages.length > 0 && (
+          <button
+            onClick={() => setMessages([])}
+            aria-label={s.chat.clear}
+            title={s.chat.clear}
+            className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-red-600 transition"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
         <button
           onClick={() => setOpen(false)}
           aria-label={s.chat.close}

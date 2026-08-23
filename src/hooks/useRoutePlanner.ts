@@ -36,26 +36,34 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
   const requestId = useRef(0)
   const { user } = useAuth()
 
-  useEffect(() => {
-    if (navigator.permissions && navigator.geolocation) {
-      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        if (result.state === 'granted') {
-          navigator.geolocation.getCurrentPosition((pos) => {
-            setOrigin((prev) => {
-              if (prev) return prev
-              return {
-                label: 'Mənim konumum',
-                subtitle: 'Cari Koordinat',
-                lat: pos.coords.latitude,
-                lng: pos.coords.longitude,
-              }
-            })
+  const fetchCurrentLocation = () => {
+    if (navigator.geolocation) {
+      const setPos = () => {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          setOrigin((prev) => {
+            if (prev) return prev
+            return {
+              label: 'Mənim konumum',
+              subtitle: 'Cari Koordinat',
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            }
           })
-        }
-      }).catch(() => {
-        // Ignore errors if permissions API is unsupported
-      })
+        })
+      }
+
+      if (navigator.permissions) {
+        navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+          if (result.state === 'granted') {
+            setPos()
+          }
+        }).catch(() => {})
+      }
     }
+  }
+
+  useEffect(() => {
+    fetchCurrentLocation()
   }, [])
 
   async function compute(o: PlaceResult, d: PlaceResult, m: RouteMode) {
@@ -154,6 +162,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     setRoute(null)
     setError(null)
     setTripActive(false)
+    fetchCurrentLocation()
   }
 
   return {

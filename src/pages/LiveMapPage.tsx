@@ -30,8 +30,10 @@ export default function LiveMapPage() {
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null)
   const [panelVisible, setPanelVisible] = useState(true)
   const [focus, setFocus] = useState<{ lat: number; lng: number; label?: string } | null>(null)
+  const [routePickingMode, setRoutePickingMode] = useState<'origin' | 'destination' | null>(null)
 
   const [reportingMode, setReportingMode] = useState(false)
+  const [reportPickingMode, setReportPickingMode] = useState(false)
   const [reportLocation, setReportLocation] = useState<{lat: number, lng: number} | null>(null)
 
   const { user } = useAuth()
@@ -73,8 +75,26 @@ export default function LiveMapPage() {
   }
 
   function handleMapClick(lat: number, lng: number) {
+    if (reportPickingMode) {
+      setReportLocation({ lat, lng })
+      setReportPickingMode(false)
+      return
+    }
     if (reportingMode) {
       setReportLocation({ lat, lng })
+      return
+    }
+    if (routePickingMode === 'origin') {
+      planner.setOrigin({ label: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, lat, lng })
+      setRoutePickingMode(null)
+      setPanelVisible(true)
+      return
+    }
+    if (routePickingMode === 'destination') {
+      planner.setDestination({ label: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, lat, lng })
+      setRoutePickingMode(null)
+      setPanelVisible(true)
+      return
     }
   }
 
@@ -95,6 +115,18 @@ export default function LiveMapPage() {
       setReportLocation(null)
     } catch (error) {
       console.error('Failed to submit report', error)
+    }
+  }
+
+  const fetchCurrentLocationForReport = () => {
+    if (navigator.geolocation && navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'granted') {
+          navigator.geolocation.getCurrentPosition((pos) => {
+            setReportLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+          })
+        }
+      }).catch(() => {})
     }
   }
 
@@ -183,6 +215,39 @@ export default function LiveMapPage() {
         currentLocation={currentLocation}
       />
 
+      {routePickingMode && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1100] animate-fade-up">
+          <div className="flex items-center gap-3 rounded-full bg-slate-900/90 px-4 py-2.5 text-sm font-medium text-white shadow-float backdrop-blur">
+            <span>{s.common.pickingOnMapHint}</span>
+            <button
+              onClick={() => {
+                setRoutePickingMode(null)
+                setPanelVisible(true)
+              }}
+              className="rounded-full bg-white/20 px-3 py-1 text-xs transition hover:bg-white/30"
+            >
+              {s.common.cancel}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {reportPickingMode && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1100] animate-fade-up">
+          <div className="flex items-center gap-3 rounded-full bg-slate-900/90 px-4 py-2.5 text-sm font-medium text-white shadow-float backdrop-blur">
+            <span>{s.common.pickingOnMapHint}</span>
+            <button
+              onClick={() => {
+                setReportPickingMode(false)
+              }}
+              className="rounded-full bg-white/20 px-3 py-1 text-xs transition hover:bg-white/30"
+            >
+              {s.common.cancel}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="pointer-events-none absolute inset-0 z-[1000] flex flex-col gap-3 p-3 sm:p-4">
         <div className="flex min-h-0 flex-1 items-start justify-between gap-3">
           <div className="pointer-events-none flex h-full max-h-full min-h-0 min-w-0 max-w-[calc(100vw-1.5rem)] flex-col">
@@ -205,8 +270,16 @@ export default function LiveMapPage() {
               tripActive={planner.tripActive}
               onStartTrip={handleStartTrip}
               onEndTrip={handleEndTrip}
+              onPickOrigin={() => {
+                setRoutePickingMode('origin')
+                setPanelVisible(false)
+              }}
+              onPickDestination={() => {
+                setRoutePickingMode('destination')
+                setPanelVisible(false)
+              }}
             />
-            {reportingMode && (
+            {reportingMode && !reportPickingMode && (
               <div className="mt-3">
                 <ReportIncidentPanel
                   onCancel={() => {
@@ -215,6 +288,7 @@ export default function LiveMapPage() {
                   }}
                   onSubmit={handleSubmitReport}
                   hasLocation={!!reportLocation}
+                  onPickOnMap={() => setReportPickingMode(true)}
                 />
               </div>
             )}
@@ -226,6 +300,8 @@ export default function LiveMapPage() {
                 onClick={() => {
                   setReportingMode(true)
                   setPanelVisible(false)
+                  setReportLocation(null)
+                  fetchCurrentLocationForReport()
                 }}
                 className="pointer-events-auto flex items-center gap-2 rounded-full border border-transparent bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-float transition hover:bg-brand-700 active:scale-95"
               >

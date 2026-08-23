@@ -87,6 +87,7 @@ export interface Strings {
     errorReply: string
     open: string
     close: string
+    clear: string
   }
   cityBar: {
     citywideStatus: string
@@ -187,6 +188,8 @@ export interface Strings {
     vehicles: string
     ago: string
     justNow: string
+    pickOnMap: string
+    pickingOnMapHint: string
   }
 }
 
@@ -279,6 +282,7 @@ export const az: Strings = {
     errorReply: 'Bağlantı xətası baş verdi. Backend serverinin işlədiyinə əmin olun.',
     open: 'WayGo AI-ı aç',
     close: 'Bağla',
+    clear: 'Söhbəti təmizlə',
   },
   cityBar: {
     citywideStatus: 'Şəhər üzrə vəziyyət',
@@ -403,6 +407,8 @@ export const az: Strings = {
     vehicles: 'vasitə',
     ago: 'əvvəl',
     justNow: 'indicə',
+    pickOnMap: 'Xəritədə seç',
+    pickingOnMapHint: 'Xəritədə nöqtəni seçin',
   },
 }
 
@@ -495,6 +501,7 @@ export const en: Strings = {
     errorReply: 'Connection error — make sure the backend server is running.',
     open: 'Open WayGo AI',
     close: 'Close',
+    clear: 'Clear chat',
   },
   cityBar: {
     citywideStatus: 'Citywide status',
@@ -619,5 +626,7 @@ export const en: Strings = {
     vehicles: 'vehicles',
     ago: 'ago',
     justNow: 'just now',
+    pickOnMap: 'Pick on map',
+    pickingOnMapHint: 'Select a point on the map',
   },
 }
