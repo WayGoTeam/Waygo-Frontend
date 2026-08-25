@@ -108,6 +108,7 @@ export function LiveMap({
   const incidentSize = currentZoom < 10 ? 12 : currentZoom < 12 ? 20 : currentZoom < 14 ? 26 : 30
   const pinSize = currentZoom < 10 ? 16 : currentZoom < 12 ? 24 : currentZoom < 14 ? 30 : 34
   const dotSize = currentZoom < 10 ? 8 : currentZoom < 12 ? 12 : currentZoom < 14 ? 14 : 16
+  const showMarkers = currentZoom >= 9
 
   return (
     <MapContainer center={center} zoom={zoom} className="h-full w-full" zoomControl={false} attributionControl>
@@ -128,7 +129,7 @@ export function LiveMap({
         />
       )}
 
-      {visibleIncidents.map((incident) => (
+      {showMarkers && visibleIncidents.map((incident) => (
         <Marker
           key={incident.id}
           position={[incident.latitude as number, incident.longitude as number]}
@@ -150,17 +151,17 @@ export function LiveMap({
           <Polyline positions={routeLatLngs} pathOptions={{ color: '#2358eb', weight: 5, opacity: 0.95, lineCap: 'round' }} />
         </>
       )}
-      {origin && <Marker position={[origin.lat, origin.lng]} icon={dotIcon('#22c55e', dotSize)} />}
-      {destination && <Marker position={[destination.lat, destination.lng]} icon={pinIcon('#ef4444', pinSize)} />}
-      {focus && !origin && !destination && (
+      {showMarkers && origin && <Marker position={[origin.lat, origin.lng]} icon={dotIcon('#22c55e', dotSize)} />}
+      {showMarkers && destination && <Marker position={[destination.lat, destination.lng]} icon={pinIcon('#ef4444', pinSize)} />}
+      {showMarkers && focus && !origin && !destination && (
         <Marker position={[focus.lat, focus.lng]} icon={pinIcon('#2358eb', pinSize)}>
           {focus.label && <Popup>{focus.label}</Popup>}
         </Marker>
       )}
-      {reportLocation && (
+      {showMarkers && reportLocation && (
         <Marker position={[reportLocation.lat, reportLocation.lng]} icon={incidentIcon('#f59e0b', true, incidentSize)} />
       )}
-      {currentLocation && (
+      {showMarkers && currentLocation && (
         <Marker position={[currentLocation.lat, currentLocation.lng]} icon={dotIcon('#3b82f6', dotSize)} zIndexOffset={1000} />
       )}
     </MapContainer>
