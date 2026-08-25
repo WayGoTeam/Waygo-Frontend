@@ -66,3 +66,8 @@ export const loginWithGoogle = async (idToken: string): Promise<OAuthLoginRespon
   if (res.token) localStorage.setItem('waygo_token', res.token)
   return res
 }
+
+export const oauthGoogle = loginWithGoogle
+
+export const updateProfile = (data: any) =>
+  api.put('/auth/profile', data)

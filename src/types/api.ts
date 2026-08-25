@@ -280,6 +280,7 @@ export interface ValhallaRouteResponse {
 export interface WalletBalance {
   ecoPointsBalance: number
   totalCo2SavedKg: number
+  totalDistanceKm?: number
 }
 
 export interface VoucherResponse {

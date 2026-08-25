@@ -101,7 +101,7 @@ export function OtpLoginModal({ onClose }: Props) {
     setLoading(true)
     setError(null)
     try {
-      await onboarding(vehicleType, plate)
+      await onboarding(vehicleType, plate, '')
       await refreshUser()
       setStep('SUCCESS')
     } catch {
