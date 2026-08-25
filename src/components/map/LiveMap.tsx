@@ -73,10 +73,11 @@ export function LiveMap({
 
   const center: [number, number] = mapConfig ? [mapConfig.centerLat, mapConfig.centerLng] : BAKU_CENTER
   const zoom = mapConfig?.defaultZoom ?? 12
+  // Use OSM for standard map, Esri for satellite
   const basemapUrl =
     basemap === 'satellite'
-      ? (showTraffic ? 'https://mt1.google.com/vt/lyrs=y,traffic&x={x}&y={y}&z={z}' : 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}')
-      : (showTraffic ? 'https://mt1.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}' : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}')
+      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 
   const routeLatLngs = useMemo<[number, number][]>(
     () => (route ? route.points.map((p) => [p.latitude, p.longitude]) : []),
