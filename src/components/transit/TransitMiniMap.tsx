@@ -9,7 +9,7 @@ export function TransitMiniMap({ network }: { network: TransitNetwork }) {
   return (
     <Map
       initialViewState={{ longitude: BAKU_CENTER[0], latitude: BAKU_CENTER[1], zoom: 12 }}
-      mapStyle={mapStyle}
+      mapStyle={mapStyle as any}
       style={{ width: '100%', height: '100%' }}
       interactive={false}
     >

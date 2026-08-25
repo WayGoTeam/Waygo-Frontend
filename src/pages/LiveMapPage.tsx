@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { finishTrip, sendGpsPing } from '@/api/navigation'
-import type maplibregl from 'maplibre-gl'
+import maplibregl from 'maplibre-gl'
 import { useTrafficMap } from '@/hooks/useTrafficMap'
 import { useCityStats } from '@/hooks/useCityStats'
 import { useMapConfig } from '@/hooks/useMapConfig'
@@ -90,6 +90,7 @@ export default function LiveMapPage() {
       )
       mapInstance.fitBounds(bounds, { padding: 72 })
     }
+    setPanelVisible(false)
   }
 
   function handleMapClick(lat: number, lng: number) {
@@ -297,7 +298,10 @@ export default function LiveMapPage() {
           <div className="pointer-events-none flex h-full max-h-full min-h-0 min-w-0 max-w-[calc(100vw-1.5rem)] flex-col">
             <RoutePlannerPanel
               visible={panelVisible}
-              onClose={() => setPanelVisible(false)}
+              onClose={() => {
+                setPanelVisible(false)
+                planner.clear()
+              }}
               onReopen={() => setPanelVisible(true)}
               origin={planner.origin}
               setOrigin={planner.setOrigin}

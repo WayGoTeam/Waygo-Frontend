@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import L from 'leaflet'
+import maplibregl from 'maplibre-gl'
+import type { Map } from 'maplibre-gl'
 import { Crosshair, Maximize, Minimize, Minus, Plus } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import { IconButton } from '@/components/common/primitives'
@@ -8,14 +9,14 @@ export function MapZoomControls({
   map,
   fullscreenTarget,
 }: {
-  map: L.Map
+  map: Map
   fullscreenTarget: HTMLElement | null
 }) {
   const { s } = useLocale()
   const [locating, setLocating] = useState(false)
   const [locateError, setLocateError] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [userMarker, setUserMarker] = useState<L.CircleMarker | null>(null)
+  const [userMarker, setUserMarker] = useState<maplibregl.Marker | null>(null)
 
   useEffect(() => {
     const handler = () => setIsFullscreen(Boolean(document.fullscreenElement))
@@ -29,20 +30,17 @@ export function MapZoomControls({
     setLocateError(false)
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const latlng: [number, number] = [pos.coords.latitude, pos.coords.longitude]
-        map.flyTo(latlng, 15, { duration: 1 })
+        const latlng: [number, number] = [pos.coords.longitude, pos.coords.latitude]
+        map.flyTo({ center: latlng, zoom: 15, duration: 1000 })
         
         if (userMarker) {
-          userMarker.setLatLng(latlng)
+          userMarker.setLngLat(latlng)
         } else {
-          const newMarker = L.circleMarker(latlng, {
-            radius: 8,
-            fillColor: '#3b82f6',
-            color: '#ffffff',
-            weight: 3,
-            opacity: 1,
-            fillOpacity: 1
-          }).addTo(map)
+          const el = document.createElement('div')
+          el.className = 'w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-[0_0_0_2px_rgba(59,130,246,0.5)]'
+          const newMarker = new maplibregl.Marker({ element: el })
+            .setLngLat(latlng)
+            .addTo(map)
           setUserMarker(newMarker)
         }
         

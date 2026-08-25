@@ -53,7 +53,7 @@ export function LiveMap({
 
   useEffect(() => {
     if (mapRef.current) {
-      onMapReady(mapRef.current.getMap())
+      onMapReady(mapRef.current.getMap() as any)
     }
   }, [onMapReady])
 
@@ -88,7 +88,7 @@ export function LiveMap({
     <Map
       ref={mapRef}
       initialViewState={{ longitude: center[0], latitude: center[1], zoom: mapConfig?.defaultZoom ?? 12 }}
-      mapStyle={mapStyle}
+      mapStyle={mapStyle as any}
       style={{ width: '100%', height: '100%' }}
       onClick={(e) => onMapClick?.(e.lngLat.lat, e.lngLat.lng)}
       onZoom={(e) => setCurrentZoom(e.viewState.zoom)}

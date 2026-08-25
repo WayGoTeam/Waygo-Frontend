@@ -78,7 +78,7 @@ export function RoutePlannerPanel({
         </button>
       </div>
 
-      <div className="scroll-thin flex-1 overflow-y-auto px-4 py-3.5">
+      <div className="flex-shrink-0 px-4 py-3.5 z-10">
         <label className="mb-1 block text-xs font-medium text-slate-500">{s.routePlanner.origin}</label>
         <PlaceAutocomplete
           value={origin}
@@ -122,18 +122,20 @@ export function RoutePlannerPanel({
             </button>
           ))}
         </div>
+      </div>
 
+      <div className="scroll-thin flex-1 overflow-y-auto px-4 pb-3.5">
         {!origin || !destination ? (
-          <p className="mt-4 rounded-xl bg-slate-50 px-3 py-3 text-center text-xs text-slate-400">
+          <p className="rounded-xl bg-slate-50 px-3 py-3 text-center text-xs text-slate-400">
             {s.routePlanner.pickBoth}
           </p>
         ) : loading ? (
-          <div className="mt-4 flex items-center justify-center gap-2 py-6 text-sm text-slate-400">
+          <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-400">
             <Loader2 className="h-4 w-4 animate-spin" />
             {s.routePlanner.calculating}
           </div>
         ) : error || !route ? (
-          <p className="mt-4 rounded-xl bg-red-50 px-3 py-3 text-center text-xs text-red-500">
+          <p className="rounded-xl bg-red-50 px-3 py-3 text-center text-xs text-red-500">
             {s.routePlanner.error}
           </p>
         ) : (
