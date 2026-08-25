@@ -71,7 +71,15 @@ export default function LiveMapPage() {
   function showOnMap() {
     if (!planner.route || !mapInstance) return
     const latLngs = planner.route.points.map((p) => [p.latitude, p.longitude]) as [number, number][]
-    if (latLngs.length > 1) mapInstance.fitBounds(latLngs, { padding: [72, 72] })
+    if (latLngs.length > 1) {
+      mapInstance.fitBounds(latLngs, { padding: [72, 72] })
+      setPanelVisible(false)
+    }
+  }
+
+  function handleClosePanel() {
+    planner.clear()
+    setPanelVisible(false)
   }
 
   function handleMapClick(lat: number, lng: number) {
@@ -253,7 +261,7 @@ export default function LiveMapPage() {
           <div className="pointer-events-none flex h-full max-h-full min-h-0 min-w-0 max-w-[calc(100vw-1.5rem)] flex-col">
             <RoutePlannerPanel
               visible={panelVisible}
-              onClose={() => setPanelVisible(false)}
+              onClose={handleClosePanel}
               onReopen={() => setPanelVisible(true)}
               origin={planner.origin}
               setOrigin={planner.setOrigin}
