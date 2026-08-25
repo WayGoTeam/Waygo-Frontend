@@ -49,7 +49,7 @@ export function LiveMap({
   const mapRef = useRef<MapRef>(null)
 
   const center: [number, number] = mapConfig ? [mapConfig.centerLng, mapConfig.centerLat] : BAKU_CENTER
-  const zoom = mapConfig?.defaultZoom ?? 12
+  const [currentZoom, setCurrentZoom] = useState(mapConfig?.defaultZoom ?? 12)
 
   useEffect(() => {
     if (mapRef.current) {
@@ -77,19 +77,21 @@ export function LiveMap({
 
   const visibleIncidents = useMemo(() => {
     if (!incidents) return []
+    if (currentZoom < 12) return [] // Hide incidents when zoomed out
     return incidents.filter((i) => {
       if (!i.active || i.latitude === null || i.longitude === null) return false
       return i.source === 'ANOMALY_DETECTION' ? showLiveIncidents : showIncidents
     })
-  }, [incidents, showIncidents, showLiveIncidents])
+  }, [incidents, showIncidents, showLiveIncidents, currentZoom])
 
   return (
     <Map
       ref={mapRef}
-      initialViewState={{ longitude: center[0], latitude: center[1], zoom }}
+      initialViewState={{ longitude: center[0], latitude: center[1], zoom: mapConfig?.defaultZoom ?? 12 }}
       mapStyle={mapStyle}
       style={{ width: '100%', height: '100%' }}
       onClick={(e) => onMapClick?.(e.lngLat.lat, e.lngLat.lng)}
+      onZoom={(e) => setCurrentZoom(e.viewState.zoom)}
       interactiveLayerIds={['roads-minor', 'roads-major', 'buildings', 'water', 'parks']}
     >
       {/* Route Line */}
