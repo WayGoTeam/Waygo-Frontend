@@ -70,4 +70,4 @@ export const loginWithGoogle = async (idToken: string): Promise<OAuthLoginRespon
 export const oauthGoogle = loginWithGoogle
 
 export const updateProfile = (data: any) =>
-  api.put('/auth/profile', data)
+  api.put('/auth/update-profile', data)
