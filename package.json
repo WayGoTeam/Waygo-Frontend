@@ -11,17 +11,18 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.400.0",
-    "maplibre-gl": "^4.7.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-map-gl": "^7.1.7",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^6.30.4",
     "recharts": "^3.10.1",
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",

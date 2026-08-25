@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { finishTrip, sendGpsPing } from '@/api/navigation'
-import maplibregl from 'maplibre-gl'
+import type L from 'leaflet'
 import { useTrafficMap } from '@/hooks/useTrafficMap'
 import { useCityStats } from '@/hooks/useCityStats'
 import { useMapConfig } from '@/hooks/useMapConfig'
@@ -27,7 +27,7 @@ export default function LiveMapPage() {
   const location = useLocation()
   const { s } = useLocale()
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null)
+  const [mapInstance, setMapInstance] = useState<L.Map | null>(null)
   const [panelVisible, setPanelVisible] = useState(true)
   const [focus, setFocus] = useState<{ lat: number; lng: number; label?: string } | null>(null)
   const [routePickingMode, setRoutePickingMode] = useState<'origin' | 'destination' | null>(null)
@@ -49,16 +49,10 @@ export default function LiveMapPage() {
   const planner = useRoutePlanner(segments)
 
   useEffect(() => {
-    const state = location.state as FocusState & { reportingMode?: boolean } | null
+    const state = location.state as FocusState | null
     if (state?.focus) {
       setFocus(state.focus)
       setPanelVisible(false)
-    }
-    if (state?.reportingMode) {
-      setReportingMode(true)
-      setPanelVisible(false)
-      setReportLocation(null)
-      fetchCurrentLocationForReport()
     }
   }, [location.state])
 
@@ -68,29 +62,16 @@ export default function LiveMapPage() {
 
   useEffect(() => {
     if (planner.route && mapInstance) {
-      const coords = planner.route.points
-      if (coords.length > 1) {
-        const bounds = coords.reduce(
-          (b, p) => b.extend([p.longitude, p.latitude]),
-          new maplibregl.LngLatBounds([coords[0].longitude, coords[0].latitude], [coords[0].longitude, coords[0].latitude])
-        )
-        mapInstance.fitBounds(bounds, { padding: 72 })
-      }
+      const latLngs = planner.route.points.map((p) => [p.latitude, p.longitude]) as [number, number][]
+      if (latLngs.length > 1) mapInstance.fitBounds(latLngs, { padding: [72, 72] })
       setPanelVisible(true)
     }
   }, [planner.route, mapInstance])
 
   function showOnMap() {
     if (!planner.route || !mapInstance) return
-    const coords = planner.route.points
-    if (coords.length > 1) {
-      const bounds = coords.reduce(
-        (b, p) => b.extend([p.longitude, p.latitude]),
-        new maplibregl.LngLatBounds([coords[0].longitude, coords[0].latitude], [coords[0].longitude, coords[0].latitude])
-      )
-      mapInstance.fitBounds(bounds, { padding: 72 })
-    }
-    setPanelVisible(false)
+    const latLngs = planner.route.points.map((p) => [p.latitude, p.longitude]) as [number, number][]
+    if (latLngs.length > 1) mapInstance.fitBounds(latLngs, { padding: [72, 72] })
   }
 
   function handleMapClick(lat: number, lng: number) {
@@ -120,40 +101,14 @@ export default function LiveMapPage() {
   async function handleSubmitReport(type: ReportType, description: string) {
     if (!reportLocation) return
     const finalDescription = description.trim() || `Reported: ${type}`
-    
-    let nearestSegmentId = segments[0]?.segmentId || crypto.randomUUID()
-    if (segments.length > 0) {
-      let minDistance = Infinity
-      for (const seg of segments) {
-        // We calculate distance to the centroid for simplicity, or we could check every point. Centroid is fine.
-        const mid = seg.coordinates.reduce(
-          (acc, c) => ({ latitude: acc.latitude + c.latitude, longitude: acc.longitude + c.longitude }),
-          { latitude: 0, longitude: 0 }
-        )
-        mid.latitude /= seg.coordinates.length
-        mid.longitude /= seg.coordinates.length
-        
-        // Simple Euclidean distance for finding closest segment is usually enough, but let's just use it
-        const d = Math.pow(mid.latitude - reportLocation.lat, 2) + Math.pow(mid.longitude - reportLocation.lng, 2)
-        if (d < minDistance) {
-          minDistance = d
-          nearestSegmentId = seg.segmentId
-        }
-      }
-    }
-
     try {
       await submitReport({
-        userId: localStorage.getItem('waygo.reporterId') || (function(){
-          const id = crypto.randomUUID();
-          localStorage.setItem('waygo.reporterId', id);
-          return id;
-        })(),
+        userId: crypto.randomUUID(),
         type,
         description: finalDescription,
         latitude: reportLocation.lat,
         longitude: reportLocation.lng,
-        segmentId: nearestSegmentId,
+        segmentId: segments[0]?.segmentId || crypto.randomUUID(),
         createdAt: new Date().toISOString()
       })
       setReportingMode(false)
@@ -298,10 +253,7 @@ export default function LiveMapPage() {
           <div className="pointer-events-none flex h-full max-h-full min-h-0 min-w-0 max-w-[calc(100vw-1.5rem)] flex-col">
             <RoutePlannerPanel
               visible={panelVisible}
-              onClose={() => {
-                setPanelVisible(false)
-                planner.clear()
-              }}
+              onClose={() => setPanelVisible(false)}
               onReopen={() => setPanelVisible(true)}
               origin={planner.origin}
               setOrigin={planner.setOrigin}
