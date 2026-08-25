@@ -3,7 +3,7 @@ import { getRoute } from '@/api/maps'
 import { getAiRoute } from '@/api/navigation'
 import { calculateSmartEta } from '@/api/traffic'
 import { useAuth } from '@/context/AuthContext'
-import { pickNearestSegments } from '@/lib/geo'
+import { pickNearestSegments, decodePolyline6 } from '@/lib/geo'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
 import type { Coordinate, RouteMode, TrafficMapEntry } from '@/types/api'
 
@@ -71,7 +71,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     setLoading(true)
     setError(null)
     try {
-      let routes: any[] = []
+      let trip: any = null
       let ecoPointsEarned: number | undefined
       let verraHash: string | undefined
       let co2SavedKg: number | undefined
@@ -80,8 +80,12 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
       if (user) {
         const raw = await getAiRoute(o.lat, o.lng, d.lat, d.lng, m, user.vehicleType)
         if (id !== requestId.current) return // a newer request has since started — drop this one
-        const tomTomData = raw.routeJson ? JSON.parse(raw.routeJson) : {}
-        routes = tomTomData.routes ?? []
+        const valhallaData = raw.routeJson ? JSON.parse(raw.routeJson) : {}
+        if (m === 'alternative' && valhallaData.alternates && valhallaData.alternates.length > 0) {
+           trip = valhallaData.alternates[0].trip
+        } else {
+           trip = valhallaData.trip
+        }
         ecoPointsEarned = raw.ecoPointsEarned
         verraHash = raw.verraHash
         co2SavedKg = raw.co2SavedKg
@@ -89,17 +93,21 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
       } else {
         const raw = await getRoute(o.lat, o.lng, d.lat, d.lng, m)
         if (id !== requestId.current) return
-        routes = raw.routes ?? []
+        const valhallaData = raw as any
+        if (m === 'alternative' && valhallaData.alternates && valhallaData.alternates.length > 0) {
+           trip = valhallaData.alternates[0].trip
+        } else {
+           trip = valhallaData.trip
+        }
       }
-      const chosen = m === 'alternative' ? (routes[1] ?? routes[0]) : routes[0]
-      if (!chosen) {
+      
+      if (!trip) {
         setRoute(null)
         setError('no-route')
         return
       }
-      const points = chosen.legs.flatMap((leg: any) =>
-        leg.points.map((p: any) => ({ latitude: p.latitude, longitude: p.longitude })),
-      )
+      
+      const points = decodePolyline6(trip.legs[0].shape)
 
       let forecast: ForecastPoint[] | null = null
       if (segments && segments.length > 0) {
@@ -110,7 +118,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
             if (id !== requestId.current) return
             const baselineWindow = smartEta.windows[0]
             if (baselineWindow && baselineWindow.travelMinutes > 0.1) {
-              const baselineMinutes = chosen.summary.travelTimeInSeconds / 60
+              const baselineMinutes = trip.summary.time / 60
               forecast = smartEta.windows.map((w) => ({
                 offsetMinutes: w.departureOffsetMinutes,
                 minutes: baselineMinutes * (w.travelMinutes / baselineWindow.travelMinutes),
@@ -125,10 +133,10 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
       if (id !== requestId.current) return
       setRoute({
         points,
-        distanceMeters: chosen.summary.lengthInMeters,
-        travelTimeSeconds: chosen.summary.travelTimeInSeconds,
-        trafficDelaySeconds: chosen.summary.trafficDelayInSeconds ?? 0,
-        freeFlowTravelTimeSeconds: chosen.summary.noTrafficTravelTimeInSeconds ?? null,
+        distanceMeters: trip.summary.length * 1000,
+        travelTimeSeconds: trip.summary.time,
+        trafficDelaySeconds: 0,
+        freeFlowTravelTimeSeconds: trip.summary.time,
         forecast,
         ecoPointsEarned,
         verraHash,

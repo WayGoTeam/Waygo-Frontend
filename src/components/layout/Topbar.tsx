@@ -11,6 +11,7 @@ import { Popover } from '@/components/common/Popover'
 import { Badge, IconButton, Toggle } from '@/components/common/primitives'
 import { IncidentRow } from '@/components/incidents/IncidentRow'
 import { EmptyState } from '@/components/common/States'
+import { Modal } from '@/components/common/Modal'
 import { useAuth } from '@/context/AuthContext'
 import { OtpLoginModal } from '@/components/auth/OtpLoginModal'
 
@@ -23,6 +24,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     useMapLayers()
   const { user, logout } = useAuth()
   const [showLogin, setShowLogin] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const activeIncidents = incidents ?? []
 
@@ -123,11 +125,13 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
         {user ? (
           <div className="flex items-center gap-3">
             <div className="flex flex-col text-right">
-              <span className="text-sm font-semibold text-slate-900">{user.username || user.phone}</span>
+              <span className="text-sm font-semibold text-slate-900">
+                {user.fullName || user.email || (user.username?.startsWith('google:') ? 'İstifadəçi' : user.username)}
+              </span>
               {user.vehicleType && <span className="text-[10px] uppercase font-bold text-brand-600">{user.vehicleType}</span>}
             </div>
             <button
-              onClick={() => logout()}
+              onClick={() => setShowLogoutConfirm(true)}
               title="Çıxış"
               className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
             >
@@ -146,6 +150,53 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
       </div>
 
       {showLogin && <OtpLoginModal onClose={() => setShowLogin(false)} />}
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <button
+            aria-label="Close"
+            onClick={() => setShowLogoutConfirm(false)}
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+          />
+          <div className="relative w-full max-w-[480px] animate-fade-up flex flex-col items-center justify-center rounded-[2rem] bg-white p-8 shadow-2xl">
+            <button
+              onClick={() => setShowLogoutConfirm(false)}
+              className="absolute right-6 top-6 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-50 mb-6 border-8 border-brand-50/50">
+              <LogOut className="h-8 w-8 text-brand-600 ml-1" />
+            </div>
+            
+            <h2 className="font-display text-2xl font-bold text-slate-900 text-center">
+              Çıxış etmək istəyirsiniz?
+            </h2>
+            <p className="mt-3 text-center text-[15px] leading-relaxed text-slate-500 max-w-[320px]">
+              Hesabınızdan çıxış edilir. Yenidən daxil olmaq üçün qeydiyyatdan keçdiyiniz nömrəni istifadə edə bilərsiniz.
+            </p>
+            
+            <div className="mt-8 flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-center sm:gap-4">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="w-full rounded-2xl bg-slate-100 px-6 py-3.5 text-[15px] font-bold text-slate-600 transition hover:bg-slate-200 sm:w-[160px]"
+              >
+                Ləğv et
+              </button>
+              <button
+                onClick={() => {
+                  setShowLogoutConfirm(false)
+                  logout()
+                }}
+                className="w-full rounded-2xl bg-brand-600 px-6 py-3.5 text-[15px] font-bold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-700 hover:shadow-brand-500/40 sm:w-[160px]"
+              >
+                Bəli, çıxış et
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

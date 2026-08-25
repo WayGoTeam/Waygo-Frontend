@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart3, Bus, CloudSun, MapIcon, ShieldCheck, TriangleAlert, X, Wallet, LogOut } from 'lucide-react'
+import { BarChart3, Bus, CloudSun, MapIcon, ShieldCheck, TriangleAlert, X, Wallet, LogOut, UserCircle } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { LogoMark } from '@/components/common/LogoMark'
@@ -19,6 +19,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     { to: '/analytics', label: s.nav.analytics, icon: BarChart3 },
     { to: '/incidents', label: s.nav.incidents, icon: TriangleAlert, badge: incidentCount },
     { to: '/wallet', label: 'Eko-Cüzdan', icon: Wallet },
+    { to: '/profile', label: 'Profil', icon: UserCircle },
   ]
 
   return (

@@ -48,5 +48,21 @@ export const verifyOtp = async (phone: string, code: string) => {
   return res
 }
 
-export const onboarding = (vehicleType: string, plateNumber: string) =>
-  api.post<UserMeResponse>('/auth/onboarding', { vehicleType, texpasportInfo: plateNumber })
+export const onboarding = (vehicleType: string, plateNumber: string, fullName: string) =>
+  api.post<UserMeResponse>('/auth/onboarding', { vehicleType, texpasportInfo: plateNumber, fullName })
+
+export interface OAuthLoginResponse {
+  token: string
+  refreshToken: string
+  tokenType: string
+  userId: string
+  isNewUser: boolean
+  needsOnboarding: boolean
+  fullName?: string
+}
+
+export const loginWithGoogle = async (idToken: string): Promise<OAuthLoginResponse> => {
+  const res = await api.post<OAuthLoginResponse>('/auth/oauth/google', { idToken, provider: 'GOOGLE' })
+  if (res.token) localStorage.setItem('waygo_token', res.token)
+  return res
+}

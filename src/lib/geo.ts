@@ -43,7 +43,6 @@ export function pickNearestSegments(
     const distance = Math.min(...sampled.map((p) => haversineKm(p, mid)))
     return { segment, distance }
   })
-
   scored.sort((a, b) => a.distance - b.distance)
   return scored.slice(0, count).map(({ segment }) => ({
     id: segment.segmentId,
@@ -51,4 +50,47 @@ export function pickNearestSegments(
     coordinates: segment.coordinates,
     zone: segment.zone,
   }))
+}
+
+/**
+ * Decodes a Valhalla (or OSRM polyline6) encoded geometry string into an array of Coordinates.
+ * The standard Google Polyline uses 1e5 precision, but Valhalla uses 1e6 (6 decimals).
+ */
+export function decodePolyline6(str: string, precision: number = 6): Coordinate[] {
+  let index = 0
+  let lat = 0
+  let lng = 0
+  const coordinates: Coordinate[] = []
+  const factor = Math.pow(10, precision)
+
+  while (index < str.length) {
+    let byte
+    let shift = 0
+    let result = 0
+
+    do {
+      byte = str.charCodeAt(index++) - 63
+      result |= (byte & 0x1f) << shift
+      shift += 5
+    } while (byte >= 0x20)
+
+    const lat_change = result & 1 ? ~(result >> 1) : result >> 1
+    lat += lat_change
+
+    shift = 0
+    result = 0
+
+    do {
+      byte = str.charCodeAt(index++) - 63
+      result |= (byte & 0x1f) << shift
+      shift += 5
+    } while (byte >= 0x20)
+
+    const lng_change = result & 1 ? ~(result >> 1) : result >> 1
+    lng += lng_change
+
+    coordinates.push({ latitude: lat / factor, longitude: lng / factor })
+  }
+
+  return coordinates
 }

@@ -6,13 +6,11 @@ import { useIncidentsContext } from '@/context/IncidentsContext'
 import { PageHeader } from '@/components/common/PageHeader'
 import { EmptyState, ErrorState, LoadingState } from '@/components/common/States'
 import { IncidentRow } from '@/components/incidents/IncidentRow'
-import { ReportIncidentModal } from '@/components/incidents/ReportIncidentModal'
 
 export default function IncidentsPage() {
   const { s } = useLocale()
   const navigate = useNavigate()
   const { incidents, loading, error, refetch } = useIncidentsContext()
-  const [reportOpen, setReportOpen] = useState(false)
 
   return (
     <div className="scroll-thin h-full overflow-y-auto p-4 sm:p-6">
@@ -29,7 +27,7 @@ export default function IncidentsPage() {
               {s.incidentsPage.liveBadge}
             </span>
             <button
-              onClick={() => setReportOpen(true)}
+              onClick={() => navigate('/', { state: { reportingMode: true } })}
               className="flex items-center gap-1.5 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700"
             >
               <Plus className="h-4 w-4" />
@@ -64,8 +62,6 @@ export default function IncidentsPage() {
           </div>
         )}
       </div>
-
-      {reportOpen && <ReportIncidentModal onClose={() => setReportOpen(false)} onSubmitted={refetch} />}
     </div>
   )
 }

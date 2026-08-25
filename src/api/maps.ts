@@ -1,7 +1,7 @@
 import { API_BASE, api } from './client'
-import type { RouteMode, TomTomRouteResponse, TomTomSearchResult } from '@/types/api'
+import type { RouteMode, ValhallaRouteResponse, WaygoSearchResult } from '@/types/api'
 
-export const searchPlaces = (query: string) => api.get<TomTomSearchResult>('/search', { q: query })
+export const searchPlaces = (query: string) => api.get<WaygoSearchResult[]>('/search', { q: query })
 
 export const getRoute = (
   fromLat: number,
@@ -10,7 +10,7 @@ export const getRoute = (
   toLng: number,
   mode: RouteMode,
 ) =>
-  api.get<TomTomRouteResponse>('/route', {
+  api.get<ValhallaRouteResponse>('/route', {
     fromLat,
     fromLng,
     toLat,

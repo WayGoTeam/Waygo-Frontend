@@ -4,18 +4,7 @@ import { searchPlaces } from '@/api/maps'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useLocale } from '@/i18n/LocaleContext'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
-import type { TomTomSearchResult } from '@/types/api'
 
-function toPlaceResults(raw: TomTomSearchResult): PlaceResult[] {
-  return (raw.results ?? [])
-    .filter((r) => r.position)
-    .map((r) => ({
-      label: r.poi?.name ?? r.address?.freeformAddress ?? 'Naməlum yer',
-      subtitle: r.address?.municipality ?? r.address?.streetName ?? r.address?.countrySubdivision,
-      lat: r.position.lat,
-      lng: r.position.lon,
-    }))
-}
 
 export function PlaceAutocomplete({
   value,
@@ -52,17 +41,18 @@ export function PlaceAutocomplete({
     }
     let cancelled = false
     setLoading(true)
-    searchPlaces(trimmed)
-      .then((raw) => {
+    async function fetch() {
+      try {
+        const res = await searchPlaces(trimmed)
         if (cancelled) return
-        setResults(toPlaceResults(raw))
-      })
-      .catch(() => {
+        setResults(res)
+      } catch {
         if (!cancelled) setResults([])
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+    fetch()
     return () => {
       cancelled = true
     }

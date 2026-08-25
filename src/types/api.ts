@@ -224,8 +224,16 @@ export interface UserMeResponse {
   username: string
   roles: string[]
   phone?: string
+  email?: string
   vehicleType?: VehicleType
   plateNumber?: string
+  fullName?: string
+}
+
+export interface OnboardingData {
+  vehicleType: string
+  texpasportInfo: string
+  fullName?: string
 }
 
 // ---- Chat ---------------------------------------------------------------
@@ -237,42 +245,34 @@ export interface ChatMessage {
   createdAt: number
 }
 
-// ---- TomTom pass-through shapes (subset of fields WayGo actually proxies) --
+// ---- WayGo Custom Search Format ----
 
-export interface TomTomSearchResult {
-  results?: Array<{
-    id: string
-    type?: string
-    address?: {
-      freeformAddress?: string
-      municipality?: string
-      streetName?: string
-      countrySubdivision?: string
-    }
-    poi?: { name?: string; categories?: string[] }
-    position: { lat: number; lon: number }
-  }>
+export interface WaygoSearchResult {
+  label: string
+  subtitle?: string
+  lat: number
+  lng: number
 }
 
-export interface TomTomRouteSummary {
-  lengthInMeters: number
-  travelTimeInSeconds: number
-  trafficDelayInSeconds?: number
-  noTrafficTravelTimeInSeconds?: number
-  departureTime?: string
-  arrivalTime?: string
+// ---- Valhalla Route API Types ----
+
+export interface ValhallaRouteSummary {
+  time: number
+  length: number // distance in km
+  cost: number
 }
 
-export interface TomTomRoutePoint {
-  latitude: number
-  longitude: number
+export interface ValhallaRouteLeg {
+  shape: string // Polyline6 encoded geometry
 }
 
-export interface TomTomRouteResponse {
-  routes?: Array<{
-    summary: TomTomRouteSummary
-    legs: Array<{ points: TomTomRoutePoint[] }>
-  }>
+export interface ValhallaRouteTrip {
+  summary: ValhallaRouteSummary
+  legs: ValhallaRouteLeg[]
+}
+
+export interface ValhallaRouteResponse {
+  trip: ValhallaRouteTrip
 }
 
 // ---- Eco Wallet & Navigation ---------------------------------------------

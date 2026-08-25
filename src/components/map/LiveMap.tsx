@@ -1,44 +1,20 @@
-import { useEffect, useMemo } from 'react'
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-import type L from 'leaflet'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import Map, { Marker, Popup, Source, Layer, useMap } from 'react-map-gl'
+import type { MapRef } from 'react-map-gl'
+import type maplibregl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
+
 import { useMapLayers } from '@/context/MapLayersContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { useLocale } from '@/i18n/LocaleContext'
-import { congestionColor, congestionBand } from '@/lib/congestion'
-import { dotIcon, incidentIcon, pinIcon } from '@/lib/mapIcons'
-import { trafficFlowTileUrl, TRANSPARENT_TILE } from '@/api/maps'
+import { incidentIcon, dotIcon, pinIcon } from '@/lib/mapIcons'
 import { IncidentTypeIcon } from '@/components/incidents/incidentIcons'
 import type { MapConfig, TrafficMapEntry } from '@/types/api'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
 import type { RouteResult } from '@/hooks/useRoutePlanner'
+import { mapStyle } from '@/lib/mapStyle'
 
-const BAKU_CENTER: [number, number] = [40.4093, 49.8671]
-
-function MapReadyBridge({ onReady }: { onReady: (map: L.Map) => void }) {
-  const map = useMap()
-  useEffect(() => {
-    onReady(map)
-  }, [map, onReady])
-  return null
-}
-
-function MapEventHandler({ onClick }: { onClick?: (lat: number, lng: number) => void }) {
-  useMapEvents({
-    click(e) {
-      onClick?.(e.latlng.lat, e.latlng.lng)
-    },
-  })
-  return null
-}
-
-function FlyToFocus({ focus }: { focus: { lat: number; lng: number } | null }) {
-  const map = useMap()
-  useEffect(() => {
-    if (focus) map.flyTo([focus.lat, focus.lng], 15, { duration: 1.1 })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focus])
-  return null
-}
+const BAKU_CENTER: [number, number] = [49.8671, 40.4093] // [lng, lat] for MapLibre
 
 function isRecent(iso: string, withinMs: number): boolean {
   return Date.now() - new Date(iso).getTime() < withinMs
@@ -62,7 +38,7 @@ export function LiveMap({
   destination: PlaceResult | null
   route: RouteResult | null
   focus: { lat: number; lng: number; label?: string } | null
-  onMapReady: (map: L.Map) => void
+  onMapReady: (map: maplibregl.Map) => void
   onMapClick?: (lat: number, lng: number) => void
   reportLocation?: { lat: number; lng: number } | null
   currentLocation?: { lat: number; lng: number } | null
@@ -70,23 +46,37 @@ export function LiveMap({
   const { s } = useLocale()
   const { basemap, showTraffic, showIncidents, showLiveIncidents } = useMapLayers()
   const { incidents } = useIncidentsContext()
+  const mapRef = useRef<MapRef>(null)
 
-  const center: [number, number] = mapConfig ? [mapConfig.centerLat, mapConfig.centerLng] : BAKU_CENTER
+  const center: [number, number] = mapConfig ? [mapConfig.centerLng, mapConfig.centerLat] : BAKU_CENTER
   const zoom = mapConfig?.defaultZoom ?? 12
-  const basemapUrl =
-    basemap === 'satellite'
-      ? (showTraffic ? 'https://mt1.google.com/vt/lyrs=y,traffic&x={x}&y={y}&z={z}' : 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}')
-      : (showTraffic ? 'https://mt1.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}' : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}')
 
-  const routeLatLngs = useMemo<[number, number][]>(
-    () => (route ? route.points.map((p) => [p.latitude, p.longitude]) : []),
-    [route],
-  )
+  useEffect(() => {
+    if (mapRef.current) {
+      onMapReady(mapRef.current.getMap())
+    }
+  }, [onMapReady])
+
+  useEffect(() => {
+    if (focus && mapRef.current) {
+      mapRef.current.flyTo({ center: [focus.lng, focus.lat], zoom: 15, duration: 1100 })
+    }
+  }, [focus])
+
+  const routeGeoJSON = useMemo(() => {
+    if (!route || route.points.length < 2) return null
+    return {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates: route.points.map((p) => [p.longitude, p.latitude])
+      }
+    }
+  }, [route])
 
   const visibleIncidents = useMemo(() => {
     if (!incidents) return []
-    // "Hadisələr" shows user-reported incidents; "Canlı hadisələr" shows the engine's
-    // own real-time anomaly detections — same split used by the bottom status bar.
     return incidents.filter((i) => {
       if (!i.active || i.latitude === null || i.longitude === null) return false
       return i.source === 'ANOMALY_DETECTION' ? showLiveIncidents : showIncidents
@@ -94,60 +84,92 @@ export function LiveMap({
   }, [incidents, showIncidents, showLiveIncidents])
 
   return (
-    <MapContainer center={center} zoom={zoom} className="h-full w-full" zoomControl={false} attributionControl>
-      <MapReadyBridge onReady={onMapReady} />
-      <MapEventHandler onClick={onMapClick} />
-      <FlyToFocus focus={focus} />
-
-      {basemapUrl && (
-        <TileLayer
-          key={basemap}
-          url={basemapUrl}
-          attribution={
-            basemap === 'satellite'
-              ? '&copy; Esri &mdash; World Imagery'
-              : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          }
-        />
+    <Map
+      ref={mapRef}
+      initialViewState={{ longitude: center[0], latitude: center[1], zoom }}
+      mapStyle={mapStyle}
+      style={{ width: '100%', height: '100%' }}
+      onClick={(e) => onMapClick?.(e.lngLat.lat, e.lngLat.lng)}
+      interactiveLayerIds={['roads-minor', 'roads-major', 'buildings', 'water', 'parks']}
+    >
+      {/* Route Line */}
+      {routeGeoJSON && (
+        <Source id="route-source" type="geojson" data={routeGeoJSON as any}>
+          <Layer
+            id="route-layer-bg"
+            type="line"
+            layout={{ 'line-join': 'round', 'line-cap': 'round' }}
+            paint={{ 'line-color': '#1447e6', 'line-width': 9, 'line-opacity': 0.25 }}
+          />
+          <Layer
+            id="route-layer-fg"
+            type="line"
+            layout={{ 'line-join': 'round', 'line-cap': 'round' }}
+            paint={{ 'line-color': '#2358eb', 'line-width': 5, 'line-opacity': 0.95 }}
+          />
+        </Source>
       )}
 
-
-
-      {visibleIncidents.map((incident) => (
-        <Marker
-          key={incident.id}
-          position={[incident.latitude as number, incident.longitude as number]}
-          icon={incidentIcon('#f59e0b', isRecent(incident.createdAt, 2 * 60_000))}
-        >
-          <Popup autoPanPaddingTopLeft={[364, 84]} autoPanPaddingBottomRight={[224, 168]}>
-            <p className="flex items-center gap-1.5 font-semibold text-slate-800">
-              <IncidentTypeIcon type={incident.incidentType} className="h-3.5 w-3.5 text-amber-500" />
-              {s.incidentTypes[incident.incidentType] ?? incident.incidentType}
-            </p>
-            <p className="mt-1 text-slate-500">{incident.description}</p>
-          </Popup>
+      {/* Origin, Destination, Focus, Report Location, Current Location */}
+      {/* We need custom markers. In maplibre-gl with React, we can use <Marker> to render HTML markers */}
+      {origin && (
+        <Marker longitude={origin.lng} latitude={origin.lat} anchor="bottom">
+          <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow-md" />
         </Marker>
-      ))}
-
-      {route && routeLatLngs.length > 1 && (
-        <>
-          <Polyline positions={routeLatLngs} pathOptions={{ color: '#1447e6', weight: 9, opacity: 0.25, lineCap: 'round' }} />
-          <Polyline positions={routeLatLngs} pathOptions={{ color: '#2358eb', weight: 5, opacity: 0.95, lineCap: 'round' }} />
-        </>
       )}
-      {origin && <Marker position={[origin.lat, origin.lng]} icon={dotIcon('#22c55e')} />}
-      {destination && <Marker position={[destination.lat, destination.lng]} icon={pinIcon('#ef4444')} />}
+      {destination && (
+        <Marker longitude={destination.lng} latitude={destination.lat} anchor="bottom">
+          <div className="w-5 h-5 bg-red-500 transform rotate-45 rounded-tl-full rounded-tr-full rounded-bl-full shadow-md" />
+        </Marker>
+      )}
       {focus && !origin && !destination && (
-        <Marker position={[focus.lat, focus.lng]} icon={pinIcon('#2358eb')}>
-          {focus.label && <Popup>{focus.label}</Popup>}
+        <Marker longitude={focus.lng} latitude={focus.lat} anchor="bottom">
+          <div className="w-5 h-5 bg-blue-600 transform rotate-45 rounded-tl-full rounded-tr-full rounded-bl-full shadow-md" />
+          {focus.label && (
+            <Popup longitude={focus.lng} latitude={focus.lat} anchor="top" closeButton={false}>
+              {focus.label}
+            </Popup>
+          )}
         </Marker>
       )}
       {reportLocation && (
-        <Marker position={[reportLocation.lat, reportLocation.lng]} icon={incidentIcon('#f59e0b', true)} />
+        <Marker longitude={reportLocation.lng} latitude={reportLocation.lat} anchor="bottom">
+          <div className="w-6 h-6 bg-amber-500 transform rotate-45 rounded-tl-full rounded-tr-full rounded-bl-full shadow-md flex items-center justify-center">
+            <div className="w-2 h-2 bg-white rounded-full" />
+          </div>
+        </Marker>
       )}
       {currentLocation && (
-        <Marker position={[currentLocation.lat, currentLocation.lng]} icon={dotIcon('#3b82f6')} zIndexOffset={1000} />
+        <Marker longitude={currentLocation.lng} latitude={currentLocation.lat} anchor="center">
+          <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-[0_0_0_2px_rgba(59,130,246,0.5)]" />
+        </Marker>
       )}
-    </MapContainer>
+
+      {/* Incidents */}
+      {visibleIncidents.map((incident) => (
+        <Marker
+          key={incident.id}
+          longitude={incident.longitude as number}
+          latitude={incident.latitude as number}
+          anchor="bottom"
+        >
+          <div className="w-6 h-6 bg-amber-500 transform rotate-45 rounded-tl-full rounded-tr-full rounded-bl-full shadow-md flex items-center justify-center cursor-pointer group">
+             <div className="transform -rotate-45 text-white">
+                <IncidentTypeIcon type={incident.incidentType} className="h-3 w-3" />
+             </div>
+             
+             {/* Simple hover popup */}
+             <div className="absolute bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-white rounded shadow-lg z-50 text-xs">
+                <p className="font-bold flex items-center gap-1 text-slate-800">
+                  <IncidentTypeIcon type={incident.incidentType} className="h-3 w-3 text-amber-500" />
+                  {s.incidentTypes[incident.incidentType] ?? incident.incidentType}
+                </p>
+                <p className="text-slate-600 mt-1">{incident.description}</p>
+             </div>
+          </div>
+        </Marker>
+      ))}
+
+    </Map>
   )
 }

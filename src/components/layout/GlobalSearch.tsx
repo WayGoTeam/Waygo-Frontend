@@ -4,24 +4,13 @@ import { Loader2, MapPin, Search } from 'lucide-react'
 import { searchPlaces } from '@/api/maps'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useLocale } from '@/i18n/LocaleContext'
-import type { TomTomSearchResult } from '@/types/api'
+import type { WaygoSearchResult } from '@/types/api'
 
 export interface PlaceResult {
   label: string
   subtitle?: string
   lat: number
   lng: number
-}
-
-function toPlaceResults(raw: TomTomSearchResult): PlaceResult[] {
-  return (raw.results ?? [])
-    .filter((r) => r.position)
-    .map((r) => ({
-      label: r.poi?.name ?? r.address?.freeformAddress ?? 'Naməlum yer',
-      subtitle: r.address?.municipality ?? r.address?.streetName ?? r.address?.countrySubdivision,
-      lat: r.position.lat,
-      lng: r.position.lon,
-    }))
 }
 
 export function GlobalSearch({ placeholder }: { placeholder?: string }) {
@@ -43,9 +32,9 @@ export function GlobalSearch({ placeholder }: { placeholder?: string }) {
     let cancelled = false
     setLoading(true)
     searchPlaces(trimmed)
-      .then((raw) => {
+      .then((res) => {
         if (cancelled) return
-        setResults(toPlaceResults(raw))
+        setResults(res)
       })
       .catch(() => {
         if (!cancelled) setResults([])
