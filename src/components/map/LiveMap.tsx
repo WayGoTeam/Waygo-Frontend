@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import type L from 'leaflet'
 import { useMapLayers } from '@/context/MapLayersContext'
@@ -27,6 +27,15 @@ function MapEventHandler({ onClick }: { onClick?: (lat: number, lng: number) => 
     click(e) {
       onClick?.(e.latlng.lat, e.latlng.lng)
     },
+  })
+  return null
+}
+
+function ZoomTracker({ onZoom }: { onZoom: (z: number) => void }) {
+  const map = useMapEvents({
+    zoomend() {
+      onZoom(map.getZoom())
+    }
   })
   return null
 }
@@ -73,6 +82,8 @@ export function LiveMap({
 
   const center: [number, number] = mapConfig ? [mapConfig.centerLat, mapConfig.centerLng] : BAKU_CENTER
   const zoom = mapConfig?.defaultZoom ?? 12
+  const [currentZoom, setCurrentZoom] = useState(zoom)
+
   // Use OSM for standard map, Esri for satellite
   const basemapUrl =
     basemap === 'satellite'
@@ -94,9 +105,14 @@ export function LiveMap({
     })
   }, [incidents, showIncidents, showLiveIncidents])
 
+  const incidentSize = currentZoom < 10 ? 12 : currentZoom < 12 ? 20 : currentZoom < 14 ? 26 : 30
+  const pinSize = currentZoom < 10 ? 16 : currentZoom < 12 ? 24 : currentZoom < 14 ? 30 : 34
+  const dotSize = currentZoom < 10 ? 8 : currentZoom < 12 ? 12 : currentZoom < 14 ? 14 : 16
+
   return (
     <MapContainer center={center} zoom={zoom} className="h-full w-full" zoomControl={false} attributionControl>
       <MapReadyBridge onReady={onMapReady} />
+      <ZoomTracker onZoom={setCurrentZoom} />
       <MapEventHandler onClick={onMapClick} />
       <FlyToFocus focus={focus} />
 
@@ -112,13 +128,11 @@ export function LiveMap({
         />
       )}
 
-
-
       {visibleIncidents.map((incident) => (
         <Marker
           key={incident.id}
           position={[incident.latitude as number, incident.longitude as number]}
-          icon={incidentIcon('#f59e0b', isRecent(incident.createdAt, 2 * 60_000))}
+          icon={incidentIcon('#f59e0b', isRecent(incident.createdAt, 2 * 60_000), incidentSize)}
         >
           <Popup autoPanPaddingTopLeft={[364, 84]} autoPanPaddingBottomRight={[224, 168]}>
             <p className="flex items-center gap-1.5 font-semibold text-slate-800">
@@ -136,18 +150,18 @@ export function LiveMap({
           <Polyline positions={routeLatLngs} pathOptions={{ color: '#2358eb', weight: 5, opacity: 0.95, lineCap: 'round' }} />
         </>
       )}
-      {origin && <Marker position={[origin.lat, origin.lng]} icon={dotIcon('#22c55e')} />}
-      {destination && <Marker position={[destination.lat, destination.lng]} icon={pinIcon('#ef4444')} />}
+      {origin && <Marker position={[origin.lat, origin.lng]} icon={dotIcon('#22c55e', dotSize)} />}
+      {destination && <Marker position={[destination.lat, destination.lng]} icon={pinIcon('#ef4444', pinSize)} />}
       {focus && !origin && !destination && (
-        <Marker position={[focus.lat, focus.lng]} icon={pinIcon('#2358eb')}>
+        <Marker position={[focus.lat, focus.lng]} icon={pinIcon('#2358eb', pinSize)}>
           {focus.label && <Popup>{focus.label}</Popup>}
         </Marker>
       )}
       {reportLocation && (
-        <Marker position={[reportLocation.lat, reportLocation.lng]} icon={incidentIcon('#f59e0b', true)} />
+        <Marker position={[reportLocation.lat, reportLocation.lng]} icon={incidentIcon('#f59e0b', true, incidentSize)} />
       )}
       {currentLocation && (
-        <Marker position={[currentLocation.lat, currentLocation.lng]} icon={dotIcon('#3b82f6')} zIndexOffset={1000} />
+        <Marker position={[currentLocation.lat, currentLocation.lng]} icon={dotIcon('#3b82f6', dotSize)} zIndexOffset={1000} />
       )}
     </MapContainer>
   )
