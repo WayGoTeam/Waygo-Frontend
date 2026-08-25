@@ -7,6 +7,8 @@ export interface Strings {
     transport: string
     weather: string
     adminPanel: string
+    ecoWallet: string
+    profile: string
   }
   topbar: {
     searchPlaceholder: string
@@ -135,6 +137,39 @@ export interface Strings {
     success: string
     error: string
   }
+  aiAnalytics: {
+    pageTitle: string
+    pageSubtitle: string
+    esgTitle: string
+    esgSubtitle: string
+    esgTotal: string
+    esgSaved: string
+    securityStatus: string
+    securityDesc: string
+    timeSavedTitle: string
+    timeSavedSubtitle: string
+    timeSavedUnit: string
+    timeSavedDesc: string
+    peakTitle: string
+    peakSubtitle: string
+    peakLoad: string
+    roadsTitle: string
+    roadsSubtitle: string
+    live: string
+    weatherTitle: string
+    weatherSubtitle: string
+    weatherTime: string
+    predictionTitle: string
+    predictionSubtitle: string
+    road: string
+    day: string
+    hour: string
+    calculate: string
+    predictedSpeed: string
+    predictedCongestion: string
+    modelConfidence: string
+    days: Record<string, string>
+  }
   analyticsPage: {
     title: string
     subtitle: string
@@ -191,6 +226,52 @@ export interface Strings {
     pickOnMap: string
     pickingOnMapHint: string
   }
+  walletPage: {
+    loggedOutTitle: string
+    loggedOutDesc: string
+    title: string
+    subtitle: string
+    errorLoad: string
+    errorVoucher: string
+    balanceTitle: string
+    totalCo2: string
+    monetizationTitle: string
+    monetizationDesc: string
+    progress: string
+    generateVoucher: string
+    myVouchers: string
+    fuelCard: string
+    issuedAt: string
+  }
+  profilePage: {
+    loggedOutTitle: string
+    loggedOutDesc: string
+    totalKm: string
+    totalCo2: string
+    ecoPoints: string
+    contactInfo: string
+    email: string
+    phone: string
+    add: string
+    vehicleInfo: string
+    engineType: string
+    multiplier: string
+    ecoPointGain: string
+    plateNumber: string
+    ecoDriver: string
+    logout: string
+    logoutConfirmTitle: string
+    logoutConfirmDesc: string
+    logoutConfirmYes: string
+    logoutConfirmNo: string
+    vehicleTypes: {
+      PETROL: string
+      DIESEL: string
+      HYBRID: string
+      ELECTRIC: string
+      NONE: string
+    }
+  }
 }
 
 export const az: Strings = {
@@ -202,6 +283,8 @@ export const az: Strings = {
     transport: 'Nəqliyyat',
     weather: 'Hava Məlumatı',
     adminPanel: 'Admin Paneli',
+    ecoWallet: 'Eko-Cüzdan',
+    profile: 'Profil',
   },
   topbar: {
     searchPlaceholder: 'Bakıda yer, küçə axtar...',
@@ -354,6 +437,47 @@ export const az: Strings = {
     success: 'Təşəkkürlər! Hesabatınız admin təsdiqini gözləyir.',
     error: 'Hesabat göndərilə bilmədi. Yenidən cəhd edin.',
   },
+  aiAnalytics: {
+    pageTitle: 'İntellektual Analitika',
+    pageSubtitle: '/api/v1/analytics/stats - Canlı AI Göstəriciləri',
+    esgTitle: 'Verra ESG Analitikası',
+    esgSubtitle: 'Karbon və Ekologiya Qeydləri',
+    esgTotal: 'Ümumi ESG Qeydləri',
+    esgSaved: 'Nəfər tıxacdan xilas olub',
+    securityStatus: 'Təhlükəsizlik Statusu',
+    securityDesc: 'Blokçeyn məntiqi ilə qorunan dəyişdirilə bilməz sənədlər.',
+    timeSavedTitle: 'Qənaət Edilən Vaxt',
+    timeSavedSubtitle: 'AI alternativ marşrutlarının faydası',
+    timeSavedUnit: 'Dəqiqə / Səfər',
+    timeSavedDesc: 'Bu gün hər bir sürücü AI sayəsində orta hesabla 18 dəqiqə tıxacdan xilas olub.',
+    peakTitle: 'Pik Tıxac Saatları',
+    peakSubtitle: 'AI analizinə görə ən qorxulu saatlar (8, 9, 18, 19)',
+    peakLoad: 'Yük %',
+    roadsTitle: 'Yolların Vəziyyəti',
+    roadsSubtitle: 'ML Modeli - 9 Əsas Magistral',
+    live: 'CANLI',
+    weatherTitle: 'Canlı Hava Şəraiti',
+    weatherSubtitle: 'Sürücünün GPS-inə əsasən cari hava durumu',
+    weatherTime: 'Saat:',
+    predictionTitle: 'AI Tıxac Proqnozu',
+    predictionSubtitle: 'CatBoost ML Modeli ilə gələcəyi görün',
+    road: 'Yol / Küçə',
+    day: 'Gün',
+    hour: 'Saat',
+    calculate: 'Nəticəni Hesabla',
+    predictedSpeed: 'Təxmin Edilən Sürət',
+    predictedCongestion: 'Sıxlıq Dərəcəsi',
+    modelConfidence: 'Model Güvəni (Confidence)',
+    days: {
+      MONDAY: 'Bazar ertəsi',
+      TUESDAY: 'Çərşənbə axşamı',
+      WEDNESDAY: 'Çərşənbə',
+      THURSDAY: 'Cümə axşamı',
+      FRIDAY: 'Cümə',
+      SATURDAY: 'Şənbə',
+      SUNDAY: 'Bazar'
+    }
+  },
   analyticsPage: {
     title: 'Analitika',
     subtitle: 'Bakı üzrə tıxac tendensiyaları və rayonlar üzrə real-vaxt göstəricilər',
@@ -362,7 +486,7 @@ export const az: Strings = {
     activeVehicles: 'Aktiv nəqliyyat',
     last24h: 'Son 24 saat',
     districts: 'Rayonlar üzrə tıxac',
-    districtsHint: 'OSM canlı məlumatı əsasında',
+    districtsHint: 'Canlı axın məlumatı əsasında',
     criticalSegments: 'Kritik Yollar (Top 5)',
     criticalSegmentsHint: 'Hazırda ən çox yüklənmiş yol seqmentləri',
     speedColumn: 'Sürət',
@@ -410,6 +534,52 @@ export const az: Strings = {
     pickOnMap: 'Xəritədə seç',
     pickingOnMapHint: 'Xəritədə nöqtəni seçin',
   },
+  walletPage: {
+    loggedOutTitle: 'Eko-Cüzdana baxmaq üçün giriş etməlisiniz',
+    loggedOutDesc: 'Təbiətə verdiyiniz töhfələri izləmək, yığdığınız Eco-Points balansını görmək və topladığınız xalları SOCAR yanacaq vaoçerinə çevirmək üçün zəhmət olmasa sistemə daxil olun.',
+    title: 'Eko-Cüzdan',
+    subtitle: 'Təbiətə verdiyiniz töhfələr və qazandığınız SOCAR vaoçerləri.',
+    errorLoad: 'Balans yüklənərkən xəta baş verdi.',
+    errorVoucher: 'Vaoçer yaradılarkən xəta baş verdi.',
+    balanceTitle: 'Eco-Points Balansı',
+    totalCo2: 'Ümumi CO₂ Qənaəti',
+    monetizationTitle: 'SOCAR Vaoçeri',
+    monetizationDesc: '1000 XP = 10 AZN Yanacaq Vaoçeri',
+    progress: 'Tərəqqi',
+    generateVoucher: 'Vaoçer Yarat',
+    myVouchers: 'Aktiv Vaoçerlərim',
+    fuelCard: 'SOCAR Yanacaq Kartı',
+    issuedAt: 'Yaradıldı',
+  },
+  profilePage: {
+    loggedOutTitle: 'Profilə baxmaq üçün giriş etməlisiniz',
+    loggedOutDesc: 'Şəxsi məlumatlarınızı idarə etmək, avtomobil parametrlərinizi görmək və AI tərəfindən hesablanmış Eko-Çarpan reytinqinizi izləmək üçün zəhmət olmasa sistemə daxil olun.',
+    totalKm: 'Ümumi km',
+    totalCo2: 'CO₂ qənaəti',
+    ecoPoints: 'EcoPoints',
+    contactInfo: 'Əlaqə məlumatları',
+    email: 'E-poçt',
+    phone: 'Telefon',
+    add: 'Əlavə et',
+    vehicleInfo: 'Avtomobil məlumatları',
+    engineType: 'Mühərrik növü',
+    multiplier: 'Çarpan',
+    ecoPointGain: 'Eko-Xal qazancı',
+    plateNumber: 'Dövlət nömrə nişanı',
+    ecoDriver: 'Eco-Sürücü',
+    logout: 'Hesabdan çıx',
+    logoutConfirmTitle: 'Hesabdan çıxış',
+    logoutConfirmDesc: 'Sistemdən çıxmaq istədiyinizə əminsiniz?',
+    logoutConfirmYes: 'Bəli, çıx',
+    logoutConfirmNo: 'Xeyr, qal',
+    vehicleTypes: {
+      PETROL: 'Benzin',
+      DIESEL: 'Dizel',
+      HYBRID: 'Hibrid',
+      ELECTRIC: 'Elektrik',
+      NONE: 'Avtomobil yoxdur',
+    },
+  },
 }
 
 export const en: Strings = {
@@ -421,6 +591,8 @@ export const en: Strings = {
     transport: 'Transport',
     weather: 'Weather',
     adminPanel: 'Admin Panel',
+    ecoWallet: 'Eco-Wallet',
+    profile: 'Profile',
   },
   topbar: {
     searchPlaceholder: 'Search a place or street in Baku...',
@@ -573,6 +745,47 @@ export const en: Strings = {
     success: 'Thanks! Your report is pending admin approval.',
     error: 'Could not submit the report. Please try again.',
   },
+  aiAnalytics: {
+    pageTitle: 'Intelligent Analytics',
+    pageSubtitle: '/api/v1/analytics/stats - Live AI Metrics',
+    esgTitle: 'Verra ESG Analytics',
+    esgSubtitle: 'Carbon & Ecology Records',
+    esgTotal: 'Total ESG Records',
+    esgSaved: 'People saved from traffic',
+    securityStatus: 'Security Status',
+    securityDesc: 'Immutable records secured by blockchain logic.',
+    timeSavedTitle: 'Time Saved',
+    timeSavedSubtitle: 'Benefit of AI alternative routes',
+    timeSavedUnit: 'Minutes / Trip',
+    timeSavedDesc: 'Today, each driver saved an average of 18 minutes from traffic thanks to AI.',
+    peakTitle: 'Peak Traffic Hours',
+    peakSubtitle: 'Most severe hours based on AI analysis (8, 9, 18, 19)',
+    peakLoad: 'Load %',
+    roadsTitle: 'Road Conditions',
+    roadsSubtitle: 'ML Model - 9 Main Highways',
+    live: 'LIVE',
+    weatherTitle: 'Live Weather',
+    weatherSubtitle: 'Current conditions based on Driver GPS',
+    weatherTime: 'Time:',
+    predictionTitle: 'AI Traffic Forecast',
+    predictionSubtitle: 'See the future with CatBoost ML Model',
+    road: 'Road / Street',
+    day: 'Day',
+    hour: 'Hour',
+    calculate: 'Calculate Result',
+    predictedSpeed: 'Predicted Speed',
+    predictedCongestion: 'Congestion Level',
+    modelConfidence: 'Model Confidence',
+    days: {
+      MONDAY: 'Monday',
+      TUESDAY: 'Tuesday',
+      WEDNESDAY: 'Wednesday',
+      THURSDAY: 'Thursday',
+      FRIDAY: 'Friday',
+      SATURDAY: 'Saturday',
+      SUNDAY: 'Sunday'
+    }
+  },
   analyticsPage: {
     title: 'Analytics',
     subtitle: 'Citywide congestion trends and real-time district breakdowns',
@@ -581,7 +794,7 @@ export const en: Strings = {
     activeVehicles: 'Active vehicles',
     last24h: 'Last 24 hours',
     districts: 'Congestion by district',
-    districtsHint: 'Based on OSM data',
+    districtsHint: 'Based on live flow data',
     criticalSegments: 'Critical Segments (Top 5)',
     criticalSegmentsHint: 'Currently most congested road segments',
     speedColumn: 'Speed',
@@ -628,5 +841,51 @@ export const en: Strings = {
     justNow: 'just now',
     pickOnMap: 'Pick on map',
     pickingOnMapHint: 'Select a point on the map',
+  },
+  walletPage: {
+    loggedOutTitle: 'Please log in to view Eco-Wallet',
+    loggedOutDesc: 'Log in to track your contributions to nature, see your Eco-Points balance, and convert your points into a SOCAR fuel voucher.',
+    title: 'Eco-Wallet',
+    subtitle: 'Your contributions to nature and earned SOCAR vouchers.',
+    errorLoad: 'An error occurred while loading the balance.',
+    errorVoucher: 'An error occurred while generating the voucher.',
+    balanceTitle: 'Eco-Points Balance',
+    totalCo2: 'Total CO₂ Saved',
+    monetizationTitle: 'SOCAR Voucher',
+    monetizationDesc: '1000 XP = 10 AZN Fuel Voucher',
+    progress: 'Progress',
+    generateVoucher: 'Generate Voucher',
+    myVouchers: 'My Active Vouchers',
+    fuelCard: 'SOCAR Fuel Card',
+    issuedAt: 'Issued at',
+  },
+  profilePage: {
+    loggedOutTitle: 'Please log in to view your profile',
+    loggedOutDesc: 'Log in to manage your personal information, view vehicle parameters, and track your AI-calculated Eco-Multiplier rating.',
+    totalKm: 'Total km',
+    totalCo2: 'CO₂ Saved',
+    ecoPoints: 'EcoPoints',
+    contactInfo: 'Contact information',
+    email: 'Email',
+    phone: 'Phone',
+    add: 'Add',
+    vehicleInfo: 'Vehicle information',
+    engineType: 'Engine type',
+    multiplier: 'Multiplier',
+    ecoPointGain: 'Eco-Point gain',
+    plateNumber: 'Plate number',
+    ecoDriver: 'Eco-Driver',
+    logout: 'Log out',
+    logoutConfirmTitle: 'Log out',
+    logoutConfirmDesc: 'Are you sure you want to log out?',
+    logoutConfirmYes: 'Yes, log out',
+    logoutConfirmNo: 'No, stay',
+    vehicleTypes: {
+      PETROL: 'Petrol',
+      DIESEL: 'Diesel',
+      HYBRID: 'Hybrid',
+      ELECTRIC: 'Electric',
+      NONE: 'No vehicle',
+    },
   },
 }

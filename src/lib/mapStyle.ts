@@ -12,25 +12,25 @@ export const mapStyle: StyleSpecification = {
   sources: {
     'planet_osm_polygon': {
       type: 'vector',
-      tiles: [`${TILE_BASE}/planet_osm_polygon/{z}/{x}/{y}.pbf`],
+      tiles: [`${TILE_BASE}/planet_osm_polygon/{z}/{x}/{y}`],
       minzoom: 0,
       maxzoom: 14
     },
     'planet_osm_line': {
       type: 'vector',
-      tiles: [`${TILE_BASE}/planet_osm_line/{z}/{x}/{y}.pbf`],
+      tiles: [`${TILE_BASE}/planet_osm_line/{z}/{x}/{y}`],
       minzoom: 0,
       maxzoom: 14
     },
     'planet_osm_roads': {
       type: 'vector',
-      tiles: [`${TILE_BASE}/planet_osm_roads/{z}/{x}/{y}.pbf`],
+      tiles: [`${TILE_BASE}/planet_osm_roads/{z}/{x}/{y}`],
       minzoom: 0,
       maxzoom: 14
     },
     'planet_osm_point': {
       type: 'vector',
-      tiles: [`${TILE_BASE}/planet_osm_point/{z}/{x}/{y}.pbf`],
+      tiles: [`${TILE_BASE}/planet_osm_point/{z}/{x}/{y}`],
       minzoom: 0,
       maxzoom: 14
     }

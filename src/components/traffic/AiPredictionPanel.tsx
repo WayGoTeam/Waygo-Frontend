@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { predictTraffic } from '@/api/traffic'
 import type { TrafficForecast, DayOfWeek } from '@/types/api'
 import { Sparkles, Clock, Calendar, MapPin, Loader2, Info } from 'lucide-react'
+import { useLocale } from '@/i18n/LocaleContext'
 
 // Hardcoded segments matching SampleDataSeeder.java for demo
 const SEGMENTS = [
@@ -12,17 +13,10 @@ const SEGMENTS = [
   { id: '55555555-5555-5555-5555-555555555555', name: '28 May Corridor' },
 ]
 
-const DAYS_OF_WEEK: { value: DayOfWeek; label: string }[] = [
-  { value: 'MONDAY', label: 'Bazar ertəsi' },
-  { value: 'TUESDAY', label: 'Çərşənbə axşamı' },
-  { value: 'WEDNESDAY', label: 'Çərşənbə' },
-  { value: 'THURSDAY', label: 'Cümə axşamı' },
-  { value: 'FRIDAY', label: 'Cümə' },
-  { value: 'SATURDAY', label: 'Şənbə' },
-  { value: 'SUNDAY', label: 'Bazar' },
-]
+const DAYS_OF_WEEK: DayOfWeek[] = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
 
 export function AiPredictionPanel() {
+  const { s } = useLocale()
   const [segmentId, setSegmentId] = useState(SEGMENTS[0].id)
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>('MONDAY')
   const [hour, setHour] = useState(18) // Default to 6 PM peak
@@ -44,7 +38,7 @@ export function AiPredictionPanel() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-slate-100 overflow-hidden relative">
+    <div className="w-full h-full flex flex-col rounded-[2rem] bg-white/60 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 backdrop-blur-xl overflow-hidden relative transition-all hover:bg-white/80 duration-500">
       {/* Decorative gradient blob */}
       <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl"></div>
       
@@ -53,8 +47,8 @@ export function AiPredictionPanel() {
           <Sparkles className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="font-display text-lg font-bold text-slate-900">AI Tıxac Proqnozu</h2>
-          <p className="text-xs text-slate-500">CatBoost ML Modeli ilə gələcəyi görün</p>
+          <h2 className="font-display text-lg font-bold text-slate-900">{s.aiAnalytics.predictionTitle}</h2>
+          <p className="text-xs text-slate-500">{s.aiAnalytics.predictionSubtitle}</p>
         </div>
       </div>
 
@@ -62,7 +56,7 @@ export function AiPredictionPanel() {
         {/* Road Segment Select */}
         <div>
           <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700">
-            <MapPin className="h-3.5 w-3.5 text-slate-400" /> Yol / Küçə
+            <MapPin className="h-3.5 w-3.5 text-slate-400" /> {s.aiAnalytics.road}
           </label>
           <select
             value={segmentId}
@@ -79,7 +73,7 @@ export function AiPredictionPanel() {
           {/* Day of Week */}
           <div className="flex-1">
             <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700">
-              <Calendar className="h-3.5 w-3.5 text-slate-400" /> Gün
+              <Calendar className="h-3.5 w-3.5 text-slate-400" /> {s.aiAnalytics.day}
             </label>
             <select
               value={dayOfWeek}
@@ -87,7 +81,7 @@ export function AiPredictionPanel() {
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
             >
               {DAYS_OF_WEEK.map((d) => (
-                <option key={d.value} value={d.value}>{d.label}</option>
+                <option key={d} value={d}>{s.aiAnalytics.days[d]}</option>
               ))}
             </select>
           </div>
@@ -95,7 +89,7 @@ export function AiPredictionPanel() {
           {/* Hour */}
           <div className="flex-1">
             <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700">
-              <Clock className="h-3.5 w-3.5 text-slate-400" /> Saat
+              <Clock className="h-3.5 w-3.5 text-slate-400" /> {s.aiAnalytics.hour}
             </label>
             <select
               value={hour}
@@ -117,7 +111,7 @@ export function AiPredictionPanel() {
           className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-slate-800 disabled:opacity-70"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-brand-400" />}
-          Nəticəni Hesabla
+          {s.aiAnalytics.calculate}
         </button>
 
         {error && (
@@ -133,7 +127,7 @@ export function AiPredictionPanel() {
               
               <div className="flex justify-between items-end mb-4">
                 <div>
-                  <p className="text-xs font-medium text-slate-500 mb-1">Təxmin Edilən Sürət</p>
+                  <p className="text-xs font-medium text-slate-500 mb-1">{s.aiAnalytics.predictedSpeed}</p>
                   <div className="flex items-baseline gap-1">
                     <span className={`text-3xl font-display font-bold ${
                       forecast.predictedSpeedKmh > 40 ? 'text-green-600' : 
@@ -146,7 +140,7 @@ export function AiPredictionPanel() {
                 </div>
                 
                 <div className="text-right">
-                   <p className="text-xs font-medium text-slate-500 mb-1">Sıxlıq Dərəcəsi</p>
+                   <p className="text-xs font-medium text-slate-500 mb-1">{s.aiAnalytics.predictedCongestion}</p>
                    <span className="text-xl font-bold text-slate-900">{forecast.predictedCongestionLevel}%</span>
                 </div>
               </div>
