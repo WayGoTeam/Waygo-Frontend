@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  Gauge, Activity, Car, AlertTriangle, Wifi, CloudRain, Sparkles,
-  TrendingUp, TrendingDown, Minus, Wind, Droplets, Thermometer,
-  MapPin, Zap, Clock, RefreshCw, Radio, History, BarChart3,
+  CloudRain, Sparkles, Wind, Droplets, Thermometer,
+  Clock, RefreshCw, BarChart3,
 } from 'lucide-react'
 import {
   AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -10,30 +9,29 @@ import {
 } from 'recharts'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useDistrictsWeather } from '@/hooks/useDistrictsWeather'
-import { LoadingState, ErrorState } from '@/components/common/States'
+import { ErrorState } from '@/components/common/States'
 import { AiPredictionPanel } from '@/components/traffic/AiPredictionPanel'
-import {
-  getCityStats, getAnomalies, getTelemetryStatus, getDailyPrediction
-} from '@/api/traffic'
-import type { CityStats, TrafficAnomaly, TelemetryStatus } from '@/types/api'
+import { getDailyPrediction } from '@/api/traffic'
 
 
+
+
+// ─── Custom Tooltip ───────────────────────────────────────────────────────────
+function ChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-lg text-xs">
+      <p className="font-bold text-slate-900 mb-2">{label}:00</p>
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: p.color }} className="font-medium">
+          {p.name}: {p.value}{p.name === 'Sürət' ? ' km/s' : '%'}
+        </p>
+      ))}
+    </div>
+  )
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-function congestionColor(pct: number) {
-  if (pct >= 75) return { text: 'text-red-500',    bg: 'bg-red-500',    badge: 'bg-red-100 text-red-700',    label: 'Ağır Tıxac' }
-  if (pct >= 50) return { text: 'text-orange-500', bg: 'bg-orange-500', badge: 'bg-orange-100 text-orange-700', label: 'Orta Tıxac' }
-  if (pct >= 25) return { text: 'text-yellow-500', bg: 'bg-yellow-500', badge: 'bg-yellow-100 text-yellow-700', label: 'Axın Zəif' }
-  return           { text: 'text-emerald-500', bg: 'bg-emerald-500', badge: 'bg-emerald-100 text-emerald-700', label: 'Axın Normal' }
-}
-
-function speedColor(kmh: number) {
-  if (kmh >= 50) return 'text-emerald-500'
-  if (kmh >= 30) return 'text-yellow-500'
-  if (kmh >= 15) return 'text-orange-500'
-  return 'text-red-500'
-}
-
 function weatherIcon(cond: string) {
   const c = cond?.toLowerCase() ?? ''
   if (c.includes('rain') || c.includes('yağ')) return '🌧️'
@@ -51,86 +49,21 @@ function weatherGradient(cond: string, impact: number) {
   return 'from-emerald-400/10 to-emerald-500/5 border-emerald-200'
 }
 
-// ─── Subcomponents ────────────────────────────────────────────────────────────
-
-function PulseMetric({ icon: Icon, label, value, unit, sub, color, live }: {
-  icon: React.ElementType; label: string; value: string | number; unit?: string;
-  sub?: string; color: string; live?: boolean
-}) {
-  return (
-    <div className={`relative flex flex-col gap-1 rounded-2xl border bg-white p-5 shadow-sm transition-all hover:shadow-md ${color === 'emerald' ? 'border-emerald-100' : color === 'red' ? 'border-red-100' : color === 'blue' ? 'border-blue-100' : color === 'amber' ? 'border-amber-100' : 'border-slate-100'}`}>
-      {live && (
-        <span className="absolute right-4 top-4 flex h-2 w-2">
-          <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${color === 'emerald' ? 'bg-emerald-400' : color === 'red' ? 'bg-red-400' : 'bg-blue-400'}`} />
-          <span className={`relative inline-flex h-2 w-2 rounded-full ${color === 'emerald' ? 'bg-emerald-500' : color === 'red' ? 'bg-red-500' : 'bg-blue-500'}`} />
-        </span>
-      )}
-      <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${
-        color === 'emerald' ? 'bg-emerald-100 text-emerald-600' :
-        color === 'red'     ? 'bg-red-100 text-red-600' :
-        color === 'blue'    ? 'bg-blue-100 text-blue-600' :
-        color === 'amber'   ? 'bg-amber-100 text-amber-600' :
-        color === 'purple'  ? 'bg-purple-100 text-purple-600' :
-        'bg-slate-100 text-slate-600'
-      }`}>
-        <Icon className="h-4.5 w-4.5" strokeWidth={2} />
-      </div>
-      <p className="mt-1 text-xs font-medium text-slate-500">{label}</p>
-      <div className="flex items-baseline gap-1">
-        <span className={`font-display text-3xl font-bold ${
-          color === 'emerald' ? 'text-emerald-600' :
-          color === 'red'     ? 'text-red-600' :
-          color === 'blue'    ? 'text-blue-600' :
-          color === 'amber'   ? 'text-amber-600' :
-          color === 'purple'  ? 'text-purple-600' :
-          'text-slate-800'
-        }`}>{value}</span>
-        {unit && <span className="text-xs font-medium text-slate-400">{unit}</span>}
-      </div>
-      {sub && <p className="text-[11px] text-slate-400">{sub}</p>}
-    </div>
-  )
-}
-
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
-function ChartTooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-lg text-xs">
-      <p className="font-bold text-slate-900 mb-2">{label}:00</p>
-      {payload.map((p: any, i: number) => (
-        <p key={i} style={{ color: p.color }} className="font-medium">
-          {p.name}: {p.value}{p.name === 'Sürət' ? ' km/s' : '%'}
-        </p>
-      ))}
-    </div>
-  )
-}
-
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function AnalyticsPage() {
   const { s } = useLocale()
   const weather = useDistrictsWeather()
 
-  const [cityStats,  setCityStats]  = useState<CityStats | null>(null)
-  const [anomalies,  setAnomalies]  = useState<TrafficAnomaly[]>([])
-  const [telemetry,  setTelemetry]  = useState<TelemetryStatus | null>(null)
   const [dailyData,  setDailyData]  = useState<any[]>([])
-  const [loading,    setLoading]    = useState(true)
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
   const [mounted,    setMounted]    = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   async function fetchAll() {
     try {
-      const [cs, an, te, da] = await Promise.allSettled([
-        getCityStats(), getAnomalies(), getTelemetryStatus(), getDailyPrediction()
-      ])
-      if (cs.status === 'fulfilled') setCityStats(cs.value)
-      if (an.status === 'fulfilled') setAnomalies(an.value)
-      if (te.status === 'fulfilled') setTelemetry(te.value)
-      if (da.status === 'fulfilled') {
-        const mappedData = da.value.map((d: any) => ({
+      const da = await getDailyPrediction()
+      if (da) {
+        const mappedData = da.map((d: any) => ({
           t: String(d.hour).padStart(2, '0'),
           congestion: Math.round(d.predicted_congestion_level),
           speed: Math.round(d.predicted_speed_kmh)
@@ -138,8 +71,9 @@ export default function AnalyticsPage() {
         setDailyData(mappedData)
       }
       setLastUpdate(new Date())
+    } catch(e) {
+      console.error(e)
     } finally {
-      setLoading(false)
       setMounted(true)
     }
   }
@@ -151,12 +85,6 @@ export default function AnalyticsPage() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [])
 
-  const congestion = cityStats?.congestionPercent ?? 0
-  const avgSpeed   = cityStats?.averageSpeedKmh   ?? 0
-  const vehicles   = cityStats?.activeVehiclesCount ?? 0
-  const anomCount  = telemetry?.activeAnomaliesCount ?? anomalies.filter(a => a.status === 'ACTIVE').length
-  const sysOk      = telemetry?.status === 'HEALTHY' || telemetry?.status === 'UP'
-  const congestC   = congestionColor(congestion)
   const currentHour = new Date().getHours()
 
   return (
@@ -189,74 +117,12 @@ export default function AnalyticsPage() {
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════════
-            BÖLMƏ 1 — LIVE CITY PULSE (5 metric)
-        ══════════════════════════════════════════════════════════════════════ */}
-        <section>
-          <div className="mb-6 flex items-center gap-3">
-            <Radio className="h-5 w-5 text-red-500 animate-pulse" />
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Canlı Şəhər Vəziyyəti</h2>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-36 animate-pulse rounded-2xl bg-slate-200" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              <PulseMetric
-                icon={Gauge}
-                label="Ortalama Sürət"
-                value={Math.round(avgSpeed)}
-                unit="km/s"
-                sub={avgSpeed >= 40 ? '🟢 Yaxşı axın' : avgSpeed >= 20 ? '🟡 Zəif axın' : 'Tıxac'}
-                color={avgSpeed >= 40 ? 'emerald' : avgSpeed >= 20 ? 'amber' : 'red'}
-                live
-              />
-              <PulseMetric
-                icon={Activity}
-                label="Tıxac Faizi"
-                value={Math.round(congestion)}
-                unit="%"
-                sub={congestC.label}
-                color={congestion >= 70 ? 'red' : congestion >= 40 ? 'amber' : 'emerald'}
-                live
-              />
-              <PulseMetric
-                icon={Car}
-                label="Aktiv Nəqliyyat"
-                value={vehicles.toLocaleString()}
-                sub="bu an yolda"
-                color="blue"
-                live
-              />
-              <PulseMetric
-                icon={AlertTriangle}
-                label="Aktiv Anomaliya"
-                value={anomCount}
-                sub={anomCount > 0 ? 'yoxlanılır...' : 'Anomaliya yoxdur'}
-                color={anomCount > 2 ? 'red' : anomCount > 0 ? 'amber' : 'emerald'}
-              />
-              <PulseMetric
-                icon={Wifi}
-                label="Sistem"
-                value={sysOk ? 'Aktiv' : telemetry ? 'Xəta' : '—'}
-                sub={telemetry?.engineVersion ?? 'yüklənir...'}
-                color={sysOk ? 'emerald' : 'red'}
-                live={sysOk}
-              />
-            </div>
-          )}
-        </section>
-
-        {/* ══════════════════════════════════════════════════════════════════════
-            BÖLMƏ 2 — AI PROQNOZu + ANOMALIYALAR
+            BÖLMƏ 2 — AI PROQNOZU
         ══════════════════════════════════════════════════════════════════════ */}
         <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
 
-          {/* AI Prediction — 6 cols */}
-          <div className="lg:col-span-6 flex flex-col">
+          {/* AI Prediction — 12 cols */}
+          <div className="lg:col-span-12 flex flex-col">
             <div className="mb-6 flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-brand-500" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">AI Proqnozu</h2>
@@ -266,75 +132,15 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          {/* Anomalies — 6 cols */}
-          <div className="lg:col-span-6 flex flex-col">
-            <div className="mb-6 flex items-center gap-3">
-              <Zap className="h-5 w-5 text-amber-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">
-                Canlı Anomaliyalar
-                {anomalies.length > 0 && (
-                  <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-600">
-                    {anomalies.filter(a => a.status === 'ACTIVE').length} aktiv
-                  </span>
-                )}
-              </h2>
-            </div>
-            <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm flex-1">
-              {loading ? (
-                <div className="flex h-64 items-center justify-center">
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-brand-500" />
-                </div>
-              ) : anomalies.length === 0 ? (
-                <div className="flex h-64 flex-col items-center justify-center gap-3 text-center p-8">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100">
-                    <Activity className="h-7 w-7 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900">Anomaliya Aşkarlanmadı</p>
-                    <p className="mt-1 text-sm text-slate-500">Trafik axını normal çərçivədə davam edir</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="divide-y divide-slate-100">
-                  {anomalies.slice(0, 6).map((a) => (
-                    <div key={a.segmentId + a.detectedAt} className="flex items-start gap-3 px-5 py-4 hover:bg-slate-50 transition-colors">
-                      <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
-                        a.status === 'ACTIVE' ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-400'
-                      }`}>
-                        <AlertTriangle className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="truncate text-sm font-semibold text-slate-900">{a.segmentId}</p>
-                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-                            a.status === 'ACTIVE' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'
-                          }`}>{a.status}</span>
-                        </div>
-                        <p className="mt-0.5 text-xs text-slate-500 line-clamp-1">{a.description}</p>
-                        <p className="mt-1 text-[10px] text-slate-400 font-mono">
-                          z-score: {a.zScore?.toFixed(2)} · {new Date(a.detectedAt).toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                  {anomalies.length > 6 && (
-                    <p className="px-5 py-3 text-xs text-slate-400 text-center">
-                      +{anomalies.length - 6} daha çox anomaliya
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════════
-            BÖLMƏ 4 — SAATLıQ TRAFİK + 24 SAAT TARİXİ
+            BÖLMƏ 4 — SAATLIQ TRAFİK
         ══════════════════════════════════════════════════════════════════════ */}
         <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
 
-          {/* Hourly demand — 8 cols */}
-          <div className="lg:col-span-8 flex flex-col">
+          {/* Hourly demand — 12 cols */}
+          <div className="lg:col-span-12 flex flex-col">
             <div className="mb-6 flex items-center gap-3">
               <BarChart3 className="h-5 w-5 text-sky-500" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Günlük Trafik Piki</h2>
@@ -405,58 +211,6 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          {/* Stats column — 4 cols */}
-          <div className="lg:col-span-4 flex flex-col">
-            <div className="mb-6 flex items-center gap-3">
-              <History className="h-5 w-5 text-slate-400" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">24 Saat Tarixi</h2>
-            </div>
-            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm h-[calc(100%-2.5rem)]">
-              {!cityStats?.last24Hours?.length ? (
-                <div className="flex h-full flex-col items-center justify-center gap-2 text-slate-400">
-                  <TrendingUp className="h-8 w-8 opacity-30" />
-                  <p className="text-sm">Tarix məlumatı yüklənir...</p>
-                </div>
-              ) : (
-                <>
-                  {mounted && (
-                    <ResponsiveContainer width="100%" height={180}>
-                      <AreaChart
-                        data={cityStats.last24Hours.map(h => ({
-                          t: new Date(h.bucketStart).getHours() + ':00',
-                          speed: Math.round(h.averageSpeedKmh),
-                          cong: Math.round(h.averageCongestionLevel),
-                        }))}
-                        margin={{ top: 5, right: 0, left: -25, bottom: 0 }}
-                      >
-                        <defs>
-                          <linearGradient id="gradHist" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
-                            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <XAxis dataKey="t" tick={{ fontSize: 9, fill: '#94a3b8' }} tickLine={false} axisLine={false} interval={3} />
-                        <YAxis tick={{ fontSize: 9, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
-                        <Tooltip content={<ChartTooltip />} />
-                        <Area type="monotone" dataKey="speed" name="Sürət" stroke="#3b82f6" strokeWidth={1.5} fill="url(#gradHist)" />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  )}
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    {[
-                      { label: 'Min Sürət', val: Math.min(...cityStats.last24Hours.map(h => h.averageSpeedKmh)).toFixed(0) + ' km/s', icon: TrendingDown, color: 'text-red-500' },
-                      { label: 'Max Sürət', val: Math.max(...cityStats.last24Hours.map(h => h.averageSpeedKmh)).toFixed(0) + ' km/s', icon: TrendingUp, color: 'text-emerald-500' },
-                    ].map(m => (
-                      <div key={m.label} className="rounded-xl bg-slate-50 p-3">
-                        <p className="text-[10px] text-slate-400">{m.label}</p>
-                        <p className={`mt-0.5 text-base font-bold ${m.color}`}>{m.val}</p>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════════
