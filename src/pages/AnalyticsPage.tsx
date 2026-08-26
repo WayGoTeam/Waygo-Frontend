@@ -48,7 +48,7 @@ function weatherGradient(cond: string, impact: number) {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function AnalyticsPage() {
-  const { s } = useLocale()
+  const { s, locale } = useLocale()
   const weather = useDistrictsWeather()
 
   const [dailyData,  setDailyData]  = useState<any[]>([])
@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Yenilə</span>
-            <span className="text-xs text-slate-400">{lastUpdate.toLocaleTimeString(s.brand.name === 'WayGo' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}</span>
+            <span className="text-xs text-slate-400">{lastUpdate.toLocaleTimeString(locale === 'en' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}</span>
           </button>
         </div>
 
@@ -187,17 +187,6 @@ export default function AnalyticsPage() {
                   </AreaChart>
                 </ResponsiveContainer>
               )}
-              <div className="mt-4 flex items-center gap-2 rounded-xl bg-slate-50 px-4 py-2.5 text-xs text-slate-600">
-                <Clock className="h-3.5 w-3.5 text-brand-500 shrink-0" />
-                <span>
-                  <strong>{s.analyticsPage.currentHour} ({currentHour}:00):</strong>{' '}
-                  {(() => {
-                    const cur = dailyData.find((h: any) => parseInt(h.t) === currentHour) ?? dailyData[currentHour] ?? dailyData[0]
-                    if (!cur) return s.analyticsPage.dataLoading
-                    return `${s.analyticsPage.speedColumn} ~${cur.speed} km/s · ${s.analyticsPage.congestionColumn} ~${cur.congestion}%`
-                  })()}
-                </span>
-              </div>
             </div>
           </div>
         </section>
@@ -212,7 +201,7 @@ export default function AnalyticsPage() {
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.districtWeatherTitle}</h2>
             </div>
             <span className="rounded-lg bg-sky-50 px-3 py-1 text-xs font-bold text-sky-600 border border-sky-200">
-              Bakı · {new Date().toLocaleTimeString(s.brand.name === 'WayGo' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}
+              Bakı · {new Date().toLocaleTimeString(locale === 'en' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
 
