@@ -200,9 +200,6 @@ export default function AnalyticsPage() {
               <CloudRain className="h-4 w-4 text-sky-500" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.districtWeatherTitle}</h2>
             </div>
-            <span className="rounded-lg bg-sky-50 px-3 py-1 text-xs font-bold text-sky-600 border border-sky-200">
-              Bakı
-            </span>
           </div>
 
           <div className="rounded-3xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">

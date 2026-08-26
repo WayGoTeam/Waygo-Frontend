@@ -98,12 +98,14 @@ export default function WalletPage() {
 
   if (!user) {
     return (
-      <div className="flex h-full flex-col items-center justify-center bg-slate-50 p-6 text-center">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-100">
-          <Leaf className="h-10 w-10 text-brand-600" />
+      <div className="flex h-full flex-col overflow-y-auto bg-slate-50">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-100">
+            <Leaf className="h-10 w-10 text-brand-600" />
+          </div>
+          <h2 className="mb-3 font-display text-2xl font-bold text-slate-900">{t.walletPage.loggedOutTitle}</h2>
+          <p className="max-w-sm text-slate-500">{t.walletPage.loggedOutDesc}</p>
         </div>
-        <h2 className="mb-3 font-display text-2xl font-bold text-slate-900">{t.walletPage.loggedOutTitle}</h2>
-        <p className="max-w-sm text-slate-500">{t.walletPage.loggedOutDesc}</p>
       </div>
     )
   }
