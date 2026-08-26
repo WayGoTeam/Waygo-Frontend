@@ -13,9 +13,9 @@ import { useDistrictsWeather } from '@/hooks/useDistrictsWeather'
 import { LoadingState, ErrorState } from '@/components/common/States'
 import { AiPredictionPanel } from '@/components/traffic/AiPredictionPanel'
 import {
-  getCityStats, getAnomalies, getDistrictAnalytics, getTelemetryStatus, getDailyPrediction
+  getCityStats, getAnomalies, getTelemetryStatus, getDailyPrediction
 } from '@/api/traffic'
-import type { CityStats, TrafficAnomaly, DistrictAnalytics, TelemetryStatus } from '@/types/api'
+import type { CityStats, TrafficAnomaly, TelemetryStatus } from '@/types/api'
 
 
 
@@ -114,7 +114,6 @@ export default function AnalyticsPage() {
 
   const [cityStats,  setCityStats]  = useState<CityStats | null>(null)
   const [anomalies,  setAnomalies]  = useState<TrafficAnomaly[]>([])
-  const [districts,  setDistricts]  = useState<DistrictAnalytics[]>([])
   const [telemetry,  setTelemetry]  = useState<TelemetryStatus | null>(null)
   const [dailyData,  setDailyData]  = useState<any[]>([])
   const [loading,    setLoading]    = useState(true)
@@ -124,12 +123,11 @@ export default function AnalyticsPage() {
 
   async function fetchAll() {
     try {
-      const [cs, an, di, te, da] = await Promise.allSettled([
-        getCityStats(), getAnomalies(), getDistrictAnalytics(), getTelemetryStatus(), getDailyPrediction()
+      const [cs, an, te, da] = await Promise.allSettled([
+        getCityStats(), getAnomalies(), getTelemetryStatus(), getDailyPrediction()
       ])
       if (cs.status === 'fulfilled') setCityStats(cs.value)
       if (an.status === 'fulfilled') setAnomalies(an.value)
-      if (di.status === 'fulfilled') setDistricts(di.value)
       if (te.status === 'fulfilled') setTelemetry(te.value)
       if (da.status === 'fulfilled') {
         const mappedData = da.value.map((d: any) => ({
@@ -328,54 +326,6 @@ export default function AnalyticsPage() {
               )}
             </div>
           </div>
-        </section>
-
-        {/* ══════════════════════════════════════════════════════════════════════
-            BÖLMƏ 3 — RAYON ANALİTİKASI
-        ══════════════════════════════════════════════════════════════════════ */}
-        <section>
-          <div className="mb-6 flex items-center gap-3">
-            <CloudRain className="h-5 w-5 text-emerald-500" />
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Hava Şəraiti</h2>
-          </div>
-
-          {districts.length === 0 && !loading ? (
-            <div className="rounded-3xl border border-slate-200/80 bg-white p-8 text-center text-slate-400 shadow-sm">
-              Rayon məlumatları mövcud deyil
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
-              {(loading ? Array.from({ length: 8 }) : districts).map((d: any, i) => {
-                if (!d) return <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-200" />
-                const c = congestionColor(d.congestionPct)
-                return (
-                  <div
-                    key={d.id}
-                    className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-                  >
-                    <div className={`absolute right-0 top-0 h-16 w-16 -translate-y-4 translate-x-4 rounded-full opacity-10 ${c.bg}`} />
-                    <p className="truncate text-xs font-bold text-slate-900">{d.name}</p>
-                    <div className={`mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${c.badge}`}>
-                      {c.label}
-                    </div>
-                    <div className="mt-3 space-y-1.5">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Sürət</span>
-                        <span className={`font-bold ${speedColor(d.avgSpeedKmh)}`}>{Math.round(d.avgSpeedKmh)} km/s</span>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                        <div className={`h-full rounded-full transition-all ${c.bg}`} style={{ width: `${Math.min(100, d.congestionPct)}%` }} />
-                      </div>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400">
-                        <span>Tıxac</span>
-                        <span className="font-mono font-bold">{Math.round(d.congestionPct)}%</span>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════════
