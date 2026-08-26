@@ -35,21 +35,18 @@ export default function WeatherPage() {
       <div className="mx-auto max-w-[1200px] space-y-8 p-5 sm:p-7 pb-16">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-slate-900">Hava və Trafik</h1>
+            <h1 className="font-display text-3xl font-bold text-slate-900">{s.weather.pageTitle}</h1>
             <p className="mt-1 text-sm text-slate-500">
-              Bakı və ətraf ərazilər üçün hava şəraiti və tıxaca təsiri
+              {s.weather.pageSubtitle}
             </p>
           </div>
-          <span className="rounded-lg bg-white px-3 py-1 text-xs font-bold text-slate-600 shadow-sm border border-slate-200">
-            {new Date().toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
-          </span>
         </div>
 
         <div className="rounded-3xl border border-slate-200/80 bg-white shadow-sm overflow-hidden min-h-[400px]">
           {weather.loading && !weather.data ? (
             <div className="flex h-64 flex-col items-center justify-center gap-3 text-slate-400">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-sky-500" />
-              <span className="text-sm font-medium">Bütün bölgələr üçün hava yüklənir...</span>
+              <span className="text-sm font-medium">{s.weather.pageSubtitle}...</span>
             </div>
           ) : weather.error ? (
             <div className="p-8">
@@ -93,7 +90,7 @@ export default function WeatherPage() {
 
                       <div className="mt-5 rounded-2xl bg-white/60 p-3 backdrop-blur-md shadow-sm border border-white/50">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Trafik Təsiri</span>
+                          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{s.weather.trafficImpact}</span>
                           <span className={`text-base font-bold ${w.trafficImpactPercent > 20 ? 'text-red-600' : w.trafficImpactPercent > 10 ? 'text-orange-600' : 'text-emerald-600'}`}>
                             +{w.trafficImpactPercent}%
                           </span>

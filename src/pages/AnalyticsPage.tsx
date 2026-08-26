@@ -201,7 +201,7 @@ export default function AnalyticsPage() {
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.districtWeatherTitle}</h2>
             </div>
             <span className="rounded-lg bg-sky-50 px-3 py-1 text-xs font-bold text-sky-600 border border-sky-200">
-              Bakı · {new Date().toLocaleTimeString(locale === 'en' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}
+              Bakı
             </span>
           </div>
 
