@@ -18,6 +18,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     { to: '/', label: s.nav.liveMap, icon: MapIcon },
     { to: '/analytics', label: s.nav.analytics, icon: BarChart3 },
     { to: '/incidents', label: s.nav.incidents, icon: TriangleAlert, badge: incidentCount },
+    { to: '/weather', label: 'Hava & Trafik', icon: CloudSun },
     { to: '/wallet', label: 'Eko-Cüzdan', icon: Wallet },
     { to: '/profile', label: 'Profil', icon: UserCircle },
   ]

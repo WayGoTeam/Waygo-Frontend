@@ -10,6 +10,7 @@ const IncidentsPage = lazy(() => import('@/pages/IncidentsPage'))
 const AdminPage = lazy(() => import('@/pages/AdminPage'))
 const WalletPage = lazy(() => import('@/pages/WalletPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
+const WeatherPage = lazy(() => import('@/pages/WeatherPage'))
 
 function PageFallback() {
   return (
@@ -55,6 +56,14 @@ export default function App() {
             element={
               <Suspense fallback={<PageFallback />}>
                 <WalletPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="weather"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <WeatherPage />
               </Suspense>
             }
           />

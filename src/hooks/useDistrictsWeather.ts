@@ -3,6 +3,7 @@ import { getWeather } from '@/api/weather'
 import type { WeatherSnapshot } from '@/types/api'
 
 export const DISTRICTS_COORDS = [
+  // Bakının əsas rayonları
   { id: 'nesimi', name: 'Nəsimi', lat: 40.3920, lng: 49.8430 },
   { id: 'yasamal', name: 'Yasamal', lat: 40.3750, lng: 49.8150 },
   { id: 'nerimanov', name: 'Nərimanov', lat: 40.4050, lng: 49.8750 },
@@ -12,7 +13,14 @@ export const DISTRICTS_COORDS = [
   { id: 'suraxani', name: 'Suraxanı', lat: 40.4200, lng: 49.9800 },
   { id: 'sabuncu', name: 'Sabunçu', lat: 40.4500, lng: 49.9500 },
   { id: 'nizami', name: 'Nizami', lat: 40.4150, lng: 49.9200 },
-  { id: 'xezer', name: 'Xəzər', lat: 40.4600, lng: 50.1000 }
+  { id: 'xezer', name: 'Xəzər', lat: 40.4600, lng: 50.1000 },
+  { id: 'qaradag', name: 'Qaradağ', lat: 40.3333, lng: 49.4667 },
+  { id: 'pirallahi', name: 'Pirallahı', lat: 40.4667, lng: 50.3333 },
+  // Bakı ətrafı
+  { id: 'sumqayit', name: 'Sumqayıt', lat: 40.5897, lng: 49.6686 },
+  { id: 'xirdalan', name: 'Xırdalan', lat: 40.4481, lng: 49.7550 },
+  { id: 'abseron', name: 'Abşeron', lat: 40.4566, lng: 49.7516 },
+  { id: 'masazir', name: 'Masazır', lat: 40.4950, lng: 49.7611 },
 ];
 
 export interface DistrictWeather extends WeatherSnapshot {

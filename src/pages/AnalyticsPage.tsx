@@ -550,6 +550,7 @@ export default function AnalyticsPage() {
               <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 lg:grid-cols-5">
                 {weather.data
                   .sort((a, b) => b.trafficImpactPercent - a.trafficImpactPercent)
+                  .slice(0, 5)
                   .map((w, idx) => {
                     const isWorst = idx === 0
                     const grad = weatherGradient(w.condition, w.trafficImpactPercent)
