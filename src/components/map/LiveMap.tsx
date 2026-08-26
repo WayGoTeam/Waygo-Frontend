@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import * as L from 'leaflet'
+if (typeof window !== 'undefined') {
+  ;(window as any).L = L
+}
 import 'leaflet.vectorgrid'
 import { useMapLayers } from '@/context/MapLayersContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
