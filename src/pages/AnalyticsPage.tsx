@@ -13,9 +13,6 @@ import { ErrorState } from '@/components/common/States'
 import { AiPredictionPanel } from '@/components/traffic/AiPredictionPanel'
 import { getDailyPrediction } from '@/api/traffic'
 
-
-
-
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
@@ -89,7 +86,16 @@ export default function AnalyticsPage() {
 
   return (
     <div className="relative h-full overflow-y-auto scroll-thin bg-slate-50">
-      {/* ── Ambient blobs ─────────────────────────────────────────────────�        {/* ── Header ─────────────────────────────────────────────────────────── */}
+      {/* ── Ambient blobs ─────────────────────────────────────────────────── */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-400/8 blur-3xl" />
+        <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-violet-400/6 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-400/5 blur-3xl" />
+      </div>
+
+      <div className="mx-auto max-w-[1600px] space-y-12 lg:space-y-16 p-6 sm:p-8 lg:p-10 pb-24">
+
+        {/* ── Header ─────────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-3xl font-bold text-slate-900">{s.analyticsPage.title}</h1>
@@ -138,24 +144,6 @@ export default function AnalyticsPage() {
                 <div className="flex items-center gap-4 text-[11px]">
                   <span className="flex items-center gap-1.5"><span className="h-2 w-6 rounded-full bg-brand-500 opacity-80 inline-block" />{s.analyticsPage.congestionColumn} %</span>
                   <span className="flex items-center gap-1.5"><span className="h-2 w-6 rounded-full bg-emerald-500 opacity-80 inline-block" />{s.analyticsPage.speedColumn} km/s</span>
-                </div>
-              </div>sName="grid grid-cols-1 gap-8 lg:grid-cols-12">
-
-          {/* Hourly demand — 12 cols */}
-          <div className="lg:col-span-12 flex flex-col">
-            <div className="mb-6 flex items-center gap-3">
-              <BarChart3 className="h-5 w-5 text-sky-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Günlük Trafik Piki</h2>
-            </div>
-            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-700">Tıxac &amp; Sürət (24 saat)</p>
-                  <p className="text-xs text-slate-400 mt-0.5">Tipik iş günü, Bakı mərkəzi</p>
-                </div>
-                <div className="flex items-center gap-4 text-[11px]">
-                  <span className="flex items-center gap-1.5"><span className="h-2 w-6 rounded-full bg-brand-500 opacity-80 inline-block" />Tıxac %</span>
-                  <span className="flex items-center gap-1.5"><span className="h-2 w-6 rounded-full bg-emerald-500 opacity-80 inline-block" />Sürət km/s</span>
                 </div>
               </div>
               {mounted && (
