@@ -36,20 +36,15 @@ export function useDistrictsWeather() {
   const fetchDistrictsWeather = async () => {
     try {
       setLoading(true)
-      const results: DistrictWeather[] = []
-      // Wait a moment to allow other mount-time API calls to finish and avoid 10 req/s rate limit
-      await new Promise((resolve) => setTimeout(resolve, 800))
-      
-      for (const d of DISTRICTS_COORDS) {
+      const promises = DISTRICTS_COORDS.map(async (d) => {
         const snapshot = await getWeather(d.lat, d.lng)
-        results.push({
+        return {
           ...snapshot,
           districtId: d.id,
           districtName: d.name
-        })
-        // Add small delay between requests
-        await new Promise((resolve) => setTimeout(resolve, 150))
-      }
+        }
+      })
+      const results = await Promise.all(promises)
       setData(results)
       setError(null)
     } catch (err) {
