@@ -89,21 +89,12 @@ export default function AnalyticsPage() {
 
   return (
     <div className="relative h-full overflow-y-auto scroll-thin bg-slate-50">
-      {/* ── Ambient blobs ─────────────────────────────────────────────────── */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-400/8 blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-violet-400/6 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-400/5 blur-3xl" />
-      </div>
-
-      <div className="mx-auto max-w-[1600px] space-y-12 lg:space-y-16 p-6 sm:p-8 lg:p-10 pb-24">
-
-        {/* ── Header ─────────────────────────────────────────────────────────── */}
+      {/* ── Ambient blobs ─────────────────────────────────────────────────�        {/* ── Header ─────────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-slate-900">Analitika</h1>
+            <h1 className="font-display text-3xl font-bold text-slate-900">{s.analyticsPage.title}</h1>
             <p className="mt-1 text-sm text-slate-500">
-              Bakı şəhərinin canlı trafik göstəriciləri &amp; AI proqnozları
+              {s.analyticsPage.subtitle}
             </p>
           </div>
           <button
@@ -112,32 +103,43 @@ export default function AnalyticsPage() {
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Yenilə</span>
-            <span className="text-xs text-slate-400">{lastUpdate.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}</span>
+            <span className="text-xs text-slate-400">{lastUpdate.toLocaleTimeString(s.brand.name === 'WayGo' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}</span>
           </button>
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════════
-            BÖLMƏ 2 — AI PROQNOZU
+            BÖLMƏ 1 — AI PROQNOZU & GÜNLÜK TRAFİK
         ══════════════════════════════════════════════════════════════════════ */}
-        <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <section className="grid grid-cols-1 gap-8 xl:grid-cols-12">
 
-          {/* AI Prediction — 12 cols */}
-          <div className="lg:col-span-12 flex flex-col">
+          {/* AI Prediction — 5 cols */}
+          <div className="xl:col-span-5 flex flex-col">
             <div className="mb-6 flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-brand-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">AI Proqnozu</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.aiPredictionTitle}</h2>
             </div>
             <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm flex-1">
               <AiPredictionPanel />
             </div>
           </div>
 
-        </section>
-
-        {/* ══════════════════════════════════════════════════════════════════════
-            BÖLMƏ 4 — SAATLIQ TRAFİK
-        ══════════════════════════════════════════════════════════════════════ */}
-        <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          {/* Hourly demand — 7 cols */}
+          <div className="xl:col-span-7 flex flex-col">
+            <div className="mb-6 flex items-center gap-3">
+              <BarChart3 className="h-5 w-5 text-sky-500" />
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.dailyPeakTitle}</h2>
+            </div>
+            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm flex-1">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-700">{s.analyticsPage.dailyPeakSubtitle}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{s.analyticsPage.dailyPeakHint}</p>
+                </div>
+                <div className="flex items-center gap-4 text-[11px]">
+                  <span className="flex items-center gap-1.5"><span className="h-2 w-6 rounded-full bg-brand-500 opacity-80 inline-block" />{s.analyticsPage.congestionColumn} %</span>
+                  <span className="flex items-center gap-1.5"><span className="h-2 w-6 rounded-full bg-emerald-500 opacity-80 inline-block" />{s.analyticsPage.speedColumn} km/s</span>
+                </div>
+              </div>sName="grid grid-cols-1 gap-8 lg:grid-cols-12">
 
           {/* Hourly demand — 12 cols */}
           <div className="lg:col-span-12 flex flex-col">
@@ -200,30 +202,29 @@ export default function AnalyticsPage() {
               <div className="mt-4 flex items-center gap-2 rounded-xl bg-slate-50 px-4 py-2.5 text-xs text-slate-600">
                 <Clock className="h-3.5 w-3.5 text-brand-500 shrink-0" />
                 <span>
-                  <strong>İndiki saat ({currentHour}:00):</strong>{' '}
+                  <strong>{s.analyticsPage.currentHour} ({currentHour}:00):</strong>{' '}
                   {(() => {
                     const cur = dailyData.find((h: any) => parseInt(h.t) === currentHour) ?? dailyData[currentHour] ?? dailyData[0]
-                    if (!cur) return 'Məlumat yüklənir...'
-                    return `Sürət ~${cur.speed} km/s · Tıxac ~${cur.congestion}%`
+                    if (!cur) return s.analyticsPage.dataLoading
+                    return `${s.analyticsPage.speedColumn} ~${cur.speed} km/s · ${s.analyticsPage.congestionColumn} ~${cur.congestion}%`
                   })()}
                 </span>
               </div>
             </div>
           </div>
-
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════════
-            BÖLMƏ 5 — HAVA VƏ TRAFİK TƏSİRİ
+            BÖLMƏ 2 — HAVA VƏ TRAFİK TƏSİRİ
         ══════════════════════════════════════════════════════════════════════ */}
         <section>
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CloudRain className="h-4 w-4 text-sky-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Rayon Hava Şəraiti</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.districtWeatherTitle}</h2>
             </div>
             <span className="rounded-lg bg-sky-50 px-3 py-1 text-xs font-bold text-sky-600 border border-sky-200">
-              Bakı · {new Date().toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
+              Bakı · {new Date().toLocaleTimeString(s.brand.name === 'WayGo' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
 
@@ -231,7 +232,7 @@ export default function AnalyticsPage() {
             {weather.loading && !weather.data ? (
               <div className="flex h-48 items-center justify-center gap-3 text-slate-400">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-200 border-t-sky-500" />
-                <span className="text-sm">Hava məlumatları yüklənir...</span>
+                <span className="text-sm">{s.analyticsPage.dataLoading}</span>
               </div>
             ) : weather.error ? (
               <div className="p-6">
@@ -279,7 +280,7 @@ export default function AnalyticsPage() {
 
                         <div className="mt-4">
                           <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Trafik Təsiri</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{s.weather.trafficImpact}</span>
                             <span className={`text-sm font-bold ${w.trafficImpactPercent > 20 ? 'text-red-600' : w.trafficImpactPercent > 10 ? 'text-orange-500' : 'text-emerald-600'}`}>
                               +{w.trafficImpactPercent}%
                             </span>
