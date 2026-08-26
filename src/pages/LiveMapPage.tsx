@@ -11,7 +11,7 @@ import { RoutePlannerPanel } from '@/components/map/RoutePlannerPanel'
 import { LayerControlPanel } from '@/components/map/LayerControlPanel'
 import { MapZoomControls } from '@/components/map/MapZoomControls'
 import { MapLegend } from '@/components/map/MapLegend'
-import { CityStatusBar } from '@/components/map/CityStatusBar'
+
 import { ReportIncidentPanel } from '@/components/map/ReportIncidentPanel'
 import { AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
@@ -326,10 +326,7 @@ export default function LiveMapPage() {
           <div className="hidden sm:block">
             <MapLegend />
           </div>
-          <CityStatusBar cityStats={cityStats.data} loading={cityStats.loading} onRefresh={() => {
-            cityStats.refetch()
-            trafficMap.refetch()
-          }} />
+
         </div>
       </div>
     </div>
