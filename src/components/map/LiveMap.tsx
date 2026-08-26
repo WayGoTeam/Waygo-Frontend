@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import * as L from 'leaflet'
-if (typeof window !== 'undefined') {
-  ;(window as any).L = L
-}
-import 'leaflet.vectorgrid'
 import { useMapLayers } from '@/context/MapLayersContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { useLocale } from '@/i18n/LocaleContext'
@@ -62,40 +58,57 @@ function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean })
   
   useEffect(() => {
     if (!visible) return
-    
-    // Create vector grid layer pointing to Martin MVT
-    const layer = (L as any).vectorGrid.protobuf(url, {
-      vectorTileLayerStyles: {
-        mock_traffic: (properties: any) => {
-          const level = properties.congestion_level || 1
-          let color = '#22c55e' // Green (Light)
-          if (level === 3) color = '#f59e0b' // Orange (Moderate)
-          if (level >= 4) color = '#ef4444' // Red (Heavy)
-          
-          return {
-            weight: 5,
-            color,
-            opacity: 0.8,
-            fill: false,
-          }
+    let layer: any = null
+    let isMounted = true
+
+    // Inject L to window for vectorgrid
+    if (typeof window !== 'undefined') {
+      ;(window as any).L = L
+    }
+
+    // Dynamically import vectorgrid to avoid SSR/Vite hoisting issues
+    import('leaflet.vectorgrid').then(() => {
+      if (!isMounted) return
+
+      // Create vector grid layer pointing to Martin MVT
+      layer = (L as any).vectorGrid.protobuf(url, {
+        vectorTileLayerStyles: {
+          mock_traffic: (properties: any) => {
+            const level = properties.congestion_level || 1
+            let color = '#22c55e' // Green (Light)
+            if (level === 3) color = '#f59e0b' // Orange (Moderate)
+            if (level >= 4) color = '#ef4444' // Red (Heavy)
+            
+            return {
+              weight: 5,
+              color,
+              opacity: 0.8,
+              fill: false,
+            }
+          },
         },
-      },
-      interactive: true,
-      minZoom: 10,
-    })
-    
-    layer.addTo(map)
-    
-    layer.on('click', (e: any) => {
-      const p = e.layer.properties
-      L.popup()
-        .setContent(`<strong>Yol:</strong> ${p.name || 'N/A'}<br/><strong>Tıxac:</strong> Səviyyə ${p.congestion_level}`)
-        .setLatLng(e.latlng)
-        .openOn(map)
+        interactive: true,
+        minZoom: 10,
+      })
+      
+      layer.addTo(map)
+      
+      layer.on('click', (e: any) => {
+        const p = e.layer.properties
+        L.popup()
+          .setContent(`<strong>Yol:</strong> ${p.name || 'N/A'}<br/><strong>Tıxac:</strong> Səviyyə ${p.congestion_level}`)
+          .setLatLng(e.latlng)
+          .openOn(map)
+      })
+    }).catch(err => {
+      console.error("Failed to load leaflet.vectorgrid", err)
     })
     
     return () => {
-      map.removeLayer(layer)
+      isMounted = false
+      if (layer && map) {
+        map.removeLayer(layer)
+      }
     }
   }, [map, url, visible])
   
