@@ -71,7 +71,8 @@ function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean })
       if (!isMounted) return
 
       // Create vector grid layer pointing to Martin MVT
-      layer = (L as any).vectorGrid.protobuf(url, {
+      const L_global = (window as any).L
+      layer = L_global.vectorGrid.protobuf(url, {
         vectorTileLayerStyles: {
           mock_traffic: (properties: any) => {
             const level = properties.congestion_level || 1
