@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Gauge, Activity, Car, AlertTriangle, Wifi, CloudRain, Sparkles,
   TrendingUp, TrendingDown, Minus, Wind, Droplets, Thermometer,
-  MapPin, Zap, Clock, RefreshCw, Radio,
+  MapPin, Zap, Clock, RefreshCw, Radio, History, BarChart3,
 } from 'lucide-react'
 import {
   AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -184,7 +184,7 @@ export default function AnalyticsPage() {
         <div className="absolute bottom-0 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-400/5 blur-3xl" />
       </div>
 
-      <div className="mx-auto max-w-[1600px] space-y-8 p-5 sm:p-7 pb-16">
+      <div className="mx-auto max-w-[1600px] space-y-12 lg:space-y-16 p-6 sm:p-8 lg:p-10 pb-24">
 
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
@@ -208,8 +208,8 @@ export default function AnalyticsPage() {
             BÖLMƏ 1 — LIVE CITY PULSE (5 metric)
         ══════════════════════════════════════════════════════════════════════ */}
         <section>
-          <div className="mb-4 flex items-center gap-2">
-            <Radio className="h-4 w-4 text-red-500 animate-pulse" />
+          <div className="mb-6 flex items-center gap-3">
+            <Radio className="h-5 w-5 text-red-500 animate-pulse" />
             <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Canlı Şəhər Vəziyyəti</h2>
           </div>
 
@@ -269,23 +269,23 @@ export default function AnalyticsPage() {
         {/* ══════════════════════════════════════════════════════════════════════
             BÖLMƏ 2 — AI PROQNOZu + ANOMALIYALAR
         ══════════════════════════════════════════════════════════════════════ */}
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
 
           {/* AI Prediction — 6 cols */}
-          <div className="lg:col-span-6">
-            <div className="mb-4 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-brand-500" />
+          <div className="lg:col-span-6 flex flex-col">
+            <div className="mb-6 flex items-center gap-3">
+              <Sparkles className="h-5 w-5 text-brand-500" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">AI Proqnozu</h2>
             </div>
-            <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm flex-1">
               <AiPredictionPanel />
             </div>
           </div>
 
           {/* Anomalies — 6 cols */}
-          <div className="lg:col-span-6">
-            <div className="mb-4 flex items-center gap-2">
-              <Zap className="h-4 w-4 text-amber-500" />
+          <div className="lg:col-span-6 flex flex-col">
+            <div className="mb-6 flex items-center gap-3">
+              <Zap className="h-5 w-5 text-amber-500" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">
                 Canlı Anomaliyalar
                 {anomalies.length > 0 && (
@@ -295,7 +295,7 @@ export default function AnalyticsPage() {
                 )}
               </h2>
             </div>
-            <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm flex-1">
               {loading ? (
                 <div className="flex h-64 items-center justify-center">
                   <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-brand-500" />
@@ -348,9 +348,9 @@ export default function AnalyticsPage() {
             BÖLMƏ 3 — RAYON ANALİTİKASI
         ══════════════════════════════════════════════════════════════════════ */}
         <section>
-          <div className="mb-4 flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-violet-500" />
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Rayon Analitikası</h2>
+          <div className="mb-6 flex items-center gap-3">
+            <CloudRain className="h-5 w-5 text-emerald-500" />
+            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Hava Şəraiti</h2>
           </div>
 
           {districts.length === 0 && !loading ? (
@@ -358,8 +358,8 @@ export default function AnalyticsPage() {
               Rayon məlumatları mövcud deyil
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-              {(loading ? Array.from({ length: 6 }) : districts.slice(0, 12)).map((d: any, i) => {
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+              {(loading ? Array.from({ length: 8 }) : districts).map((d: any, i) => {
                 if (!d) return <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-200" />
                 const c = congestionColor(d.congestionPct)
                 return (
@@ -395,12 +395,12 @@ export default function AnalyticsPage() {
         {/* ══════════════════════════════════════════════════════════════════════
             BÖLMƏ 4 — SAATLıQ TRAFİK + 24 SAAT TARİXİ
         ══════════════════════════════════════════════════════════════════════ */}
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
 
           {/* Hourly demand — 8 cols */}
-          <div className="lg:col-span-8">
-            <div className="mb-4 flex items-center gap-2">
-              <Clock className="h-4 w-4 text-blue-500" />
+          <div className="lg:col-span-8 flex flex-col">
+            <div className="mb-6 flex items-center gap-3">
+              <BarChart3 className="h-5 w-5 text-sky-500" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Günlük Trafik Piki</h2>
             </div>
             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm">
@@ -468,10 +468,10 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          {/* 24h city history from API — 4 cols */}
-          <div className="lg:col-span-4">
-            <div className="mb-4 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-brand-500" />
+          {/* Stats column — 4 cols */}
+          <div className="lg:col-span-4 flex flex-col">
+            <div className="mb-6 flex items-center gap-3">
+              <History className="h-5 w-5 text-slate-400" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">24 Saat Tarixi</h2>
             </div>
             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm h-[calc(100%-2.5rem)]">
