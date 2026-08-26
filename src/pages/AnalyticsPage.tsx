@@ -551,22 +551,15 @@ export default function AnalyticsPage() {
                 {weather.data
                   .sort((a, b) => b.trafficImpactPercent - a.trafficImpactPercent)
                   .slice(0, 5)
-                  .map((w, idx) => {
-                    const isWorst = idx === 0
+                  .map((w) => {
                     const grad = weatherGradient(w.condition, w.trafficImpactPercent)
                     const condLabel = s.weather.conditions?.[w.condition] ?? w.condition
 
                     return (
                       <div
                         key={w.districtId}
-                        className={`relative flex flex-col p-5 transition-colors hover:bg-slate-50 ${isWorst ? `bg-gradient-to-br ${grad}` : ''}`}
+                        className={`relative flex flex-col p-5 transition-colors hover:bg-slate-50 bg-gradient-to-br ${grad}`}
                       >
-                        {isWorst && (
-                          <span className="absolute right-3 top-3 rounded-full bg-orange-100 px-2 py-0.5 text-[9px] font-bold uppercase text-orange-700">
-                            Ən çox təsir
-                          </span>
-                        )}
-
                         <div className="flex items-start gap-2">
                           <span className="text-2xl leading-none">{weatherIcon(w.condition)}</span>
                           <div className="min-w-0">
