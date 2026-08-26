@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-import type L from 'leaflet'
+import * as L from 'leaflet'
+import 'leaflet.vectorgrid'
 import { useMapLayers } from '@/context/MapLayersContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { useLocale } from '@/i18n/LocaleContext'
@@ -51,6 +52,51 @@ function FlyToFocus({ focus }: { focus: { lat: number; lng: number } | null }) {
 
 function isRecent(iso: string, withinMs: number): boolean {
   return Date.now() - new Date(iso).getTime() < withinMs
+}
+
+function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean }) {
+  const map = useMap()
+  
+  useEffect(() => {
+    if (!visible) return
+    
+    // Create vector grid layer pointing to Martin MVT
+    const layer = (L as any).vectorGrid.protobuf(url, {
+      vectorTileLayerStyles: {
+        mock_traffic: (properties: any) => {
+          const level = properties.congestion_level || 1
+          let color = '#22c55e' // Green (Light)
+          if (level === 3) color = '#f59e0b' // Orange (Moderate)
+          if (level >= 4) color = '#ef4444' // Red (Heavy)
+          
+          return {
+            weight: 5,
+            color,
+            opacity: 0.8,
+            fill: false,
+          }
+        },
+      },
+      interactive: true,
+      minZoom: 10,
+    })
+    
+    layer.addTo(map)
+    
+    layer.on('click', (e: any) => {
+      const p = e.layer.properties
+      L.popup()
+        .setContent(`<strong>Yol:</strong> ${p.name || 'N/A'}<br/><strong>Tıxac:</strong> Səviyyə ${p.congestion_level}`)
+        .setLatLng(e.latlng)
+        .openOn(map)
+    })
+    
+    return () => {
+      map.removeLayer(layer)
+    }
+  }, [map, url, visible])
+  
+  return null
 }
 
 export function LiveMap({
@@ -127,6 +173,9 @@ export function LiveMap({
           }
         />
       )}
+
+      {/* Render mock traffic lines via Martin Vector Tiles */}
+      <VectorTrafficLayer url={trafficFlowTileUrl()} visible={showTraffic} />
 
       {showMarkers && visibleIncidents.map((incident) => (
         <Marker

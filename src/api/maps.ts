@@ -23,5 +23,5 @@ export const getRoute = (
 export const TRANSPARENT_TILE =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 
-export const trafficFlowTileUrl = () => `${API_BASE}/traffic/tiles/flow/{z}/{x}/{y}.png?_v=2`
+export const trafficFlowTileUrl = () => `http://localhost:3001/mock_traffic/{z}/{x}/{y}`
 export const trafficIncidentTileUrl = () => `${API_BASE}/traffic/tiles/incidents/{z}/{x}/{y}.png`
