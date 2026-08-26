@@ -12,8 +12,6 @@ export function LayerControlPanel() {
     setShowTraffic,
     showIncidents,
     setShowIncidents,
-    showLiveIncidents,
-    setShowLiveIncidents,
   } = useMapLayers()
 
   return (
@@ -42,12 +40,6 @@ export function LayerControlPanel() {
       <div className="space-y-0.5">
         <LayerRow icon={Layers} label={s.layers.traffic} checked={showTraffic} onChange={setShowTraffic} />
         <LayerRow icon={TriangleAlert} label={s.layers.incidents} checked={showIncidents} onChange={setShowIncidents} />
-        <LayerRow
-          icon={Radio}
-          label={s.layers.liveIncidents}
-          checked={showLiveIncidents}
-          onChange={setShowLiveIncidents}
-        />
       </div>
     </div>
   )

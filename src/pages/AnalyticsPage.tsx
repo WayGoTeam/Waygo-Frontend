@@ -212,7 +212,7 @@ export default function AnalyticsPage() {
                 label="Ortalama Sürət"
                 value={Math.round(avgSpeed)}
                 unit="km/s"
-                sub={avgSpeed >= 40 ? '🟢 Yaxşı axın' : avgSpeed >= 20 ? '🟡 Zəif axın' : '🔴 Tıxac'}
+                sub={avgSpeed >= 40 ? '🟢 Yaxşı axın' : avgSpeed >= 20 ? '🟡 Zəif axın' : 'Tıxac'}
                 color={avgSpeed >= 40 ? 'emerald' : avgSpeed >= 20 ? 'amber' : 'red'}
                 live
               />

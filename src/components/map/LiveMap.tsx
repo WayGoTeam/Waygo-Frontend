@@ -77,7 +77,7 @@ export function LiveMap({
   currentLocation?: { lat: number; lng: number } | null
 }) {
   const { s } = useLocale()
-  const { basemap, showTraffic, showIncidents, showLiveIncidents } = useMapLayers()
+  const { basemap, showTraffic, showIncidents } = useMapLayers()
   const { incidents } = useIncidentsContext()
 
   const center: [number, number] = mapConfig ? [mapConfig.centerLat, mapConfig.centerLng] : BAKU_CENTER
@@ -97,13 +97,12 @@ export function LiveMap({
 
   const visibleIncidents = useMemo(() => {
     if (!incidents) return []
-    // "Hadisələr" shows user-reported incidents; "Canlı hadisələr" shows the engine's
-    // own real-time anomaly detections — same split used by the bottom status bar.
+    // "Hadisələr" shows user-reported incidents
     return incidents.filter((i) => {
       if (!i.active || i.latitude === null || i.longitude === null) return false
-      return i.source === 'ANOMALY_DETECTION' ? showLiveIncidents : showIncidents
+      return showIncidents
     })
-  }, [incidents, showIncidents, showLiveIncidents])
+  }, [incidents, showIncidents])
 
   const incidentSize = currentZoom < 10 ? 12 : currentZoom < 12 ? 20 : currentZoom < 14 ? 26 : 30
   const pinSize = currentZoom < 10 ? 16 : currentZoom < 12 ? 24 : currentZoom < 14 ? 30 : 34

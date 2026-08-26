@@ -3,6 +3,7 @@ import { Gauge, RefreshCw, Radio, TriangleAlert } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { RingGauge } from '@/components/common/RingGauge'
+import { useEffect, useState } from 'react'
 import { congestionColor } from '@/lib/congestion'
 import { formatBakuClock } from '@/lib/format'
 import type { CityStats } from '@/types/api'
@@ -19,7 +20,12 @@ export function CityStatusBar({
   const { s } = useLocale()
   const { incidents } = useIncidentsContext()
   const activeCount = incidents?.length ?? 0
-  const liveCount = incidents?.filter((i) => i.source === 'ANOMALY_DETECTION').length ?? 0
+
+  const [now, setNow] = useState(new Date())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   return (
     <div className="pointer-events-auto flex h-[74px] items-stretch gap-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white px-5 shadow-float scroll-thin sm:gap-8 sm:px-6">
@@ -47,13 +53,7 @@ export function CityStatusBar({
         <ValueRow icon={TriangleAlert} value={String(activeCount)} tone="text-amber-600" />
       </Group>
 
-      <Divider />
 
-      <Group label={s.cityBar.liveIncidents}>
-        <ValueRow icon={Radio} value={String(liveCount)} tone="text-brand-600" />
-      </Group>
-
-      <Divider />
 
       <Group label={s.cityBar.lastUpdated}>
         <button
@@ -61,7 +61,7 @@ export function CityStatusBar({
           className="flex items-center gap-1.5 text-sm font-bold text-slate-800 transition hover:text-brand-600"
         >
           <RefreshCw className={`h-3.5 w-3.5 text-slate-400 ${loading ? 'animate-spin' : ''}`} />
-          {cityStats ? formatBakuClock(cityStats.generatedAt) : '—:—'}
+          {formatBakuClock(now.toISOString())}
         </button>
       </Group>
     </div>
