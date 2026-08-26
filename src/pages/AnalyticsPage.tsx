@@ -13,34 +13,11 @@ import { useDistrictsWeather } from '@/hooks/useDistrictsWeather'
 import { LoadingState, ErrorState } from '@/components/common/States'
 import { AiPredictionPanel } from '@/components/traffic/AiPredictionPanel'
 import {
-  getCityStats, getAnomalies, getDistrictAnalytics, getTelemetryStatus,
+  getCityStats, getAnomalies, getDistrictAnalytics, getTelemetryStatus, getDailyPrediction
 } from '@/api/traffic'
 import type { CityStats, TrafficAnomaly, DistrictAnalytics, TelemetryStatus } from '@/types/api'
 
-// ─── Hardcoded hourly load (demo — backend has no history endpoint yet) ───────
-const HOURLY_LOAD = [
-  { t: '00', congestion: 8,  speed: 68 },
-  { t: '02', congestion: 5,  speed: 72 },
-  { t: '04', congestion: 7,  speed: 70 },
-  { t: '06', congestion: 28, speed: 52 },
-  { t: '07', congestion: 58, speed: 34 },
-  { t: '08', congestion: 92, speed: 18 },
-  { t: '09', congestion: 88, speed: 21 },
-  { t: '10', congestion: 62, speed: 32 },
-  { t: '11', congestion: 45, speed: 42 },
-  { t: '12', congestion: 50, speed: 39 },
-  { t: '13', congestion: 60, speed: 34 },
-  { t: '14', congestion: 48, speed: 41 },
-  { t: '15', congestion: 44, speed: 44 },
-  { t: '16', congestion: 58, speed: 35 },
-  { t: '17', congestion: 78, speed: 25 },
-  { t: '18', congestion: 97, speed: 14 },
-  { t: '19', congestion: 91, speed: 17 },
-  { t: '20', congestion: 70, speed: 28 },
-  { t: '21', congestion: 48, speed: 41 },
-  { t: '22', congestion: 30, speed: 55 },
-  { t: '23', congestion: 16, speed: 64 },
-]
+
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function congestionColor(pct: number) {
@@ -139,6 +116,7 @@ export default function AnalyticsPage() {
   const [anomalies,  setAnomalies]  = useState<TrafficAnomaly[]>([])
   const [districts,  setDistricts]  = useState<DistrictAnalytics[]>([])
   const [telemetry,  setTelemetry]  = useState<TelemetryStatus | null>(null)
+  const [dailyData,  setDailyData]  = useState<any[]>([])
   const [loading,    setLoading]    = useState(true)
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
   const [mounted,    setMounted]    = useState(false)
@@ -146,13 +124,21 @@ export default function AnalyticsPage() {
 
   async function fetchAll() {
     try {
-      const [cs, an, di, te] = await Promise.allSettled([
-        getCityStats(), getAnomalies(), getDistrictAnalytics(), getTelemetryStatus(),
+      const [cs, an, di, te, da] = await Promise.allSettled([
+        getCityStats(), getAnomalies(), getDistrictAnalytics(), getTelemetryStatus(), getDailyPrediction()
       ])
       if (cs.status === 'fulfilled') setCityStats(cs.value)
       if (an.status === 'fulfilled') setAnomalies(an.value)
       if (di.status === 'fulfilled') setDistricts(di.value)
       if (te.status === 'fulfilled') setTelemetry(te.value)
+      if (da.status === 'fulfilled') {
+        const mappedData = da.value.map((d: any) => ({
+          t: String(d.hour).padStart(2, '0'),
+          congestion: Math.round(d.predicted_congestion_level),
+          speed: Math.round(d.predicted_speed_kmh)
+        }))
+        setDailyData(mappedData)
+      }
       setLastUpdate(new Date())
     } finally {
       setLoading(false)
@@ -416,7 +402,7 @@ export default function AnalyticsPage() {
               </div>
               {mounted && (
                 <ResponsiveContainer width="100%" height={240}>
-                  <AreaChart data={HOURLY_LOAD} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
+                  <AreaChart data={dailyData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
                     <defs>
                       <linearGradient id="gradCong" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#6366f1" stopOpacity={0.3} />
@@ -460,7 +446,8 @@ export default function AnalyticsPage() {
                 <span>
                   <strong>İndiki saat ({currentHour}:00):</strong>{' '}
                   {(() => {
-                    const cur = HOURLY_LOAD.find(h => parseInt(h.t) === currentHour) ?? HOURLY_LOAD[currentHour] ?? HOURLY_LOAD[0]
+                    const cur = dailyData.find((h: any) => parseInt(h.t) === currentHour) ?? dailyData[currentHour] ?? dailyData[0]
+                    if (!cur) return 'Məlumat yüklənir...'
                     return `Sürət ~${cur.speed} km/s · Tıxac ~${cur.congestion}%`
                   })()}
                 </span>

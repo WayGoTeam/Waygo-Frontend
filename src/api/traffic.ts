@@ -18,6 +18,9 @@ export const getTrafficMap = () => api.get<TrafficMapView>('/traffic-map')
 export const predictTraffic = (segmentId: string, dayOfWeek: DayOfWeek, hourOfDay: number) =>
   api.get<TrafficForecast>('/predict', { segmentId, dayOfWeek, hourOfDay })
 
+export const getDailyPrediction = (lat?: number, lon?: number) => 
+  api.get<any[]>('/predict/daily', { lat, lon })
+
 export const getAnomalies = () => api.get<TrafficAnomaly[]>('/anomalies')
 
 export const getIncidents = () => api.get<RoadIncident[]>('/incidents')
