@@ -281,6 +281,8 @@ export interface WalletBalance {
   ecoPointsBalance: number
   totalCo2SavedKg: number
   totalDistanceKm?: number
+  totalTripsCount?: number
+  currentStreak?: number
 }
 
 export interface VoucherResponse {
@@ -297,4 +299,33 @@ export interface AiRouteResponse {
   ecoPointsEarned?: number
   verraHash?: string
   co2SavedKg?: number
+}
+
+// ---- Gamification ----------------------------------------------------------
+
+export interface LeaderboardEntry {
+  rank: number
+  displayName: string
+  ecoPoints: number
+  totalTrips: number
+  co2Saved: number
+  isCurrentUser: boolean
+}
+
+export interface EcoTransactionItem {
+  id: string
+  amount: number
+  type: 'ROUTE' | 'REPORT' | 'VOUCHER_REDEEM' | 'STREAK_BONUS' | 'BADGE_BONUS'
+  description: string
+  createdAt: string
+}
+
+export interface BadgeItem {
+  code: string
+  earnedAt: string
+}
+
+export interface BadgesResponse {
+  earned: string[]
+  earnedAt: BadgeItem[]
 }
