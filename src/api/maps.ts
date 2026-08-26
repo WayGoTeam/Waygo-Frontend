@@ -15,9 +15,8 @@ export const getRoute = (
     fromLng,
     toLat,
     toLng,
-    // The backend only distinguishes fastest/shortest (TomTomMapsGateway#calculateDirections);
-    // "alternative" asks for the same fastest route and we surface routes[1] from the response.
-    mode: mode === 'shortest' ? 'shortest' : 'fastest',
+    // eco uses shorter costing on the backend side; here we always pass 'fastest'
+    mode: 'fastest',
   })
 
 /** 1x1 transparent PNG — used as the Leaflet errorTileUrl so a missing TomTom key fails silently. */

@@ -666,7 +666,7 @@ export const en: Strings = {
     trafficLight: 'Light traffic',
     trafficModerate: 'Moderate traffic',
     trafficHeavy: 'Heavy traffic',
-    routeLabel: { fastest: 'Fastest route', shortest: 'Shortest route', alternative: 'Alternative route' },
+    routeLabel: { fastest: 'Fastest route', eco: 'Eco route (network-based)' },
     reopen: 'Plan a route',
     forecastTitle: 'Traffic forecast',
     now: 'Now',
@@ -677,6 +677,8 @@ export const en: Strings = {
     pickBoth: 'Choose both points to see the route',
     error: 'Could not calculate the route. Please try again.',
     minutesShort: 'min',
+    startTrip: 'Start Trip',
+    endTrip: 'End Trip',
   },
   chat: {
     title: 'WayGo AI',
