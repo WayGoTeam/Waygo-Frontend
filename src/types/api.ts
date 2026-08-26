@@ -156,7 +156,7 @@ export interface SmartEtaResult {
   routeSummary: string
 }
 
-export type RouteMode = 'fastest' | 'shortest' | 'alternative'
+export type RouteMode = 'fastest' | 'eco'
 
 // ---- Transit ---------------------------------------------------------------
 
@@ -298,7 +298,9 @@ export interface AiRouteResponse {
   vehicleType?: string
   ecoPointsEarned?: number
   verraHash?: string
+  verraAuditHash?: string
   co2SavedKg?: number
+  ecoMode?: boolean
 }
 
 // ---- Gamification ----------------------------------------------------------

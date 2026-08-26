@@ -16,6 +16,7 @@ export const getAiRoute = (
     destLng: toLng,
     currentLat: fromLat,
     currentLng: fromLng,
+    mode,
   })
 
 export const finishTrip = (
@@ -26,11 +27,14 @@ export const finishTrip = (
   currentLng: number,
   distanceKm: number = 0,
   savedMinutes: number = 0,
+  ecoMode: boolean = false,
 ) =>
   api.post<{
     success: boolean
     ecoPointsEarned: number
     co2SavedKg: number
+    distanceKm: number
+    ecoMode: boolean
     message: string
   }>('/navigation/trip/finish', {
     tripId,
@@ -40,6 +44,7 @@ export const finishTrip = (
     currentLng,
     distanceKm,
     savedMinutes,
+    ecoMode,
   })
 
 export const sendGpsPing = (

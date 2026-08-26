@@ -1,4 +1,4 @@
-import { ArrowUpDown, Loader2, Route as RouteIcon, X, Leaf, ShieldCheck } from 'lucide-react'
+import { ArrowUpDown, Loader2, Route as RouteIcon, X, Leaf, ShieldCheck, Zap } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import { PlaceAutocomplete } from './PlaceAutocomplete'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
@@ -109,18 +109,37 @@ export function RoutePlannerPanel({
           />
         </div>
 
-        <div className="mt-3.5 grid grid-cols-3 gap-1.5 rounded-xl bg-slate-100 p-1">
-          {(['fastest', 'shortest', 'alternative'] as RouteMode[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setMode(m)}
-              className={`rounded-lg py-1.5 text-xs font-semibold transition ${
-                mode === m ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              {m === 'fastest' ? s.routePlanner.fastest : m === 'shortest' ? s.routePlanner.shortest : s.routePlanner.alternative}
-            </button>
-          ))}
+        <div className="mt-3.5 grid grid-cols-2 gap-2">
+          {/* Fastest mode */}
+          <button
+            onClick={() => setMode('fastest')}
+            className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition border ${
+              mode === 'fastest'
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                : 'bg-slate-50 text-slate-500 border-slate-200 hover:border-slate-400 hover:text-slate-700'
+            }`}
+          >
+            <Zap className="h-3.5 w-3.5" />
+            {s.routePlanner.fastest}
+          </button>
+
+          {/* Eco mode */}
+          <button
+            onClick={() => setMode('eco')}
+            className={`relative flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition border ${
+              mode === 'eco'
+                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:border-emerald-400'
+            }`}
+          >
+            <Leaf className="h-3.5 w-3.5" />
+            {s.routePlanner.eco ?? 'Eco'}
+            {mode !== 'eco' && (
+              <span className="absolute -top-1.5 -right-1 rounded-full bg-emerald-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">
+                +XP
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -149,7 +168,7 @@ export function RoutePlannerPanel({
             onClick={onStartTrip}
             className="w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700"
           >
-            Səfərə Başla
+            {s.routePlanner.startTrip ?? 'Səfərə Başla'}
           </button>
         )}
         {route && tripActive && (
@@ -157,7 +176,7 @@ export function RoutePlannerPanel({
             onClick={onEndTrip}
             className="w-full rounded-xl bg-red-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 animate-pulse"
           >
-            Səfəri Bitir
+            {s.routePlanner.endTrip ?? 'Səfəri Bitir'}
           </button>
         )}
         <button
@@ -200,9 +219,30 @@ function RouteSummary({ route, mode }: { route: RouteResult; mode: RouteMode }) 
     ? clamp((route.freeFlowTravelTimeSeconds / Math.max(1, route.travelTimeSeconds)) * 100, 8, 100)
     : 85
   const baseline = route.forecast?.[0]?.minutes ?? route.travelTimeSeconds / 60
+  const distKm = route.distanceMeters / 1000
+  // Estimate eco points: ~2pts/km base for eco mode
+  const estimatedEcoPoints = mode === 'eco' ? Math.round(distKm * 2) + 15 : 0
 
   return (
     <div className="mt-4 animate-fade-up">
+      {/* Eco route banner */}
+      {mode === 'eco' && (
+        <div className="mb-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Leaf className="h-4 w-4 text-emerald-600" />
+              <span className="text-sm font-bold text-emerald-800">Eco Marşrut</span>
+            </div>
+            <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-bold text-white">
+              ~+{estimatedEcoPoints} XP
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-emerald-700">
+            Tıxacsız, qısa yol • CO₂ qənaəti • Xal qazanırsınız
+          </p>
+        </div>
+      )}
+
       <div className="flex items-end justify-between">
         <div className="flex items-baseline gap-1.5">
           <span className="font-display text-3xl font-extrabold tabular-nums text-slate-900">
@@ -216,10 +256,10 @@ function RouteSummary({ route, mode }: { route: RouteResult; mode: RouteMode }) 
         {formatKm(route.distanceMeters)} {s.common.km} {s.routePlanner.distance}
       </p>
 
-      <p className="mt-2.5 text-[11px] font-medium text-slate-400">{s.routePlanner.routeLabel[mode]}</p>
+      <p className="mt-2.5 text-[11px] font-medium text-slate-400">{s.routePlanner.routeLabel[mode] ?? mode}</p>
       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
         <div
-          className="h-full rounded-full bg-brand-500 transition-all duration-700"
+          className={`h-full rounded-full transition-all duration-700 ${mode === 'eco' ? 'bg-emerald-500' : 'bg-brand-500'}`}
           style={{ width: `${efficiencyPct}%` }}
         />
       </div>

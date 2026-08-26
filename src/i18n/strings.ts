@@ -57,15 +57,14 @@ export interface Strings {
     destinationPlaceholder: string
     swap: string
     fastest: string
-    shortest: string
-    alternative: string
+    eco: string
     showOnMap: string
     clear: string
     distance: string
     trafficLight: string
     trafficModerate: string
     trafficHeavy: string
-    routeLabel: Record<'fastest' | 'shortest' | 'alternative', string>
+    routeLabel: Record<string, string>
     reopen: string
     forecastTitle: string
     now: string
@@ -76,6 +75,8 @@ export interface Strings {
     pickBoth: string
     error: string
     minutesShort: string
+    startTrip: string
+    endTrip: string
   }
   chat: {
     title: string
@@ -341,15 +342,14 @@ export const az: Strings = {
     destinationPlaceholder: 'Gediş yerini axtar...',
     swap: 'Yerini dəyiş',
     fastest: 'Sürətli',
-    shortest: 'Qısa',
-    alternative: 'Alternativ',
+    eco: 'Eco',
     showOnMap: 'Marşrutu Xəritədə Göstər',
     clear: 'Marşrutu Təmizlə',
     distance: 'məsafə',
     trafficLight: 'Yüngül trafik',
     trafficModerate: 'Orta trafik',
     trafficHeavy: 'Ağır trafik',
-    routeLabel: { fastest: 'Ən sürətli marşrut', shortest: 'Ən qısa marşrut', alternative: 'Alternativ marşrut' },
+    routeLabel: { fastest: 'Ən sürətli marşrut', eco: 'Eco marşrut (şəbəkə bazalı)' },
     reopen: 'Marşrut planla',
     forecastTitle: 'Trafik proqnozu',
     now: 'İndi',
@@ -360,6 +360,8 @@ export const az: Strings = {
     pickBoth: 'Marşrutu görmək üçün hər iki nöqtəni seçin',
     error: 'Marşrut hesablana bilmədi. Yenidən cəhd edin.',
     minutesShort: 'dəq',
+    startTrip: 'Səfərə Başla',
+    endTrip: 'Səfəri Bitir',
   },
   chat: {
     title: 'WayGo AI',
@@ -657,8 +659,7 @@ export const en: Strings = {
     destinationPlaceholder: 'Search destination...',
     swap: 'Swap',
     fastest: 'Fastest',
-    shortest: 'Shortest',
-    alternative: 'Alternative',
+    eco: 'Eco',
     showOnMap: 'Show Route on Map',
     clear: 'Clear Route',
     distance: 'distance',

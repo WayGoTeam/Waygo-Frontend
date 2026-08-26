@@ -23,6 +23,7 @@ export interface RouteResult {
   verraHash?: string
   co2SavedKg?: number
   tripId?: string
+  ecoMode?: boolean
 }
 
 export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
@@ -81,24 +82,17 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         const raw = await getAiRoute(o.lat, o.lng, d.lat, d.lng, m, user.vehicleType)
         if (id !== requestId.current) return // a newer request has since started — drop this one
         const valhallaData = raw.routeJson ? JSON.parse(raw.routeJson) : {}
-        if (m === 'alternative' && valhallaData.alternates && valhallaData.alternates.length > 0) {
-           trip = valhallaData.alternates[0].trip
-        } else {
-           trip = valhallaData.trip
-        }
+        // eco uses auto_shorter which may return alternates — pick first trip
+        trip = valhallaData.alternates?.[0]?.trip ?? valhallaData.trip
         ecoPointsEarned = raw.ecoPointsEarned
-        verraHash = raw.verraHash
+        verraHash = raw.verraAuditHash ?? raw.verraHash
         co2SavedKg = raw.co2SavedKg
         tripId = raw.tripId
       } else {
         const raw = await getRoute(o.lat, o.lng, d.lat, d.lng, m)
         if (id !== requestId.current) return
         const valhallaData = raw as any
-        if (m === 'alternative' && valhallaData.alternates && valhallaData.alternates.length > 0) {
-           trip = valhallaData.alternates[0].trip
-        } else {
-           trip = valhallaData.trip
-        }
+        trip = valhallaData.trip
       }
       
       if (!trip) {
@@ -142,6 +136,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         verraHash,
         co2SavedKg,
         tripId,
+        ecoMode: m === 'eco',
       })
     } catch {
       if (id !== requestId.current) return
