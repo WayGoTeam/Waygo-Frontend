@@ -82,8 +82,8 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         const raw = await getAiRoute(o.lat, o.lng, d.lat, d.lng, m, user.vehicleType)
         if (id !== requestId.current) return // a newer request has since started — drop this one
         const valhallaData = raw.routeJson ? JSON.parse(raw.routeJson) : {}
-        // eco uses auto_shorter which may return alternates — pick first trip
-        trip = valhallaData.alternates?.[0]?.trip ?? valhallaData.trip
+        // Always prefer the main Valhalla trip which properly respects avoid_polygons
+        trip = valhallaData.trip ?? valhallaData.alternates?.[0]?.trip
         ecoPointsEarned = raw.ecoPointsEarned
         verraHash = raw.verraAuditHash ?? raw.verraHash
         co2SavedKg = raw.co2SavedKg
