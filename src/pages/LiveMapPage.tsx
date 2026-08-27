@@ -188,8 +188,25 @@ export default function LiveMapPage() {
       watchIdRef.current = null
     }
     planner.setTripActive(false)
+
+    // Await fresh GPS location explicitly for testing/mocking
+    let finalLocation = currentLocation
+    try {
+      finalLocation = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          (err) => reject(err),
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        )
+      })
+      if (finalLocation) {
+        setCurrentLocation(finalLocation)
+      }
+    } catch (e) {
+      console.warn('GPS yenilənmədi, köhnə mövqe istifadə olunur.', e)
+    }
     
-    if (!planner.route?.tripId || !planner.destination || !currentLocation) {
+    if (!planner.route?.tripId || !planner.destination || !finalLocation) {
       setDialogInfo({ title: 'Xəta', content: 'Səfər məlumatları tam deyil (Trip data is incomplete).' })
       return
     }
@@ -202,8 +219,8 @@ export default function LiveMapPage() {
         planner.route.tripId,
         planner.destination.lat,
         planner.destination.lng,
-        currentLocation.lat,
-        currentLocation.lng,
+        finalLocation.lat,
+        finalLocation.lng,
         distanceKm,
         savedMinutes
       )
