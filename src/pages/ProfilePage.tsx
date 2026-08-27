@@ -357,31 +357,33 @@ export default function ProfilePage() {
 
             {/* Stats */}
             {!isAdmin && (
-              <div className="mt-8 grid grid-cols-3 gap-4 sm:gap-6">
-                <div className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-100/50">
-                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-24 w-24 rounded-full bg-brand-50/50 transition-transform duration-500 group-hover:scale-150" />
-                  <MapPin className="relative mb-3 h-6 w-6 text-brand-500 group-hover:scale-110 transition-transform duration-300" />
+              <div className="mt-8 grid grid-cols-3 gap-5">
+                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] border border-slate-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-100/50">
+                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-brand-50/50 transition-transform duration-500 group-hover:scale-150" />
+                  <MapPin className="relative mb-4 h-7 w-7 text-brand-500 group-hover:scale-110 transition-transform duration-300" />
                   <div className="relative">
-                    <p className="font-display text-3xl font-bold tracking-tight text-slate-900">{balance?.totalDistanceKm?.toLocaleString() ?? 0}</p>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mt-1">{t.profilePage.totalKm}</p>
+                    <p className="font-display text-4xl font-black tracking-tight text-slate-900">{balance?.totalDistanceKm?.toLocaleString() ?? 0}</p>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">{t.profilePage.totalKm}</p>
                   </div>
                 </div>
 
-                <div className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-green-100/50">
-                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-24 w-24 rounded-full bg-green-50/50 transition-transform duration-500 group-hover:scale-150" />
-                  <Leaf className="relative mb-3 h-6 w-6 text-green-500 group-hover:scale-110 transition-transform duration-300" />
+                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] border border-slate-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-green-100/50">
+                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-green-50/50 transition-transform duration-500 group-hover:scale-150" />
+                  <Leaf className="relative mb-4 h-7 w-7 text-green-500 group-hover:scale-110 transition-transform duration-300" />
                   <div className="relative">
-                    <p className="font-display text-3xl font-bold tracking-tight text-slate-900">{balance?.totalCo2SavedKg?.toLocaleString(undefined, { maximumFractionDigits: 1 }) ?? 0} <span className="text-xl text-slate-400 font-medium">kg</span></p>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mt-1">{t.profilePage.totalCo2}</p>
+                    <p className="font-display text-4xl font-black tracking-tight text-slate-900">{balance?.totalCo2SavedKg?.toLocaleString(undefined, { maximumFractionDigits: 1 }) ?? 0} <span className="text-xl text-slate-400 font-bold">kg</span></p>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">{t.profilePage.totalCo2}</p>
                   </div>
                 </div>
 
-                <div className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-100/50">
-                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-24 w-24 rounded-full bg-orange-50/50 transition-transform duration-500 group-hover:scale-150" />
-                  <Star className="relative mb-3 h-6 w-6 text-orange-500 group-hover:scale-110 transition-transform duration-300" fill="currentColor" />
+                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-brand-500 to-brand-700 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/30">
+                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-white/10 blur-2xl transition-transform duration-700 group-hover:scale-150" />
+                  <div className="relative mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                    <Star className="h-5 w-5 text-brand-50" fill="currentColor" />
+                  </div>
                   <div className="relative">
-                    <p className="font-display text-3xl font-bold tracking-tight text-slate-900">{balance?.ecoPointsBalance?.toLocaleString() ?? 0}</p>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mt-1">{t.profilePage.ecoPoints}</p>
+                    <p className="font-display text-4xl font-black tracking-tight text-white">{balance?.ecoPointsBalance?.toLocaleString() ?? 0}</p>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-brand-100">{t.profilePage.ecoPoints}</p>
                   </div>
                 </div>
               </div>

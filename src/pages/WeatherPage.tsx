@@ -42,7 +42,7 @@ export default function WeatherPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-200/80 bg-white shadow-sm overflow-hidden min-h-[400px]">
+        <div className="rounded-[32px] border border-slate-200/50 bg-white/50 backdrop-blur-sm shadow-xl shadow-slate-200/20 overflow-hidden min-h-[400px]">
           {weather.loading && !weather.data ? (
             <div className="flex h-64 flex-col items-center justify-center gap-3 text-slate-400">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-sky-500" />
@@ -53,7 +53,7 @@ export default function WeatherPage() {
               <ErrorState onRetry={weather.refetch} />
             </div>
           ) : weather.data ? (
-            <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x lg:grid-cols-4">
+            <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
               {weather.data
                 .sort((a, b) => b.trafficImpactPercent - a.trafficImpactPercent)
                 .map((w) => {
@@ -63,44 +63,46 @@ export default function WeatherPage() {
                   return (
                     <div
                       key={w.districtId}
-                      className={`relative flex flex-col p-6 transition-colors hover:bg-slate-50 bg-gradient-to-br ${grad}`}
+                      className={`group relative flex flex-col p-8 transition-all duration-300 hover:bg-slate-50 hover:shadow-2xl bg-gradient-to-br ${grad}`}
                     >
-                      <div className="flex items-start gap-3">
-                        <span className="text-3xl leading-none drop-shadow-sm">{weatherIcon(w.condition)}</span>
-                        <div className="min-w-0">
-                          <p className="truncate text-base font-bold text-slate-900">{w.districtName}</p>
-                          <p className="truncate text-sm text-slate-600 font-medium">{condLabel}</p>
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/60 shadow-sm backdrop-blur-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                          <span className="text-3xl leading-none drop-shadow-sm">{weatherIcon(w.condition)}</span>
+                        </div>
+                        <div className="min-w-0 pt-1">
+                          <p className="truncate font-display text-lg font-black text-slate-900">{w.districtName}</p>
+                          <p className="truncate text-sm font-semibold text-slate-500">{condLabel}</p>
                         </div>
                       </div>
 
-                      <div className="mt-6 grid grid-cols-3 gap-3 rounded-2xl bg-white/60 p-3 backdrop-blur-md shadow-sm border border-white/50">
+                      <div className="mt-8 grid grid-cols-3 gap-3 rounded-[24px] bg-white/60 p-4 backdrop-blur-md shadow-sm border border-white/80 transition-all group-hover:bg-white/80">
                         <div className="text-center">
-                          <Thermometer className="mx-auto h-4 w-4 text-orange-500" />
-                          <p className="mt-1 text-base font-bold text-slate-900">{Math.round(w.temperatureC)}°</p>
+                          <Thermometer className="mx-auto h-5 w-5 text-orange-500" />
+                          <p className="mt-2 font-display text-base font-bold text-slate-900">{Math.round(w.temperatureC)}°</p>
                         </div>
                         <div className="text-center">
-                          <Wind className="mx-auto h-4 w-4 text-blue-500" />
-                          <p className="mt-1 text-base font-bold text-slate-900">{Math.round(w.windSpeedKmh)}</p>
+                          <Wind className="mx-auto h-5 w-5 text-blue-500" />
+                          <p className="mt-2 font-display text-base font-bold text-slate-900">{Math.round(w.windSpeedKmh)}</p>
                         </div>
                         <div className="text-center">
-                          <Droplets className="mx-auto h-4 w-4 text-sky-500" />
-                          <p className="mt-1 text-base font-bold text-slate-900">{w.precipitationMm.toFixed(1)}</p>
+                          <Droplets className="mx-auto h-5 w-5 text-sky-500" />
+                          <p className="mt-2 font-display text-base font-bold text-slate-900">{w.precipitationMm.toFixed(1)}</p>
                         </div>
                       </div>
 
-                      <div className="mt-5 rounded-2xl bg-white/60 p-3 backdrop-blur-md shadow-sm border border-white/50">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{s.weather.trafficImpact}</span>
-                          <span className={`text-base font-bold ${w.trafficImpactPercent > 20 ? 'text-red-600' : w.trafficImpactPercent > 10 ? 'text-orange-600' : 'text-emerald-600'}`}>
+                      <div className="mt-5 rounded-[24px] bg-white/60 p-4 backdrop-blur-md shadow-sm border border-white/80 transition-all group-hover:bg-white/80">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">{s.weather.trafficImpact}</span>
+                          <span className={`text-base font-black ${w.trafficImpactPercent > 20 ? 'text-red-500' : w.trafficImpactPercent > 10 ? 'text-orange-500' : 'text-emerald-500'}`}>
                             +{w.trafficImpactPercent}%
                           </span>
                         </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200/50">
+                        <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200/50 shadow-inner">
                           <div
-                            className={`h-full rounded-full transition-all duration-700 ${
-                              w.trafficImpactPercent > 20 ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' :
-                              w.trafficImpactPercent > 10 ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]' :
-                              'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
+                            className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                              w.trafficImpactPercent > 20 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.6)]' :
+                              w.trafficImpactPercent > 10 ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.6)]' :
+                              'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]'
                             }`}
                             style={{ width: `${Math.min(100, w.trafficImpactPercent * 3)}%` }}
                           />

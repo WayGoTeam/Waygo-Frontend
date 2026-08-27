@@ -133,38 +133,54 @@ export default function WalletPage() {
         )}
 
         {/* ── 1. HERO STATS (3 cards) ──────────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-5">
           {/* XP Balance */}
-          <div className="relative col-span-3 overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-7 text-white shadow-xl sm:col-span-1">
-            <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full bg-white/10 blur-3xl" />
+          <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-brand-500/30 sm:col-span-1">
+            <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
             <div className="relative">
-              <div className="flex items-center gap-2 text-brand-200">
-                <Leaf className="h-4 w-4" />
-                <span className="text-xs font-semibold uppercase tracking-wider">Eco XP</span>
+              <div className="flex items-center gap-2.5 text-brand-100">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                  <Leaf className="h-4 w-4" />
+                </div>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-brand-50">Eco XP</span>
               </div>
-              <p className="mt-3 font-display text-5xl font-bold tracking-tight">{pts.toLocaleString()}</p>
-              <p className="mt-1 text-sm text-brand-200">xal</p>
+              <p className="mt-5 font-display text-5xl font-black tracking-tight">{pts.toLocaleString()}</p>
+              <p className="mt-1 text-sm font-semibold text-brand-200">ümumi xal</p>
             </div>
           </div>
 
           {/* Streak */}
-          <div className="col-span-3 flex flex-col justify-between rounded-3xl bg-gradient-to-br from-orange-500 to-red-500 p-7 text-white shadow-md sm:col-span-1">
-            <div className="flex items-center gap-2 text-orange-100">
-              <Flame className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider">Ardıcıl Gün</span>
+          <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-orange-400 to-red-500 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-orange-500/30 sm:col-span-1">
+            <div className="absolute -right-8 -bottom-8 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
+            <div className="relative flex h-full flex-col justify-between">
+              <div className="flex items-center gap-2.5 text-orange-100">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                  <Flame className="h-4 w-4" />
+                </div>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-orange-50">Ardıcıl Gün</span>
+              </div>
+              <div>
+                <p className="mt-5 font-display text-5xl font-black">{streak}</p>
+                <p className="mt-1 text-sm font-semibold text-orange-100">gün seriyası</p>
+              </div>
             </div>
-            <p className="mt-3 font-display text-5xl font-bold">{streak}</p>
-            <p className="text-sm text-orange-100">gün</p>
           </div>
 
           {/* CO₂ */}
-          <div className="col-span-3 flex flex-col justify-between rounded-3xl bg-gradient-to-br from-teal-500 to-emerald-600 p-7 text-white shadow-md sm:col-span-1">
-            <div className="flex items-center gap-2 text-teal-100">
-              <Shield className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider">CO₂ Qənaəti</span>
+          <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-400 to-teal-600 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-emerald-500/30 sm:col-span-1">
+            <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
+            <div className="relative flex h-full flex-col justify-between">
+              <div className="flex items-center gap-2.5 text-teal-100">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                  <Shield className="h-4 w-4" />
+                </div>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-teal-50">CO₂ Qənaəti</span>
+              </div>
+              <div>
+                <p className="mt-5 font-display text-5xl font-black">{Number(co2).toFixed(1)}</p>
+                <p className="mt-1 text-sm font-semibold text-teal-100">kiloqram</p>
+              </div>
             </div>
-            <p className="mt-3 font-display text-5xl font-bold">{Number(co2).toFixed(1)}</p>
-            <p className="text-sm text-teal-100">kq</p>
           </div>
         </div>
 
