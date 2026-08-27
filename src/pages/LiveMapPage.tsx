@@ -206,17 +206,22 @@ export default function LiveMapPage() {
       console.warn('GPS yenilənmədi, köhnə mövqe istifadə olunur.', e)
     }
     
-    if (!planner.route?.tripId || !planner.destination || !finalLocation) {
+    if (!planner.destination || !finalLocation) {
       setDialogInfo({ title: 'Xəta', content: 'Səfər məlumatları tam deyil (Trip data is incomplete).' })
       return
     }
     
+    if (!user) {
+      setDialogInfo({ title: 'Diqqət', content: 'Eco-Points qazanmaq üçün sistemə daxil olmalısınız!' })
+      return
+    }
+    
     try {
-      const distanceKm = planner.route.distanceMeters / 1000
-      const savedMinutes = (planner.route.travelTimeSeconds / 60) * 0.2 // Mock 20% time savings for now
+      const distanceKm = planner.route?.distanceMeters ? planner.route.distanceMeters / 1000 : 0
+      const savedMinutes = planner.route?.travelTimeSeconds ? (planner.route.travelTimeSeconds / 60) * 0.2 : 0
       
       const res = await finishTrip(
-        planner.route.tripId,
+        planner.route?.tripId || 'anonymous-trip',
         planner.destination.lat,
         planner.destination.lng,
         finalLocation.lat,
