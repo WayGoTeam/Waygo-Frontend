@@ -251,6 +251,18 @@ export interface Strings {
     myVouchers: string
     fuelCard: string
     issuedAt: string
+    ecoXpTotal: string
+    streakDays: string
+    co2SavedKg: string
+    currentRank: string
+    maxRank: string
+    rankLeft: string
+    totalRoutes: string
+    totalDistance: string
+    longestStreak: string
+    badgeCount: string
+    achievements: string
+    badgesEarned: string
   }
   profilePage: {
     loggedOutTitle: string
@@ -568,6 +580,18 @@ export const az: Strings = {
     myVouchers: 'Aktiv Vaoçerlərim',
     fuelCard: 'SOCAR Yanacaq Kartı',
     issuedAt: 'Yaradıldı',
+    ecoXpTotal: 'ümumi xal',
+    streakDays: 'gün seriyası',
+    co2SavedKg: 'kiloqram',
+    currentRank: 'Cari Rütbə',
+    maxRank: 'Maksimum Rütbə 🏆',
+    rankLeft: 'Növbəti rütbəyə {0} XP qalır',
+    totalRoutes: 'Ümumi Marşrut',
+    totalDistance: 'Ümumi Məsafə',
+    longestStreak: 'Ən Uzun Seriya',
+    badgeCount: 'Badge Sayı',
+    achievements: 'Nailiyyətlər',
+    badgesEarned: '{0}/{1} badge qazanılmış',
   },
   profilePage: {
     loggedOutTitle: 'Profilə baxmaq üçün giriş etməlisiniz',
@@ -884,7 +908,19 @@ export const en: Strings = {
     generateVoucher: 'Generate Voucher',
     myVouchers: 'My Active Vouchers',
     fuelCard: 'SOCAR Fuel Card',
-    issuedAt: 'Issued at',
+    issuedAt: 'Issued',
+    ecoXpTotal: 'total xp',
+    streakDays: 'day streak',
+    co2SavedKg: 'kilograms',
+    currentRank: 'Current Rank',
+    maxRank: 'Max Rank 🏆',
+    rankLeft: '{0} XP left to next rank',
+    totalRoutes: 'Total Routes',
+    totalDistance: 'Total Distance',
+    longestStreak: 'Longest Streak',
+    badgeCount: 'Badge Count',
+    achievements: 'Achievements',
+    badgesEarned: '{0}/{1} badges earned',
   },
   profilePage: {
     loggedOutTitle: 'Please log in to view your profile',

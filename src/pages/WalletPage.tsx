@@ -145,7 +145,7 @@ export default function WalletPage() {
                 <span className="text-[11px] font-bold uppercase tracking-widest text-brand-50">Eco XP</span>
               </div>
               <p className="mt-5 font-display text-5xl font-black tracking-tight">{pts.toLocaleString()}</p>
-              <p className="mt-1 text-sm font-semibold text-brand-200">ümumi xal</p>
+              <p className="mt-1 text-sm font-semibold text-brand-200">{t.walletPage.ecoXpTotal}</p>
             </div>
           </div>
 
@@ -157,11 +157,11 @@ export default function WalletPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                   <Flame className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-orange-50">Ardıcıl Gün</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-orange-50">{t.walletPage.streakDays.toUpperCase()}</span>
               </div>
               <div>
                 <p className="mt-5 font-display text-5xl font-black">{streak}</p>
-                <p className="mt-1 text-sm font-semibold text-orange-100">gün seriyası</p>
+                <p className="mt-1 text-sm font-semibold text-orange-100">{t.walletPage.streakDays}</p>
               </div>
             </div>
           </div>
@@ -174,11 +174,11 @@ export default function WalletPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                   <Shield className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-teal-50">CO₂ Qənaəti</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-teal-50">{t.walletPage.totalCo2.toUpperCase()}</span>
               </div>
               <div>
                 <p className="mt-5 font-display text-5xl font-black">{Number(co2).toFixed(1)}</p>
-                <p className="mt-1 text-sm font-semibold text-teal-100">kiloqram</p>
+                <p className="mt-1 text-sm font-semibold text-teal-100">{t.walletPage.co2SavedKg}</p>
               </div>
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function WalletPage() {
         <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Cari Rütbə</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t.walletPage.currentRank}</p>
               <p className="mt-1 font-display text-3xl font-bold" style={{ color: rank.color }}>
                 {rank.label}
               </p>
@@ -208,7 +208,7 @@ export default function WalletPage() {
           <div className="mt-6">
             <div className="mb-2 flex justify-between text-xs text-slate-500">
               <span>{pts.toLocaleString()} XP</span>
-              <span>{rank.next === Infinity ? 'Maksimum Rütbə 🏆' : `${rank.next.toLocaleString()} XP`}</span>
+              <span>{rank.next === Infinity ? t.walletPage.maxRank : `${rank.next.toLocaleString()} XP`}</span>
             </div>
             <div className="h-3 overflow-hidden rounded-full bg-slate-100">
               <div
@@ -218,19 +218,19 @@ export default function WalletPage() {
             </div>
             {rank.next !== Infinity && (
               <p className="mt-2 text-xs text-slate-400">
-                Növbəti rütbəyə {(rank.next - pts).toLocaleString()} XP qalır
+                {t.walletPage.rankLeft.replace('{0}', (rank.next - pts).toLocaleString())}
               </p>
             )}
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-5 sm:grid-cols-4">
             {[
-              { label: 'Ümumi Marşrut', value: trips, unit: 'gediş' },
-              { label: 'Ümumi Məsafə', value: `${Number(balance?.totalDistanceKm ?? 0).toFixed(0)}`, unit: 'km' },
-              { label: 'Ən Uzun Seriya', value: streak, unit: 'gün' },
-              { label: 'Badge Sayı', value: earnedBadges.length, unit: 'nailiyyət' },
-            ].map(s => (
-              <div key={s.label} className="text-center">
+              { label: t.walletPage.totalRoutes, value: trips, unit: '' },
+              { label: t.walletPage.totalDistance, value: `${Number(balance?.totalDistanceKm ?? 0).toFixed(0)}`, unit: t.common.km },
+              { label: t.walletPage.longestStreak, value: streak, unit: '' },
+              { label: t.walletPage.badgeCount, value: earnedBadges.length, unit: '' },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
                 <p className="font-display text-2xl font-bold text-slate-900">{s.value}</p>
                 <p className="text-xs text-slate-400">{s.unit}</p>
                 <p className="text-[10px] text-slate-300">{s.label}</p>
@@ -241,9 +241,9 @@ export default function WalletPage() {
 
         {/* ── 3. BADGES ───────────────────────────────────────────────────── */}
         <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
-          <h2 className="font-display text-xl font-bold text-slate-900">Nailiyyətlər</h2>
+          <h2 className="font-display text-xl font-bold text-slate-900">{t.walletPage.achievements}</h2>
           <p className="mt-1 text-sm text-slate-500">
-            {earnedBadges.length}/{ALL_BADGES.length} badge qazanılmış
+            {t.walletPage.badgesEarned.replace('{0}', earnedBadges.length.toString()).replace('{1}', ALL_BADGES.length.toString())}
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
