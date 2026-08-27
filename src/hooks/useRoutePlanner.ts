@@ -82,8 +82,21 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         const raw = await getAiRoute(o.lat, o.lng, d.lat, d.lng, m, user.vehicleType)
         if (id !== requestId.current) return // a newer request has since started — drop this one
         const valhallaData = raw.routeJson ? JSON.parse(raw.routeJson) : {}
-        // Always prefer the main Valhalla trip which properly respects avoid_polygons
-        trip = valhallaData.trip ?? valhallaData.alternates?.[0]?.trip
+
+        // For eco mode: the main trip already has avoid_polygons applied (traffic-free route).
+        // For fastest mode: use main trip (direct route). Alternates are secondary options.
+        if (m === 'eco') {
+          // Eco: use the main trip (which was calculated with avoid_polygons)
+          trip = valhallaData.trip
+          // If Valhalla returned alternates, pick the one that differs most (longer distance = truly avoids traffic)
+          if (!trip && valhallaData.alternates?.length > 0) {
+            trip = valhallaData.alternates[0]?.trip
+          }
+        } else {
+          // Fastest: use main trip (direct/fastest route)
+          trip = valhallaData.trip ?? valhallaData.alternates?.[0]?.trip
+        }
+
         ecoPointsEarned = raw.ecoPointsEarned
         verraHash = raw.verraAuditHash ?? raw.verraHash
         co2SavedKg = raw.co2SavedKg

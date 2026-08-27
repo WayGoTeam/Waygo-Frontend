@@ -11,7 +11,7 @@ import { RoutePlannerPanel } from '@/components/map/RoutePlannerPanel'
 import { LayerControlPanel } from '@/components/map/LayerControlPanel'
 import { MapZoomControls } from '@/components/map/MapZoomControls'
 import { MapLegend } from '@/components/map/MapLegend'
-
+import { Modal } from '@/components/common/Modal'
 import { ReportIncidentPanel } from '@/components/map/ReportIncidentPanel'
 import { AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
@@ -138,9 +138,11 @@ export default function LiveMapPage() {
     }
   }
 
+  const [dialogInfo, setDialogInfo] = useState<{ title: string; content: React.ReactNode; isConfirm?: boolean; onConfirm?: () => void } | null>(null)
+
   function handleStartTrip() {
     if (!navigator.geolocation) {
-      alert('Brauzeriniz GPS dəstəkləmir.')
+      setDialogInfo({ title: 'Diqqət', content: 'Brauzeriniz GPS dəstəkləmir.' })
       return
     }
     planner.setTripActive(true)
@@ -169,7 +171,18 @@ export default function LiveMapPage() {
     watchIdRef.current = id
   }
 
+  function handleEndTripClick() {
+    setDialogInfo({
+      title: 'Səfəri bitir',
+      content: 'Səfəri bitirmək istədiyinizə əminsiniz?',
+      isConfirm: true,
+      onConfirm: handleEndTrip
+    })
+  }
+
   async function handleEndTrip() {
+    setDialogInfo(null)
+    
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current)
       watchIdRef.current = null
@@ -177,7 +190,7 @@ export default function LiveMapPage() {
     planner.setTripActive(false)
     
     if (!planner.route?.tripId || !planner.destination || !currentLocation) {
-      alert('Səfər məlumatları tam deyil.')
+      setDialogInfo({ title: 'Xəta', content: 'Səfər məlumatları tam deyil (Trip data is incomplete).' })
       return
     }
     
@@ -197,14 +210,14 @@ export default function LiveMapPage() {
       
       if (res.success) {
         if (res.ecoPointsEarned > 0) {
-          alert(res.message + `\n+${res.ecoPointsEarned} Eco-Points!`)
+          setDialogInfo({ title: 'Uğurlu', content: res.message + `\n+${res.ecoPointsEarned} Eco-Points!` })
         } else {
-          alert(res.message)
+          setDialogInfo({ title: 'Uğurlu', content: res.message })
         }
       }
     } catch (e: any) {
       const msg = e.message || 'Xəta baş verdi.'
-      alert(msg)
+      setDialogInfo({ title: 'Xəta', content: msg })
     }
   }
 
@@ -277,7 +290,7 @@ export default function LiveMapPage() {
               onShowOnMap={showOnMap}
               tripActive={planner.tripActive}
               onStartTrip={handleStartTrip}
-              onEndTrip={handleEndTrip}
+              onEndTrip={handleEndTripClick}
               onPickOrigin={() => {
                 setRoutePickingMode('origin')
                 setPanelVisible(false)
@@ -329,6 +342,39 @@ export default function LiveMapPage() {
 
         </div>
       </div>
+
+      {dialogInfo && (
+        <Modal
+          title={dialogInfo.title}
+          onClose={() => setDialogInfo(null)}
+        >
+          <div className="text-sm text-slate-600 mb-6 whitespace-pre-line">
+            {dialogInfo.content}
+          </div>
+          <div className="flex justify-end gap-3">
+            {dialogInfo.isConfirm && (
+              <button
+                onClick={() => setDialogInfo(null)}
+                className="rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              >
+                {s.common.cancel || 'Ləğv et'}
+              </button>
+            )}
+            <button
+              onClick={() => {
+                if (dialogInfo.onConfirm) {
+                  dialogInfo.onConfirm()
+                } else {
+                  setDialogInfo(null)
+                }
+              }}
+              className="rounded-full bg-brand-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-brand-700"
+            >
+              OK
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

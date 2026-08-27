@@ -15,8 +15,7 @@ export const getRoute = (
     fromLng,
     toLat,
     toLng,
-    // eco uses shorter costing on the backend side; here we always pass 'fastest'
-    mode: 'fastest',
+    mode,
   })
 
 /** 1x1 transparent PNG — used as the Leaflet errorTileUrl so a missing TomTom key fails silently. */
