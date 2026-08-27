@@ -13,6 +13,7 @@ import { MapZoomControls } from '@/components/map/MapZoomControls'
 import { MapLegend } from '@/components/map/MapLegend'
 import { Modal } from '@/components/common/Modal'
 import { ReportIncidentPanel } from '@/components/map/ReportIncidentPanel'
+import { TripSummaryModal } from '@/components/map/TripSummaryModal'
 import { AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/i18n/LocaleContext'
@@ -47,6 +48,9 @@ export default function LiveMapPage() {
   const { data: mapConfig } = useMapConfig()
   const segments = trafficMap.data?.segments ?? []
   const planner = useRoutePlanner(segments)
+
+  const [tripSummary, setTripSummary] = useState<{ecoPoints: number, co2SavedKg: number, distanceKm: number, ecoMode: boolean} | null>(null)
+
 
   useEffect(() => {
     const state = location.state as FocusState | null
@@ -262,11 +266,12 @@ export default function LiveMapPage() {
       )
       
       if (res.success) {
-        if (res.ecoPointsEarned > 0) {
-          setDialogInfo({ title: 'Uğurlu', content: res.message + `\n+${res.ecoPointsEarned} Eco-Points!` })
-        } else {
-          setDialogInfo({ title: 'Uğurlu', content: res.message })
-        }
+        setTripSummary({
+          ecoPoints: res.ecoPointsEarned || 0,
+          co2SavedKg: res.co2SavedKg || 0,
+          distanceKm: res.distanceKm || distanceKm,
+          ecoMode: res.ecoMode || planner.mode === 'eco'
+        })
       }
     } catch (e: any) {
       const msg = e.message || 'Xəta baş verdi.'
@@ -428,6 +433,15 @@ export default function LiveMapPage() {
           </div>
         </Modal>
       )}
+
+      <TripSummaryModal
+        visible={!!tripSummary}
+        ecoPoints={tripSummary?.ecoPoints || 0}
+        co2SavedKg={tripSummary?.co2SavedKg || 0}
+        distanceKm={tripSummary?.distanceKm || 0}
+        ecoMode={tripSummary?.ecoMode || false}
+        onClose={() => setTripSummary(null)}
+      />
     </div>
   )
 }
