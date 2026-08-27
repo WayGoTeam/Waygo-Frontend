@@ -145,31 +145,62 @@ export default function LiveMapPage() {
       setDialogInfo({ title: 'Diqqət', content: 'Brauzeriniz GPS dəstəkləmir.' })
       return
     }
-    planner.setTripActive(true)
-    const id = navigator.geolocation.watchPosition(
-      (pos) => {
-        const lat = pos.coords.latitude
-        const lng = pos.coords.longitude
-        const speedMs = pos.coords.speed || 0
-        const speedKmh = speedMs * 3.6
-        
-        setCurrentLocation({ lat, lng })
-        
-        // GpsPing telemetry: yalniz her 10 saniyeden bir gonder
-        const now = Date.now()
-        if (now - lastPingTimeRef.current > 10000) {
-          lastPingTimeRef.current = now
-          const deviceId = user?.username ?? 'anonymous-device'
-          sendGpsPing(deviceId, lat, lng, new Date().toISOString(), speedKmh).catch(() => {})
+
+    const startGps = () => {
+      planner.setTripActive(true)
+      const id = navigator.geolocation.watchPosition(
+        (pos) => {
+          const lat = pos.coords.latitude
+          const lng = pos.coords.longitude
+          const speedMs = pos.coords.speed || 0
+          const speedKmh = speedMs * 3.6
+          
+          setCurrentLocation({ lat, lng })
+          
+          const now = Date.now()
+          if (now - lastPingTimeRef.current > 10000) {
+            lastPingTimeRef.current = now
+            const deviceId = user?.username ?? 'anonymous-device'
+            sendGpsPing(deviceId, lat, lng, new Date().toISOString(), speedKmh).catch(() => {})
+          }
+        },
+        (err) => {
+          console.error('GPS error:', err)
+        },
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
+      )
+      watchIdRef.current = id
+    }
+
+    if (!user) {
+      setDialogInfo({
+        title: 'Qonaq Rejimi',
+        content: 'Hesaba daxil olmadan səfərə başlayırsınız.\nSəfər sonu heç bir xal (Eco-Points) qazanmayacaqsınız. Yenə də davam etmək istəyirsiniz?',
+        isConfirm: true,
+        onConfirm: () => {
+          setDialogInfo(null)
+          startGps()
         }
-      },
-      (err) => {
-        console.error('GPS error:', err)
-      },
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
-    )
-    watchIdRef.current = id
+      })
+      return
+    }
+
+    if (planner.route?.inCooldown) {
+      setDialogInfo({
+        title: 'Cooldown Aktivdir',
+        content: 'Siz artıq yaxın zamanda xal qazanmısınız.\nNövbəti 5 dəqiqə ərzində bitən səfərlər üçün xal verilməyəcək. Yenə də davam etmək istəyirsiniz?',
+        isConfirm: true,
+        onConfirm: () => {
+          setDialogInfo(null)
+          startGps()
+        }
+      })
+      return
+    }
+
+    startGps()
   }
+
 
   function handleEndTripClick() {
     setDialogInfo({

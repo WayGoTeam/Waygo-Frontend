@@ -301,6 +301,7 @@ export interface AiRouteResponse {
   verraAuditHash?: string
   co2SavedKg?: number
   ecoMode?: boolean
+  inCooldown?: boolean
 }
 
 // ---- Gamification ----------------------------------------------------------

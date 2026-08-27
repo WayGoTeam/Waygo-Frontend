@@ -24,6 +24,7 @@ export interface RouteResult {
   co2SavedKg?: number
   tripId?: string
   ecoMode?: boolean
+  inCooldown?: boolean
 }
 
 export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
@@ -77,6 +78,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
       let verraHash: string | undefined
       let co2SavedKg: number | undefined
       let tripId: string | undefined
+      let inCooldown: boolean | undefined
 
       if (user) {
         const raw = await getAiRoute(o.lat, o.lng, d.lat, d.lng, m, user.vehicleType)
@@ -101,6 +103,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         verraHash = raw.verraAuditHash ?? raw.verraHash
         co2SavedKg = raw.co2SavedKg
         tripId = raw.tripId
+        inCooldown = raw.inCooldown
       } else {
         const raw = await getRoute(o.lat, o.lng, d.lat, d.lng, m)
         if (id !== requestId.current) return
@@ -150,6 +153,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         co2SavedKg,
         tripId,
         ecoMode: m === 'eco',
+        inCooldown,
       })
     } catch {
       if (id !== requestId.current) return
