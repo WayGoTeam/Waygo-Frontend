@@ -358,21 +358,25 @@ export default function ProfilePage() {
             {/* Stats */}
             {!isAdmin && (
               <div className="mt-8 grid grid-cols-3 gap-5">
-                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] border border-slate-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-100/50">
-                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-brand-50/50 transition-transform duration-500 group-hover:scale-150" />
-                  <MapPin className="relative mb-4 h-7 w-7 text-brand-500 group-hover:scale-110 transition-transform duration-300" />
+                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-blue-500 to-blue-700 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/30">
+                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-white/10 blur-2xl transition-transform duration-500 group-hover:scale-150" />
+                  <div className="relative mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                    <MapPin className="h-5 w-5 text-blue-50" />
+                  </div>
                   <div className="relative">
-                    <p className="font-display text-4xl font-black tracking-tight text-slate-900">{balance?.totalDistanceKm?.toLocaleString() ?? 0}</p>
-                    <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">{t.profilePage.totalKm}</p>
+                    <p className="font-display text-4xl font-black tracking-tight text-white">{balance?.totalDistanceKm?.toLocaleString() ?? 0}</p>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-blue-100">{t.profilePage.totalKm}</p>
                   </div>
                 </div>
 
-                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] border border-slate-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-green-100/50">
-                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-green-50/50 transition-transform duration-500 group-hover:scale-150" />
-                  <Leaf className="relative mb-4 h-7 w-7 text-green-500 group-hover:scale-110 transition-transform duration-300" />
+                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-400 to-teal-600 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/30">
+                  <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-white/10 blur-2xl transition-transform duration-500 group-hover:scale-150" />
+                  <div className="relative mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                    <Leaf className="h-5 w-5 text-emerald-50" />
+                  </div>
                   <div className="relative">
-                    <p className="font-display text-4xl font-black tracking-tight text-slate-900">{balance?.totalCo2SavedKg?.toLocaleString(undefined, { maximumFractionDigits: 1 }) ?? 0} <span className="text-xl text-slate-400 font-bold">kg</span></p>
-                    <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">{t.profilePage.totalCo2}</p>
+                    <p className="font-display text-4xl font-black tracking-tight text-white">{balance?.totalCo2SavedKg?.toLocaleString(undefined, { maximumFractionDigits: 1 }) ?? 0} <span className="text-xl text-emerald-100/70 font-bold">kg</span></p>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-emerald-100">{t.profilePage.totalCo2}</p>
                   </div>
                 </div>
 
