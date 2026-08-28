@@ -308,11 +308,10 @@ export interface AiRouteResponse {
 
 export interface LeaderboardEntry {
   rank: number
-  displayName: string
+  name: string
   ecoPoints: number
-  totalTrips: number
-  co2Saved: number
-  isCurrentUser: boolean
+  totalDistanceKm: number
+  co2SavedKg: number
 }
 
 export interface EcoTransactionItem {
