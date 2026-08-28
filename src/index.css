@@ -35,11 +35,19 @@
   }
 
   body {
-    @apply bg-slate-100 text-slate-900 antialiased;
+    @apply bg-slate-100 text-slate-900 antialiased transition-colors duration-300;
+  }
+  
+  html.dark body {
+    @apply bg-slate-950 text-slate-100;
   }
 
   ::selection {
     @apply bg-brand-200 text-brand-900;
+  }
+  
+  html.dark ::selection {
+    @apply bg-brand-800 text-brand-100;
   }
 
   /* Slim, unobtrusive scrollbars for panels */
@@ -86,12 +94,33 @@
 .leaflet-popup-content-wrapper {
   border-radius: 12px;
   box-shadow: var(--shadow-float);
+  transition: background-color 0.3s, color 0.3s;
 }
 .leaflet-popup-content {
   margin: 10px 12px;
   font-size: 13px;
   line-height: 1.4;
 }
+
+html.dark .leaflet-layer,
+html.dark .leaflet-control-zoom-in,
+html.dark .leaflet-control-zoom-out,
+html.dark .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+html.dark .leaflet-container {
+  background: #0f172a;
+}
+
+html.dark .leaflet-popup-content-wrapper {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+html.dark .leaflet-popup-tip {
+  background: #1e293b;
+}
+
 .leaflet-marker-icon.waygo-pulse-icon {
   filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.25));
 }

@@ -12,6 +12,15 @@ export interface ForecastPoint {
   minutes: number
 }
 
+export interface Maneuver {
+  type: number
+  instruction: string
+  length: number // in km
+  time: number // in seconds
+  begin_shape_index: number
+  end_shape_index: number
+}
+
 export interface RouteResult {
   points: Coordinate[]
   distanceMeters: number
@@ -25,6 +34,7 @@ export interface RouteResult {
   tripId?: string
   ecoMode?: boolean
   inCooldown?: boolean
+  maneuvers?: Maneuver[]
 }
 
 export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
@@ -154,6 +164,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         tripId,
         ecoMode: m === 'eco',
         inCooldown,
+        maneuvers: trip.legs[0]?.maneuvers ?? [],
       })
     } catch {
       if (id !== requestId.current) return

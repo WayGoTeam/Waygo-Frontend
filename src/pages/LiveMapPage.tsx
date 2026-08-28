@@ -14,11 +14,14 @@ import { MapLegend } from '@/components/map/MapLegend'
 import { Modal } from '@/components/common/Modal'
 import { ReportIncidentPanel } from '@/components/map/ReportIncidentPanel'
 import { TripSummaryModal } from '@/components/map/TripSummaryModal'
+import { TurnByTurnPanel } from '@/components/map/TurnByTurnPanel'
 import { AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/i18n/LocaleContext'
 import { submitReport } from '@/api/reports'
+import { haversineKm } from '@/lib/geo'
 import type { ReportType } from '@/types/api'
+import type { Maneuver } from '@/hooks/useRoutePlanner'
 
 interface FocusState {
   focus?: { lat: number; lng: number; label?: string }
@@ -40,6 +43,8 @@ export default function LiveMapPage() {
   const { user } = useAuth()
   
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null)
+  const [activeManeuver, setActiveManeuver] = useState<Maneuver | null>(null)
+  const [distanceToManeuver, setDistanceToManeuver] = useState<number | null>(null)
   const watchIdRef = useRef<number | null>(null)
   const lastPingTimeRef = useRef<number>(0)
 
@@ -59,6 +64,48 @@ export default function LiveMapPage() {
       setPanelVisible(false)
     }
   }, [location.state])
+
+  // Turn-by-Turn logic
+  useEffect(() => {
+    if (!planner.tripActive || !planner.route || !currentLocation || !planner.route.maneuvers) {
+      setActiveManeuver(null)
+      return
+    }
+
+    const { points, maneuvers } = planner.route
+    if (points.length === 0 || maneuvers.length === 0) return
+
+    let closestIndex = 0
+    let minDistance = Infinity
+
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i]
+      const dist = haversineKm({ latitude: p.latitude, longitude: p.longitude }, { latitude: currentLocation.lat, longitude: currentLocation.lng })
+      if (dist < minDistance) {
+        minDistance = dist
+        closestIndex = i
+      }
+    }
+
+    const maneuverIndex = maneuvers.findIndex(m => closestIndex >= m.begin_shape_index && closestIndex <= m.end_shape_index)
+    
+    if (maneuverIndex !== -1) {
+      const current = maneuvers[maneuverIndex]
+      const nextManeuver = maneuvers[maneuverIndex + 1]
+      
+      if (nextManeuver) {
+        setActiveManeuver(nextManeuver)
+        const p2 = points[nextManeuver.begin_shape_index]
+        if (p2) {
+            const distKm = haversineKm({ latitude: p2.latitude, longitude: p2.longitude }, { latitude: currentLocation.lat, longitude: currentLocation.lng })
+            setDistanceToManeuver(distKm * 1000) // to meters
+        }
+      } else {
+        setActiveManeuver(current)
+        setDistanceToManeuver(0)
+      }
+    }
+  }, [currentLocation, planner.route, planner.tripActive])
 
   useEffect(() => {
     if (planner.origin || planner.destination) setFocus(null)
@@ -262,7 +309,8 @@ export default function LiveMapPage() {
         finalLocation.lat,
         finalLocation.lng,
         distanceKm,
-        savedMinutes
+        savedMinutes,
+        planner.mode === 'eco'
       )
       
       if (res.success) {
@@ -326,6 +374,16 @@ export default function LiveMapPage() {
           </div>
         </div>
       )}
+
+      {planner.tripActive && activeManeuver && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1100] w-full">
+          <TurnByTurnPanel 
+            activeManeuver={activeManeuver} 
+            distanceToManeuverMeters={distanceToManeuver} 
+          />
+        </div>
+      )}
+
 
       <div className="pointer-events-none absolute inset-0 z-[1000] flex flex-col gap-3 p-3 sm:p-4">
         <div className="flex min-h-0 flex-1 items-start justify-between gap-3">

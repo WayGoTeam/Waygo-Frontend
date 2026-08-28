@@ -8,12 +8,14 @@ import { AuthProvider } from '@/context/AuthContext'
 import { MapLayersProvider } from '@/context/MapLayersContext'
 import { IncidentsProvider } from '@/context/IncidentsContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import { ThemeProvider } from '@/context/ThemeContext'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <LocaleProvider>
+    <ThemeProvider>
+      <BrowserRouter>
+        <LocaleProvider>
         <SocketProvider>
           <AuthProvider>
             <MapLayersProvider>
@@ -25,7 +27,8 @@ createRoot(document.getElementById('root')!).render(
             </MapLayersProvider>
           </AuthProvider>
         </SocketProvider>
-      </LocaleProvider>
-    </BrowserRouter>
+        </LocaleProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 )

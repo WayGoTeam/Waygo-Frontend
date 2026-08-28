@@ -215,9 +215,16 @@ export interface Strings {
     invalidCredentials: string
     pendingTitle: string
     pendingEmpty: string
+    activeTitle: string
+    activeEmpty: string
     approve: string
     reject: string
+    archive: string
     loggedInAs: string
+    totalUsers: string
+    totalDistance: string
+    totalEcoPoints: string
+    activeIncidentsStats: string
   }
   common: {
     loading: string
@@ -544,9 +551,16 @@ export const az: Strings = {
     invalidCredentials: 'İstifadəçi adı və ya şifrə yanlışdır',
     pendingTitle: 'Təsdiq gözləyən hesabatlar',
     pendingEmpty: 'Təsdiq gözləyən hesabat yoxdur',
+    activeTitle: 'Xəritədəki Aktiv Hadisələr',
+    activeEmpty: 'Aktiv hadisə yoxdur',
     approve: 'Təsdiqlə',
     reject: 'Rədd et',
+    archive: 'Sil (Arxivlə)',
     loggedInAs: 'Daxil olub',
+    totalUsers: 'Ümumi İstifadəçi',
+    totalDistance: 'Ümumi Gedilmiş Yol (km)',
+    totalEcoPoints: 'Qazandırılan EcoPoints',
+    activeIncidentsStats: 'Aktiv Hadisələr',
   },
   common: {
     loading: 'Yüklənir...',
@@ -873,9 +887,16 @@ export const en: Strings = {
     invalidCredentials: 'Incorrect username or password',
     pendingTitle: 'Reports awaiting review',
     pendingEmpty: 'No reports awaiting review',
+    activeTitle: 'Active Incidents on Map',
+    activeEmpty: 'No active incidents',
     approve: 'Approve',
     reject: 'Reject',
+    archive: 'Archive (Remove)',
     loggedInAs: 'Signed in as',
+    totalUsers: 'Total Users',
+    totalDistance: 'Total Distance (km)',
+    totalEcoPoints: 'EcoPoints Issued',
+    activeIncidentsStats: 'Active Incidents',
   },
   common: {
     loading: 'Loading...',

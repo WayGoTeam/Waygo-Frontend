@@ -3,6 +3,7 @@ import { User, Mail, Phone, Plus, Car, Fuel, Zap, Leaf, MapPin, Star, LogOut, Ch
 import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/i18n/LocaleContext'
+import { useTheme } from '@/context/ThemeContext'
 import { getWalletBalance } from '@/api/wallet'
 import { sendOtp, updateProfile } from '@/api/auth'
 import type { WalletBalance } from '@/types/api'
@@ -287,6 +288,7 @@ function AddEmailModal({ onClose, onSuccess }: { onClose: () => void; onSuccess:
 export default function ProfilePage() {
   const { user, isAdmin, logout, refreshUser } = useAuth()
   const { s: t } = useLocale()
+  const { theme, toggleTheme } = useTheme()
   const [balance, setBalance] = useState<WalletBalance | null>(null)
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
   const [addPhoneOpen, setAddPhoneOpen] = useState(false)
@@ -319,15 +321,15 @@ export default function ProfilePage() {
   const VehicleIcon = config.icon
 
   return (
-    <div className="flex h-full flex-col bg-slate-50/50">
+    <div className="flex h-full flex-col bg-slate-50/50 dark:bg-slate-950">
       <div className="flex-1 overflow-y-auto pb-12 pt-8 sm:pt-12">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           {/* Main Profile Card */}
-          <div className="rounded-3xl bg-white/90 backdrop-blur-xl shadow-2xl shadow-slate-200/50 ring-1 ring-slate-100 p-6 sm:p-8">
+          <div className="rounded-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl shadow-slate-200/50 dark:shadow-none ring-1 ring-slate-100 dark:ring-slate-800 p-6 sm:p-8">
 
             {/* Avatar & Name */}
-            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-8 border-b border-slate-100/60 pb-8">
-              <div className="relative h-32 w-32 shrink-0 rounded-[2rem] bg-white p-2 shadow-lg ring-1 ring-slate-100">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-8 border-b border-slate-100/60 dark:border-slate-800 pb-8">
+              <div className="relative h-32 w-32 shrink-0 rounded-[2rem] bg-white dark:bg-slate-800 p-2 shadow-lg ring-1 ring-slate-100 dark:ring-slate-700">
                 <div className="flex h-full w-full items-center justify-center rounded-3xl bg-gradient-to-br from-brand-50 to-brand-100 text-brand-600">
                   <User className="h-12 w-12" />
                 </div>
@@ -335,19 +337,25 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex flex-col items-center sm:items-start flex-1 text-center sm:text-left">
-                <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900">{user.fullName || user.username}</h1>
+                <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{user.fullName || user.username}</h1>
                 {!isAdmin && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">
+                  <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400">
                     <Leaf className="h-4 w-4" />
                     <span className="text-xs font-bold uppercase tracking-wider">{t.profilePage.ecoDriver}</span>
                   </div>
                 )}
               </div>
 
-              <div className="hidden sm:block">
+              <div className="hidden sm:flex flex-col gap-2">
+                <button
+                  onClick={toggleTheme}
+                  className="group flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-5 py-2.5 text-sm font-bold text-slate-600 shadow-sm border border-slate-200 hover:bg-slate-200 transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  {theme === 'dark' ? '☀️ Gündüz rejimi' : '🌙 Gecə rejimi'}
+                </button>
                 <button
                   onClick={() => setIsLogoutModalOpen(true)}
-                  className="group flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-brand-600 shadow-sm border border-brand-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 hover:shadow transition-all"
+                  className="group flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-brand-600 shadow-sm border border-brand-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 hover:shadow transition-all dark:bg-slate-800 dark:border-brand-900/50 dark:hover:bg-slate-800/80"
                 >
                   <LogOut className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
                   {t.profilePage.logout}
@@ -398,24 +406,24 @@ export default function ProfilePage() {
               <div className="mt-8 grid gap-8 sm:grid-cols-2">
                 {/* Contact info */}
                 <div className="space-y-4">
-                  <h4 className="font-display text-lg font-bold text-slate-900">{t.profilePage.contactInfo}</h4>
+                  <h4 className="font-display text-lg font-bold text-slate-900 dark:text-white">{t.profilePage.contactInfo}</h4>
                   <div className="flex flex-col gap-3">
 
                     {/* Email row */}
-                    <div className="group flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-4 hover:bg-white hover:shadow-md hover:border-slate-200 transition-all">
+                    <div className="group flex items-center justify-between rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md hover:border-slate-200 transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-100 group-hover:scale-105 group-hover:shadow transition-all shrink-0">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-slate-700 shadow-sm border border-slate-100 dark:border-slate-600 group-hover:scale-105 group-hover:shadow transition-all shrink-0">
                           <Mail className="h-5 w-5 text-slate-400 group-hover:text-brand-500 transition-colors" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-500 mb-0.5">{t.profilePage.email}</p>
+                          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-0.5">{t.profilePage.email}</p>
                           {user.email ? (
-                            <p className="text-sm font-bold text-slate-900 break-all">{user.email}</p>
+                            <p className="text-sm font-bold text-slate-900 dark:text-white break-all">{user.email}</p>
                           ) : (
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setAddEmailOpen(true) }}
-                              className="flex items-center gap-1 text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors"
+                              className="flex items-center gap-1 text-sm font-bold text-brand-600 dark:text-brand-400 hover:text-brand-700 transition-colors"
                             >
                               <Plus className="h-4 w-4" /> {t.profilePage.add}
                             </button>
@@ -423,22 +431,22 @@ export default function ProfilePage() {
                         </div>
                       </div>
                       {user.email && (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-50 shrink-0">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/30 shrink-0">
+                          <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400" />
                         </div>
                       )}
                     </div>
 
                     {/* Phone row */}
-                    <div className="group flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-4 hover:bg-white hover:shadow-md hover:border-slate-200 transition-all">
+                    <div className="group flex items-center justify-between rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md hover:border-slate-200 transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-100 group-hover:scale-105 group-hover:shadow transition-all shrink-0">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-slate-700 shadow-sm border border-slate-100 dark:border-slate-600 group-hover:scale-105 group-hover:shadow transition-all shrink-0">
                           <Phone className="h-5 w-5 text-slate-400 group-hover:text-brand-500 transition-colors" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-500 mb-0.5">{t.profilePage.phone}</p>
+                          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-0.5">{t.profilePage.phone}</p>
                           {user.phone ? (
-                            <p className="text-sm font-bold text-slate-900">{user.phone}</p>
+                            <p className="text-sm font-bold text-slate-900 dark:text-white">{user.phone}</p>
                           ) : (
                             <button
                               type="button"

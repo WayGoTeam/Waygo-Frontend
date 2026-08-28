@@ -18,9 +18,9 @@ export function TripSummaryModal({ visible, ecoPoints, co2SavedKg, distanceKm, e
       <div className="animate-fade-up relative w-full max-w-sm overflow-hidden rounded-[32px] bg-white shadow-2xl duration-500">
         
         {/* Header Background */}
-        <div className={`relative h-36 w-full overflow-hidden ${ecoMode ? 'bg-gradient-to-br from-emerald-400 to-green-600' : 'bg-gradient-to-br from-brand-400 to-brand-600'}`}>
+        <div className={`relative h-36 w-full ${ecoMode ? 'bg-gradient-to-br from-emerald-400 to-green-600' : 'bg-gradient-to-br from-brand-400 to-brand-600'}`}>
           {/* Confetti / Sparkles Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-30">
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-30">
             <Sparkles className="h-24 w-24 animate-pulse text-white" strokeWidth={1} />
           </div>
           
