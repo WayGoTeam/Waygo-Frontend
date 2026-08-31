@@ -37,7 +37,7 @@ export default function AdminPage() {
         action={
           <button
             onClick={() => void logout()}
-            className="flex items-center gap-1.5 rounded-full border border-slate-200 px-3.5 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+            className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900/50"
           >
             <LogOut className="h-3.5 w-3.5" />
             {s.adminPage.signOut}
@@ -45,7 +45,7 @@ export default function AdminPage() {
         }
       />
       <p className="mt-1 mb-6 text-xs text-slate-400">
-        {s.adminPage.loggedInAs} <span className="font-semibold text-slate-600">{user.username}</span>
+        {s.adminPage.loggedInAs} <span className="font-semibold text-slate-600 dark:text-slate-400">{user.username}</span>
       </p>
 
       {/* Main Tabs */}
@@ -53,7 +53,7 @@ export default function AdminPage() {
         <button
           onClick={() => setMainTab('analytics')}
           className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
-            mainTab === 'analytics' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+            mainTab === 'analytics' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
           }`}
         >
           Analytics & Growth
@@ -61,7 +61,7 @@ export default function AdminPage() {
         <button
           onClick={() => setMainTab('live')}
           className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
-            mainTab === 'live' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+            mainTab === 'live' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
           }`}
         >
           Live Map
@@ -69,7 +69,7 @@ export default function AdminPage() {
         <button
           onClick={() => setMainTab('incidents')}
           className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
-            mainTab === 'incidents' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+            mainTab === 'incidents' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
           }`}
         >
           Incidents
@@ -83,13 +83,13 @@ export default function AdminPage() {
 
       {mainTab === 'incidents' && (
         <>
-          <div className="mb-4 flex border-b border-slate-200">
+          <div className="mb-4 flex border-b border-slate-200 dark:border-slate-800">
             <button
               onClick={() => setIncidentTab('pending')}
               className={`pb-3 text-sm font-semibold transition-colors ${
                 incidentTab === 'pending'
                   ? 'border-b-2 border-brand-500 text-brand-600'
-                  : 'text-slate-500 hover:text-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
               style={{ marginRight: '24px' }}
             >
@@ -100,14 +100,14 @@ export default function AdminPage() {
               className={`pb-3 text-sm font-semibold transition-colors ${
                 incidentTab === 'active'
                   ? 'border-b-2 border-brand-500 text-brand-600'
-                  : 'text-slate-500 hover:text-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
               {s.adminPage.activeTitle || 'Active Incidents'}
             </button>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm sm:p-5">
             {incidentTab === 'pending' ? <PendingReportsTable /> : <ActiveIncidentsTable />}
           </div>
         </>

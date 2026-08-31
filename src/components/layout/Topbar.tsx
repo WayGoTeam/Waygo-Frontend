@@ -29,11 +29,11 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
   const activeIncidents = incidents ?? []
 
   return (
-    <header className="relative z-[2000] flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
+    <header className="relative z-[2000] flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 sm:px-6">
       <button
         onClick={onMenuClick}
         aria-label={s.topbar.menu}
-        className="rounded-full p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+        className="rounded-full p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
       >
         <Menu className="h-5 w-5" />
       </button>
@@ -48,7 +48,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
           </IconButton>
         )}
       >
-        <div className="w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-float">
+        <div className="w-64 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-float">
           <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
             {s.layers.title}
           </p>
@@ -81,7 +81,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             </IconButton>
           )}
         >
-          <div className="scroll-thin max-h-96 w-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-float">
+          <div className="scroll-thin max-h-96 w-80 overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-float">
             <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
               {s.topbar.notifications}
             </p>
@@ -98,20 +98,20 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             <button
               onClick={toggle}
               className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold uppercase transition ${
-                open ? 'border-brand-300 bg-brand-50 text-brand-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                open ? 'border-brand-300 bg-brand-50 text-brand-700' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300'
               }`}
             >
               {locale}
             </button>
           )}
         >
-          <div className="w-28 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-float">
+          <div className="w-28 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-float">
             {(['az', 'en'] as Locale[]).map((code) => (
               <button
                 key={code}
                 onClick={() => setLocale(code)}
                 className={`block w-full rounded-xl px-3 py-2 text-left text-sm font-medium uppercase ${
-                  locale === code ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50'
+                  locale === code ? 'bg-brand-50 text-brand-700' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
                 }`}
               >
                 {code}
@@ -121,11 +121,11 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
         </Popover>
       </div>
 
-      <div className="ml-2 flex items-center gap-3 border-l border-slate-200 pl-4">
+      <div className="ml-2 flex items-center gap-3 border-l border-slate-200 dark:border-slate-800 pl-4">
         {user ? (
           <div className="flex items-center gap-3">
             <div className="flex flex-col text-right">
-              <span className="text-sm font-semibold text-slate-900">
+              <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">
                 {user.fullName || user.email || (user.username?.startsWith('google:') ? 'İstifadəçi' : user.username)}
               </span>
               {user.vehicleType && <span className="text-[10px] uppercase font-bold text-brand-600">{user.vehicleType}</span>}
@@ -133,7 +133,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             <button
               onClick={() => setShowLogoutConfirm(true)}
               title="Çıxış"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               <LogOut className="h-4 w-4" />
             </button>
@@ -158,10 +158,10 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             onClick={() => setShowLogoutConfirm(false)}
             className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
           />
-          <div className="relative w-full max-w-[480px] animate-fade-up flex flex-col items-center justify-center rounded-[2rem] bg-white p-8 shadow-2xl">
+          <div className="relative w-full max-w-[480px] animate-fade-up flex flex-col items-center justify-center rounded-[2rem] bg-white dark:bg-slate-900 p-8 shadow-2xl">
             <button
               onClick={() => setShowLogoutConfirm(false)}
-              className="absolute right-6 top-6 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+              className="absolute right-6 top-6 rounded-full p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-400 transition"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
@@ -170,17 +170,17 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               <LogOut className="h-8 w-8 text-brand-600 ml-1" />
             </div>
             
-            <h2 className="font-display text-2xl font-bold text-slate-900 text-center">
+            <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50 text-center">
               Çıxış etmək istəyirsiniz?
             </h2>
-            <p className="mt-3 text-center text-[15px] leading-relaxed text-slate-500 max-w-[320px]">
+            <p className="mt-3 text-center text-[15px] leading-relaxed text-slate-500 dark:text-slate-400 max-w-[320px]">
               Hesabınızdan çıxış edilir. Yenidən daxil olmaq üçün qeydiyyatdan keçdiyiniz nömrəni istifadə edə bilərsiniz.
             </p>
             
             <div className="mt-8 flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-center sm:gap-4">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="w-full rounded-2xl bg-slate-100 px-6 py-3.5 text-[15px] font-bold text-slate-600 transition hover:bg-slate-200 sm:w-[160px]"
+                className="w-full rounded-2xl bg-slate-100 dark:bg-slate-800 px-6 py-3.5 text-[15px] font-bold text-slate-600 dark:text-slate-400 transition hover:bg-slate-200 dark:hover:bg-slate-700 sm:w-[160px]"
               >
                 Ləğv et
               </button>
@@ -211,7 +211,7 @@ function FilterRow({
   onChange: (v: boolean) => void
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl px-2 py-1.5 text-sm text-slate-600">
+    <div className="flex items-center justify-between rounded-xl px-2 py-1.5 text-sm text-slate-600 dark:text-slate-400">
       <span>{label}</span>
       <Toggle checked={checked} onChange={onChange} label={label} />
     </div>

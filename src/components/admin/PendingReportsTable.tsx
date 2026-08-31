@@ -64,17 +64,17 @@ export function PendingReportsTable() {
   if (!allReports || allReports.length === 0) return <EmptyState title={s.adminPage.pendingEmpty} />
 
   return (
-    <div className="divide-y divide-slate-100">
+    <div className="divide-y divide-slate-100 dark:divide-slate-800">
       {allReports.map((report) => (
         <div key={report.id} className="flex items-start justify-between gap-3 py-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
+              <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400">
                 {s.incidentTypes[report.type] ?? report.type}
               </span>
               <span className="text-[11px] text-slate-400">{formatRelativeTime(report.createdAt, s.common)}</span>
             </div>
-            <p className="mt-1 text-sm text-slate-700">{report.description}</p>
+            <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{report.description}</p>
           </div>
           <div className="flex shrink-0 gap-1.5">
             <button

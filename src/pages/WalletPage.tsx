@@ -37,7 +37,7 @@ function txMeta(type: string) {
     case 'BADGE_BONUS':    return { icon: <Star     className="h-3.5 w-3.5" />, color: 'text-yellow-600', bg: 'bg-yellow-50' }
     case 'REPORT':         return { icon: <Megaphone className="h-3.5 w-3.5" />, color: 'text-purple-600', bg: 'bg-purple-50' }
     case 'VOUCHER_REDEEM': return { icon: <Gift     className="h-3.5 w-3.5" />, color: 'text-red-600',    bg: 'bg-red-50' }
-    default:               return { icon: <Zap      className="h-3.5 w-3.5" />, color: 'text-slate-600',  bg: 'bg-slate-50' }
+    default:               return { icon: <Zap      className="h-3.5 w-3.5" />, color: 'text-slate-600 dark:text-slate-400',  bg: 'bg-slate-50 dark:bg-slate-900/50' }
   }
 }
 
@@ -98,13 +98,13 @@ export default function WalletPage() {
 
   if (!user) {
     return (
-      <div className="flex h-full flex-col overflow-y-auto bg-slate-50">
+      <div className="flex h-full flex-col overflow-y-auto bg-slate-50 dark:bg-slate-900/50">
         <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center min-h-[60vh] p-6 text-center">
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-100">
             <Leaf className="h-10 w-10 text-brand-600" />
           </div>
-          <h2 className="mb-3 font-display text-2xl font-bold text-slate-900">{t.walletPage.loggedOutTitle}</h2>
-          <p className="max-w-sm text-slate-500">{t.walletPage.loggedOutDesc}</p>
+          <h2 className="mb-3 font-display text-2xl font-bold text-slate-900 dark:text-slate-50">{t.walletPage.loggedOutTitle}</h2>
+          <p className="max-w-sm text-slate-500 dark:text-slate-400">{t.walletPage.loggedOutDesc}</p>
         </div>
       </div>
     )
@@ -119,13 +119,13 @@ export default function WalletPage() {
   const rankPct = rank.next === Infinity ? 100 : Math.round((pts / nextPts) * 100)
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-slate-50">
+    <div className="flex h-full flex-col overflow-y-auto bg-slate-50 dark:bg-slate-900/50">
       <div className="mx-auto w-full max-w-5xl space-y-8 p-6 pb-16">
 
         {/* ── Page Header ─────────────────────────────────────────────── */}
         <div>
-          <h1 className="font-display text-3xl font-bold text-slate-900">{t.walletPage.title}</h1>
-          <p className="mt-1 text-slate-500">{t.walletPage.subtitle}</p>
+          <h1 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-50">{t.walletPage.title}</h1>
+          <p className="mt-1 text-slate-500 dark:text-slate-400">{t.walletPage.subtitle}</p>
         </div>
 
         {error && (
@@ -136,10 +136,10 @@ export default function WalletPage() {
         <div className="grid grid-cols-3 gap-5">
           {/* XP Balance */}
           <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-brand-500/30 sm:col-span-1">
-            <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
+            <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10 dark:bg-slate-900/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
             <div className="relative">
               <div className="flex items-center gap-2.5 text-brand-100">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm">
                   <Leaf className="h-4 w-4" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-widest text-brand-50">Eco XP</span>
@@ -151,10 +151,10 @@ export default function WalletPage() {
 
           {/* Streak */}
           <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-orange-400 to-red-500 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-orange-500/30 sm:col-span-1">
-            <div className="absolute -right-8 -bottom-8 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
+            <div className="absolute -right-8 -bottom-8 h-40 w-40 rounded-full bg-white/10 dark:bg-slate-900/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
             <div className="relative flex h-full flex-col justify-between">
               <div className="flex items-center gap-2.5 text-orange-100">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm">
                   <Flame className="h-4 w-4" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-widest text-orange-50">{t.walletPage.streakDays.toUpperCase()}</span>
@@ -168,10 +168,10 @@ export default function WalletPage() {
 
           {/* CO₂ */}
           <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-400 to-teal-600 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-emerald-500/30 sm:col-span-1">
-            <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
+            <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-white/10 dark:bg-slate-900/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
             <div className="relative flex h-full flex-col justify-between">
               <div className="flex items-center gap-2.5 text-teal-100">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm">
                   <Shield className="h-4 w-4" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-widest text-teal-50">{t.walletPage.totalCo2.toUpperCase()}</span>
@@ -185,7 +185,7 @@ export default function WalletPage() {
         </div>
 
         {/* ── 2. RANK & PROGRESS ─────────────────────────────────────────── */}
-        <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
+        <div className="rounded-3xl bg-white dark:bg-slate-900 p-7 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t.walletPage.currentRank}</p>
@@ -206,11 +206,11 @@ export default function WalletPage() {
           </div>
 
           <div className="mt-6">
-            <div className="mb-2 flex justify-between text-xs text-slate-500">
+            <div className="mb-2 flex justify-between text-xs text-slate-500 dark:text-slate-400">
               <span>{pts.toLocaleString()} XP</span>
               <span>{rank.next === Infinity ? t.walletPage.maxRank : `${rank.next.toLocaleString()} XP`}</span>
             </div>
-            <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{ width: `${rankPct}%`, backgroundColor: rank.color }}
@@ -223,7 +223,7 @@ export default function WalletPage() {
             )}
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-5 sm:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 dark:border-slate-800 pt-5 sm:grid-cols-4">
             {[
               { label: t.walletPage.totalRoutes, value: trips, unit: '' },
               { label: t.walletPage.totalDistance, value: `${Number(balance?.totalDistanceKm ?? 0).toFixed(0)}`, unit: t.common.km },
@@ -231,7 +231,7 @@ export default function WalletPage() {
               { label: t.walletPage.badgeCount, value: earnedBadges.length, unit: '' },
             ].map((s, i) => (
               <div key={i} className="text-center">
-                <p className="font-display text-2xl font-bold text-slate-900">{s.value}</p>
+                <p className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50">{s.value}</p>
                 <p className="text-xs text-slate-400">{s.unit}</p>
                 <p className="text-[10px] text-slate-300">{s.label}</p>
               </div>
@@ -240,9 +240,9 @@ export default function WalletPage() {
         </div>
 
         {/* ── 3. BADGES ───────────────────────────────────────────────────── */}
-        <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
-          <h2 className="font-display text-xl font-bold text-slate-900">{t.walletPage.achievements}</h2>
-          <p className="mt-1 text-sm text-slate-500">
+        <div className="rounded-3xl bg-white dark:bg-slate-900 p-7 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">{t.walletPage.achievements}</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {t.walletPage.badgesEarned.replace('{0}', earnedBadges.length.toString()).replace('{1}', ALL_BADGES.length.toString())}
           </p>
 
@@ -263,7 +263,7 @@ export default function WalletPage() {
                   <div className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br text-white ${meta.color}`}>
                     {meta.icon}
                   </div>
-                  <p className="mt-2 text-xs font-semibold text-slate-700 leading-tight">{meta.title}</p>
+                  <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300 leading-tight">{meta.title}</p>
                   <p className="mt-0.5 text-[10px] text-slate-400">{meta.desc}</p>
                   {earned && (
                     <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-500 text-[9px] text-white">✓</span>
@@ -276,19 +276,19 @@ export default function WalletPage() {
 
         {/* ── 4. LEADERBOARD ─────────────────────────────────────────────── */}
         {leaderboard.length > 0 && (
-          <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
+          <div className="rounded-3xl bg-white dark:bg-slate-900 p-7 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
             <div className="flex items-center gap-3">
               <Trophy className="h-5 w-5 text-amber-500" />
-              <h2 className="font-display text-xl font-bold text-slate-900">Reytinq Cədvəli</h2>
+              <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">Reytinq Cədvəli</h2>
             </div>
             <div className="mt-5 space-y-2">
               {leaderboard.map(entry => (
                 <div
                   key={entry.rank}
                   className={`flex items-center gap-4 rounded-2xl px-4 py-3 transition-colors ${
-                    entry.isCurrentUser
+                    entry.name === (user?.fullName || user?.username)
                       ? 'bg-brand-50 ring-1 ring-brand-200'
-                      : 'hover:bg-slate-50'
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-900/50'
                   }`}
                 >
                   <span className={`w-7 text-center font-display text-lg font-bold ${
@@ -298,12 +298,12 @@ export default function WalletPage() {
                   }`}>
                     {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : entry.rank}
                   </span>
-                  <span className="flex-1 truncate font-medium text-slate-800">
-                    {entry.displayName}
-                    {entry.isCurrentUser && <span className="ml-1.5 text-xs text-brand-500">(siz)</span>}
+                  <span className="flex-1 truncate font-medium text-slate-800 dark:text-slate-200">
+                    {entry.name}
+                    {entry.name === (user?.fullName || user?.username) && <span className="ml-1.5 text-xs text-brand-500">(siz)</span>}
                   </span>
-                  <span className="text-sm font-bold text-slate-900">{entry.ecoPoints.toLocaleString()} XP</span>
-                  <span className="hidden text-xs text-slate-400 sm:block">{Number(entry.co2Saved).toFixed(1)} kq</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-slate-50">{entry.ecoPoints.toLocaleString()} XP</span>
+                  <span className="hidden text-xs text-slate-400 sm:block">{Number(entry.co2SavedKg).toFixed(1)} kq</span>
                 </div>
               ))}
             </div>
@@ -312,20 +312,20 @@ export default function WalletPage() {
 
         {/* ── 5. TRANSACTION HISTORY ─────────────────────────────────────── */}
         {transactions.length > 0 && (
-          <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
+          <div className="rounded-3xl bg-white dark:bg-slate-900 p-7 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
             <div className="flex items-center gap-3">
               <TrendingUp className="h-5 w-5 text-brand-600" />
-              <h2 className="font-display text-xl font-bold text-slate-900">Son Əməliyyatlar</h2>
+              <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">Son Əməliyyatlar</h2>
             </div>
             <div className="mt-5 space-y-2">
               {transactions.map(tx => {
                 const m = txMeta(tx.type)
                 return (
-                  <div key={tx.id} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-slate-50">
+                  <div key={tx.id} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900/50">
                     <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${m.bg} ${m.color}`}>
                       {m.icon}
                     </div>
-                    <p className="flex-1 truncate text-sm text-slate-700">{tx.description}</p>
+                    <p className="flex-1 truncate text-sm text-slate-700 dark:text-slate-300">{tx.description}</p>
                     <span className={`shrink-0 text-sm font-bold ${tx.amount >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                       {tx.amount >= 0 ? '+' : ''}{tx.amount} XP
                     </span>
@@ -340,23 +340,23 @@ export default function WalletPage() {
         )}
 
         {/* ── 6. SOCAR VOUCHER ─────────────────────────────────────────── */}
-        <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
+        <div className="rounded-3xl bg-white dark:bg-slate-900 p-7 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
               <Gift className="h-6 w-6" />
             </div>
             <div className="flex-1">
-              <h2 className="font-display text-xl font-bold text-slate-900">{t.walletPage.monetizationTitle}</h2>
-              <p className="text-sm text-slate-500">{t.walletPage.monetizationDesc}</p>
+              <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">{t.walletPage.monetizationTitle}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{t.walletPage.monetizationDesc}</p>
             </div>
           </div>
 
           <div className="mt-6">
             <div className="mb-2 flex justify-between text-sm">
-              <span className="font-medium text-slate-700">{t.walletPage.progress}</span>
-              <span className="text-slate-500">{Math.min(pts, 1000).toLocaleString()} / 1000 XP</span>
+              <span className="font-medium text-slate-700 dark:text-slate-300">{t.walletPage.progress}</span>
+              <span className="text-slate-500 dark:text-slate-400">{Math.min(pts, 1000).toLocaleString()} / 1000 XP</span>
             </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
               <div
                 className="h-full bg-orange-500 transition-all duration-700"
                 style={{ width: `${Math.min((pts / 1000) * 100, 100)}%` }}
@@ -367,7 +367,7 @@ export default function WalletPage() {
           <button
             onClick={handleGenerateVoucher}
             disabled={generating || pts < 1000}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 py-3.5 font-semibold text-white transition-colors hover:bg-slate-800 disabled:bg-slate-100 disabled:text-slate-400"
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 dark:bg-slate-100 px-6 py-3.5 font-semibold text-white dark:text-slate-900 transition-colors hover:bg-slate-800 dark:hover:bg-white disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-500"
           >
             {generating ? <Loader2 className="h-5 w-5 animate-spin" /> : <ArrowRight className="h-5 w-5" />}
             {t.walletPage.generateVoucher}
@@ -375,12 +375,12 @@ export default function WalletPage() {
 
           {vouchers.length > 0 && (
             <div className="mt-8 space-y-3">
-              <h3 className="font-display text-lg font-bold text-slate-900">{t.walletPage.myVouchers}</h3>
+              <h3 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50">{t.walletPage.myVouchers}</h3>
               {vouchers.map((v, i) => (
                 <div key={i} className="flex items-center gap-4 rounded-2xl border border-orange-200 bg-orange-50 p-5">
                   <div className="flex-1">
                     <p className="text-xs font-semibold text-orange-500">{t.walletPage.fuelCard}</p>
-                    <p className="mt-0.5 font-mono text-base font-bold tracking-wider text-slate-900">{v.voucherCode}</p>
+                    <p className="mt-0.5 font-mono text-base font-bold tracking-wider text-slate-900 dark:text-slate-50">{v.voucherCode}</p>
                   </div>
                   <p className="text-xs text-slate-400">{new Date(v.issuedAt).toLocaleDateString('az-AZ')}</p>
                 </div>

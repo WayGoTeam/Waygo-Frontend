@@ -33,7 +33,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 -translate-x-full flex-col border-r border-slate-200 bg-white transition-transform duration-200 lg:static lg:z-0 lg:h-full lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 -translate-x-full flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-transform duration-200 lg:static lg:z-0 lg:h-full lg:translate-x-0 ${
           open ? 'translate-x-0' : ''
         }`}
       >
@@ -41,7 +41,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           <div className="flex items-center gap-2.5">
             <LogoMark size={36} />
             <div>
-              <p className="font-display text-lg font-extrabold leading-none text-slate-900">
+              <p className="font-display text-lg font-extrabold leading-none text-slate-900 dark:text-slate-50">
                 {s.brand.name}
               </p>
               <p className="mt-0.5 text-[11px] font-semibold text-brand-600">{s.brand.tagline}</p>
@@ -50,7 +50,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           <button
             aria-label={s.common.close}
             onClick={onClose}
-            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 lg:hidden"
+            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
           >
             <X className="h-4.5 w-4.5" />
           </button>
@@ -67,14 +67,14 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
                 `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:text-slate-900 dark:hover:text-slate-50'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
                   <item.icon
-                    className={`h-[18px] w-[18px] shrink-0 ${isActive ? 'text-brand-600' : 'text-slate-400 group-hover:text-slate-500'}`}
+                    className={`h-[18px] w-[18px] shrink-0 ${isActive ? 'text-brand-600' : 'text-slate-400 group-hover:text-slate-500 dark:group-hover:hover:text-slate-400'}`}
                     strokeWidth={2}
                   />
                   <span className="flex-1 truncate">{item.label}</span>
@@ -91,13 +91,13 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         </div>
 
         {isAdmin && (
-          <div className="border-t border-slate-100 px-3 py-3">
+          <div className="border-t border-slate-100 dark:border-slate-800 px-3 py-3">
             <NavLink
               to="/admin"
               onClick={onClose}
               className={({ isActive }) =>
                 `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                  isActive ? 'bg-slate-900 text-white' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:text-slate-900 dark:hover:text-slate-50'
                 }`
               }
             >

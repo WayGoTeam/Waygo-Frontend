@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Trophy, Medal, Award, TrendingUp, Leaf } from 'lucide-react'
 import { getLeaderboard } from '@/api/wallet'
 import type { LeaderboardEntry } from '@/types/api'
@@ -15,7 +15,7 @@ export function LeaderboardPanel() {
 
   useEffect(() => {
     getLeaderboard()
-      .then(res => setEntries(Array.isArray(res) ? res : res.data || []))
+      .then(res => setEntries(Array.isArray(res) ? res : (res as any).data || res || []))
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
@@ -44,7 +44,7 @@ export function LeaderboardPanel() {
           <Trophy className="h-5 w-5 text-amber-600" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800">Top Sürücülər</h3>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Top Sürücülər</h3>
           <p className="text-xs text-slate-400">Bu ayın ən yaxşı eco sürücüləri</p>
         </div>
       </div>
@@ -56,14 +56,14 @@ export function LeaderboardPanel() {
         return (
           <div
             key={entry.rank}
-            className={lex items-center gap-3 rounded-xl border p-3 transition hover:shadow-sm }
+            className={`flex items-center gap-3 rounded-xl border p-3 transition hover:shadow-sm ${isTop3 ? style?.bg : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
           >
-            <div className={lex h-8 w-8 items-center justify-center rounded-full text-sm font-black }>
+            <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-black ${isTop3 ? 'bg-white/50 text-slate-800' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}`}>
               {isTop3 ? style?.badge : entry.rank}
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-semibold text-slate-800">{entry.name}</p>
+              <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">{entry.name}</p>
               <div className="flex items-center gap-3 text-xs text-slate-400">
                 <span className="flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" /> {entry.totalDistanceKm} km

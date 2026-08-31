@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Bot, MessageCircle, Send, X, Mic, Trash2 } from 'lucide-react'
-import { sendChatMessageStream, sendChatVoiceMessage } from '@/api/chat'
+import { sendChatMessageStream, sendChatVoiceMessage, fetchTTS } from '@/api/chat'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useSocket } from '@/context/SocketContext'
 import type { ChatMessage } from '@/types/api'
@@ -10,17 +10,67 @@ function makeId() {
 }
 
 export function ChatWidget() {
-  const { s } = useLocale()
+  const { s, locale } = useLocale()
   const { connected } = useSocket()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  
+  const recognitionRef = useRef<any>(null)
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, sending, open])
+
+  useEffect(() => {
+    // Initialize Web Speech API for Speech-to-Text
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition()
+      recognition.lang = locale === 'az' ? 'az-AZ' : 'en-US'
+      recognition.interimResults = false
+      recognition.continuous = false
+      
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript
+        setInput(transcript)
+        submit(transcript)
+      }
+      
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error)
+        setIsRecording(false)
+      }
+      
+      recognition.onend = () => {
+        setIsRecording(false)
+      }
+      
+      recognitionRef.current = recognition
+    }
+  }, [locale])
+
+  const toggleRecording = () => {
+    if (!recognitionRef.current) {
+      alert(locale === 'az' ? "Sizin brauzeriniz səsli daxil etməni dəstəkləmir (Chrome istifadə edin)." : "Speech recognition not supported in this browser.")
+      return
+    }
+    
+    if (isRecording) {
+      recognitionRef.current.stop()
+      setIsRecording(false)
+    } else {
+      try {
+        recognitionRef.current.start()
+        setIsRecording(true)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
 
   async function submit(text: string, voice = false) {
     const trimmed = text.trim()
@@ -29,46 +79,50 @@ export function ChatWidget() {
     setMessages((prev) => [...prev, { id: makeId(), role: 'user', text: trimmed, createdAt: Date.now() }])
     setSending(true)
     try {
-      if (voice) {
-        const res = await sendChatVoiceMessage(trimmed)
-        const url = URL.createObjectURL(res)
-        const audio = new Audio(url)
-        audio.play()
-        setMessages((prev) => [
-          ...prev,
-          { id: makeId(), role: 'assistant', text: "🔊 Səsli cavab səsləndirilir...", createdAt: Date.now() },
-        ])
-      } else {
-        const msgId = makeId()
-        setMessages((prev) => [
-          ...prev,
-          { id: msgId, role: 'assistant', text: '', createdAt: Date.now() },
-        ])
-        const res = await sendChatMessageStream(trimmed)
-        if (!res.ok) throw new Error('Stream failed')
-        const reader = res.body?.getReader()
-        if (!reader) throw new Error('No reader')
-        const decoder = new TextDecoder()
-        
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          const chunk = decoder.decode(value, { stream: true })
-          const lines = chunk.split('\n')
-          for (const line of lines) {
-            if (line.startsWith('data:')) {
-              let text = line.substring(5)
-              if (text.startsWith(' ')) text = text.substring(1)
-              if (text) {
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === msgId ? { ...m, text: m.text + text } : m
-                  )
+      const msgId = makeId()
+      setMessages((prev) => [
+        ...prev,
+        { id: msgId, role: 'assistant', text: '', createdAt: Date.now() },
+      ])
+      const res = await sendChatMessageStream(trimmed)
+      if (!res.ok) throw new Error('Stream failed')
+      const reader = res.body?.getReader()
+      if (!reader) throw new Error('No reader')
+      const decoder = new TextDecoder()
+      
+      let fullText = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+        const lines = chunk.split('\n')
+        for (const line of lines) {
+          if (line.startsWith('data:')) {
+            let text = line.substring(5)
+            if (text.startsWith(' ')) text = text.substring(1)
+            if (text) {
+              fullText += text
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === msgId ? { ...m, text: m.text + text } : m
                 )
-              }
+              )
             }
           }
         }
+      }
+
+      // Always play Azure Neural TTS via Backend Gateway
+      // Remove markdown asterisks for better speech
+      const cleanText = fullText.replace(/\*\*/g, '')
+      
+      try {
+          const blob = await fetchTTS(cleanText, locale)
+          const url = URL.createObjectURL(blob)
+          const audio = new Audio(url)
+          audio.play().catch(e => console.warn('Azure TTS Play failed (autoplay blocked):', e))
+      } catch (e) {
+          console.error('Azure TTS fetch failed:', e)
       }
     } catch {
       setMessages((prev) => [
@@ -93,13 +147,13 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-24 right-5 z-[1000] flex h-[min(30rem,70vh)] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float animate-fade-up sm:right-6">
-      <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3.5">
+    <div className="fixed bottom-24 right-5 z-[1000] flex h-[min(30rem,70vh)] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-float animate-fade-up sm:right-6">
+      <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 px-4 py-3.5">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white">
           <Bot className="h-4.5 w-4.5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-slate-900">{s.chat.title}</p>
+          <p className="truncate text-sm font-bold text-slate-900 dark:text-slate-50">{s.chat.title}</p>
           <p className="truncate text-[11px] text-slate-400">{s.chat.subtitle}</p>
         </div>
         <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
@@ -111,7 +165,7 @@ export function ChatWidget() {
             onClick={() => setMessages([])}
             aria-label={s.chat.clear}
             title={s.chat.clear}
-            className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-red-600 transition"
+            className="rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-600 transition"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -119,7 +173,7 @@ export function ChatWidget() {
         <button
           onClick={() => setOpen(false)}
           aria-label={s.chat.close}
-          className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          className="rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-400"
         >
           <X className="h-4 w-4" />
         </button>
@@ -152,20 +206,24 @@ export function ChatWidget() {
           e.preventDefault()
           void submit(input)
         }}
-        className="flex items-center gap-2 border-t border-slate-100 p-3"
+        className="flex items-center gap-2 border-t border-slate-100 dark:border-slate-800 p-3"
       >
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={s.chat.inputPlaceholder}
-          className="min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100"
+          className="min-w-0 flex-1 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3.5 py-2 text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:border-brand-300 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-100"
         />
         <button
           type="button"
-          onClick={() => submit(input, true)}
-          disabled={!input.trim() || sending}
+          onClick={toggleRecording}
+          disabled={sending}
           aria-label="Send as Voice"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition disabled:cursor-not-allowed disabled:opacity-40 ${
+            isRecording 
+              ? 'bg-red-500 text-white hover:bg-red-600 animate-pulse' 
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+          }`}
         >
           <Mic className="h-4 w-4" />
         </button>
@@ -199,7 +257,7 @@ function ChatBubble({ role, text, muted }: { role: 'user' | 'assistant'; text: s
         className={`max-w-[85%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
           isUser
             ? 'rounded-br-sm bg-brand-600 text-white'
-            : `rounded-bl-sm bg-slate-100 text-slate-700 ${muted ? 'italic text-slate-400' : ''}`
+            : `rounded-bl-sm bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 ${muted ? 'italic text-slate-400' : ''}`
         }`}
       >
         {renderTextWithBold(text)}

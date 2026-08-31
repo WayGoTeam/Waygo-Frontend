@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react'
+import { fetchTTS } from '@/api/chat'
+import { useLocale } from '@/i18n/LocaleContext'
 import { ArrowRight, CornerUpLeft, CornerUpRight, ArrowUpRight, ArrowUpLeft, RefreshCcw, CheckCircle2, ArrowUp } from 'lucide-react'
 import type { Maneuver } from '@/hooks/useRoutePlanner'
 
@@ -7,51 +9,73 @@ interface Props {
   distanceToManeuverMeters: number | null
 }
 
-const getManeuverIcon = (type: number) => {
-  // Valhalla maneuver types mapping to icons
-  switch (type) {
-    case 9: case 10: case 15: // Left turns
-      return <CornerUpLeft className="h-8 w-8 text-white" />
-    case 11: case 12: case 16: // Right turns
-      return <CornerUpRight className="h-8 w-8 text-white" />
-    case 13: // Slight left
-      return <ArrowUpLeft className="h-8 w-8 text-white" />
-    case 14: // Slight right
-      return <ArrowUpRight className="h-8 w-8 text-white" />
-    case 26: case 27: // Roundabout
-      return <RefreshCcw className="h-8 w-8 text-white" />
-    case 4: case 5: case 6: // Destination reached
-      return <CheckCircle2 className="h-8 w-8 text-white" />
-    default: // Straight or unknown
-      return <ArrowUp className="h-8 w-8 text-white" />
-  }
+const getManeuverIcon = (instruction: string) => {
+  const text = instruction.toLowerCase()
+  if (text.includes('roundabout')) return <RefreshCcw className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+  if (text.includes('destination')) return <CheckCircle2 className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+  
+  if (text.includes('slight left')) return <ArrowUpLeft className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+  if (text.includes('slight right')) return <ArrowUpRight className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+  
+  if (text.includes('left')) return <CornerUpLeft className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+  if (text.includes('right')) return <CornerUpRight className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+  
+  return <ArrowUp className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+}
+
+const translateManeuverToAz = (instruction: string): string => {
+  const text = instruction.toLowerCase()
+  if (text.includes('roundabout')) return 'dairədən dönün'
+  if (text.includes('destination')) return 'təyinat nöqtəsinə çatdınız'
+  if (text.includes('slight left')) return 'yüngül sola dönün'
+  if (text.includes('slight right')) return 'yüngül sağa dönün'
+  if (text.includes('left')) return 'sola dönün'
+  if (text.includes('right')) return 'sağa dönün'
+  if (text.includes('continue')) return 'düz davam edin'
+  return 'davam edin'
 }
 
 export function TurnByTurnPanel({ activeManeuver, distanceToManeuverMeters }: Props) {
   const lastSpokenManeuverRef = useRef<number | null>(null)
+  const { locale } = useLocale()
 
   useEffect(() => {
     // 1. Play Voice Instruction if maneuver changes
     if (activeManeuver && activeManeuver.begin_shape_index !== lastSpokenManeuverRef.current) {
-      if ('speechSynthesis' in window) {
-        // Cancel previous speech
-        window.speechSynthesis.cancel()
         
-        // Voice is only in English for Valhalla natively, but we can just say the instruction
-        const utterance = new SpeechSynthesisUtterance(activeManeuver.instruction)
-        utterance.rate = 1.0 // Normal speed
-        utterance.volume = 1.0
+        let textToSpeak = ''
         
-        // Try to find a local voice or default
-        const voices = window.speechSynthesis.getVoices()
-        const azVoice = voices.find(v => v.lang.includes('az')) || voices.find(v => v.lang.includes('en'))
-        if (azVoice) utterance.voice = azVoice
-
-        window.speechSynthesis.speak(utterance)
+        if (locale === 'az') {
+           const actionAz = translateManeuverToAz(activeManeuver.instruction)
+           textToSpeak = actionAz
+           if (distanceToManeuverMeters && distanceToManeuverMeters > 20 && !actionAz.includes('çatdınız')) {
+             const dist = distanceToManeuverMeters >= 1000 
+               ? `${(distanceToManeuverMeters / 1000).toFixed(1)} kilometrdən sonra` 
+               : `${Math.round(distanceToManeuverMeters)} metrdən sonra`
+             textToSpeak = `${dist}, ${actionAz}`
+           }
+        } else {
+           textToSpeak = activeManeuver.instruction
+           if (distanceToManeuverMeters && distanceToManeuverMeters > 20 && !textToSpeak.toLowerCase().includes('destination')) {
+             const dist = distanceToManeuverMeters >= 1000 
+               ? `${(distanceToManeuverMeters / 1000).toFixed(1)} kilometers` 
+               : `${Math.round(distanceToManeuverMeters)} meters`
+             textToSpeak = `In ${dist}, ${textToSpeak}`
+           }
+        }
+        
+        // Use Azure Neural TTS via Backend Gateway
+        fetchTTS(textToSpeak, locale)
+          .then(blob => {
+              const url = URL.createObjectURL(blob)
+              const audio = new Audio(url)
+              audio.play().catch(e => console.warn('Azure TTS Play failed (autoplay blocked):', e))
+          })
+          .catch(e => console.error('Azure TTS fetch failed:', e))
+          
         lastSpokenManeuverRef.current = activeManeuver.begin_shape_index
-      }
     }
-  }, [activeManeuver])
+  }, [activeManeuver, locale])
 
   if (!activeManeuver) return null
 
@@ -66,21 +90,25 @@ export function TurnByTurnPanel({ activeManeuver, distanceToManeuverMeters }: Pr
     }
   }
 
+  const uiInstruction = locale === 'az' 
+    ? translateManeuverToAz(activeManeuver.instruction).replace(/^./, str => str.toUpperCase())
+    : activeManeuver.instruction
+
   return (
-    <div className="pointer-events-auto absolute top-4 left-1/2 flex w-[90%] max-w-sm -translate-x-1/2 transform items-center gap-4 rounded-2xl bg-slate-900/90 p-4 shadow-2xl backdrop-blur-md transition-all sm:w-[400px]">
+    <div className="pointer-events-auto absolute top-6 left-1/2 flex w-[92%] max-w-[420px] -translate-x-1/2 transform items-center gap-4 rounded-3xl border border-slate-200/50 bg-white/80 p-3 shadow-glass backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/80 transition-all sm:w-[400px]">
       
       {/* Icon Area */}
-      <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-xl transition-colors ${isClose ? 'bg-amber-500 shadow-lg shadow-amber-500/40 animate-pulse' : 'bg-emerald-600 shadow-lg shadow-emerald-500/40'}`}>
-        {getManeuverIcon(activeManeuver.type)}
+      <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-all duration-500 ${isClose ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 shadow-[0_0_20px_-5px_rgba(245,158,11,0.5)] animate-pulse' : 'bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400'}`}>
+        {getManeuverIcon(activeManeuver.instruction)}
       </div>
 
       {/* Instruction Text */}
       <div className="flex-1 min-w-0">
-        <p className="text-xl font-bold tracking-tight text-white drop-shadow-md">
+        <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-50">
           {distanceText}
         </p>
-        <p className="mt-0.5 truncate text-sm font-medium text-slate-300 leading-tight">
-          {activeManeuver.instruction}
+        <p className="mt-0.5 truncate text-sm font-semibold text-slate-500 dark:text-slate-400 leading-tight">
+          {uiInstruction}
         </p>
       </div>
     </div>

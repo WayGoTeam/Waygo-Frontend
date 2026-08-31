@@ -24,9 +24,9 @@ export function AdminAnalytics() {
       getAdminDemographics()
     ])
       .then(([kpiData, tsData, demoData]) => {
-        setKpi(kpiData.data)
-        setTimeSeries(tsData.data)
-        setDemographics(demoData.data)
+        setKpi(kpiData as any)
+        setTimeSeries(tsData as any)
+        setDemographics(demoData as any)
       })
       .catch(console.error)
       .finally(() => setLoading(false))
@@ -34,7 +34,7 @@ export function AdminAnalytics() {
 
   if (loading || !kpi) {
     return (
-      <div className="flex h-40 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex h-40 items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
         <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-brand-500"></div>
       </div>
     )
@@ -59,12 +59,12 @@ export function AdminAnalytics() {
         {stats.map((stat, idx) => {
           const Icon = stat.icon
           return (
-            <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+            <div key={idx} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm transition hover:shadow-md">
               <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-full ${stat.bg}`}>
                 <Icon className={`h-5 w-5 ${stat.color}`} />
               </div>
-              <p className="text-xl font-bold text-slate-900">{stat.value}</p>
-              <p className="mt-1 text-xs font-medium text-slate-500">{stat.label}</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-slate-50">{stat.value}</p>
+              <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
             </div>
           )
         })}
@@ -73,8 +73,8 @@ export function AdminAnalytics() {
       {/* Charts Row */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* User Growth Area Chart */}
-        <div className="col-span-2 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-4 text-sm font-bold text-slate-800">New Users (Last 30 Days)</h3>
+        <div className="col-span-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h3 className="mb-4 text-sm font-bold text-slate-800 dark:text-slate-200">New Users (Last 30 Days)</h3>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -97,8 +97,8 @@ export function AdminAnalytics() {
         </div>
 
         {/* Demographics Pie Chart */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-4 text-sm font-bold text-slate-800">Vehicle Types</h3>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h3 className="mb-4 text-sm font-bold text-slate-800 dark:text-slate-200">Vehicle Types</h3>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -126,8 +126,8 @@ export function AdminAnalytics() {
       </div>
 
       {/* Economy Bar Chart */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-sm font-bold text-slate-800">EcoPoints Economy (Earned vs Spent)</h3>
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h3 className="mb-4 text-sm font-bold text-slate-800 dark:text-slate-200">EcoPoints Economy (Earned vs Spent)</h3>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

@@ -67,7 +67,7 @@ export function PlaceAutocomplete({
         if (!containerRef.current?.contains(e.relatedTarget as Node)) setOpen(false)
       }}
     >
-      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-100">
+      <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-brand-100 dark:focus-within:ring-brand-900/30">
         <span
           className="h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white"
           style={{ backgroundColor: dotColor, boxShadow: '0 0 0 1px rgb(0 0 0 / 0.06)' }}
@@ -80,7 +80,7 @@ export function PlaceAutocomplete({
           }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="w-full min-w-0 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
+          className="w-full min-w-0 bg-transparent text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none"
         />
         {loading && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-slate-300" />}
         {!loading && onPickOnMap && (
@@ -93,7 +93,7 @@ export function PlaceAutocomplete({
               setOpen(false)
               if (onPickOnMap) onPickOnMap()
             }}
-            className="shrink-0 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-brand-600"
+            className="shrink-0 rounded-full p-1 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-brand-600"
           >
             <MapPin className="h-4 w-4" />
           </button>
@@ -108,7 +108,7 @@ export function PlaceAutocomplete({
               setResults(null)
               onChange(null)
             }}
-            className="shrink-0 rounded-full p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-600"
+            className="shrink-0 rounded-full p-0.5 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-400"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -116,7 +116,7 @@ export function PlaceAutocomplete({
       </div>
 
       {open && !value && (results !== null || loading) && (
-        <div className="scroll-thin absolute left-0 right-0 top-[calc(100%+6px)] z-[1000] max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-float animate-fade-up">
+        <div className="scroll-thin absolute left-0 right-0 top-[calc(100%+6px)] z-[1000] max-h-64 overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1.5 shadow-float animate-fade-up">
           {results === null && loading && (
             <div className="flex items-center justify-center gap-2 py-4 text-xs text-slate-400">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -139,7 +139,7 @@ export function PlaceAutocomplete({
             >
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
               <span className="min-w-0">
-                <span className="block truncate font-medium text-slate-800">{place.label}</span>
+                <span className="block truncate font-medium text-slate-800 dark:text-slate-200">{place.label}</span>
                 {place.subtitle && (
                   <span className="block truncate text-xs text-slate-400">{place.subtitle}</span>
                 )}

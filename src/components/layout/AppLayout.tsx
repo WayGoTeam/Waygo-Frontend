@@ -7,7 +7,7 @@ export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-slate-100">
+    <div className="flex h-dvh w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />

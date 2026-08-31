@@ -28,6 +28,9 @@ export const finishTrip = (
   distanceKm: number = 0,
   savedMinutes: number = 0,
   ecoMode: boolean = false,
+  actualTravelTimeSeconds: number = 0,
+  expectedTravelTimeSeconds: number = 0,
+  rerouteCount: number = 0,
 ) =>
   api.post<{
     success: boolean
@@ -45,6 +48,9 @@ export const finishTrip = (
     distanceKm,
     savedMinutes,
     ecoMode,
+    actualTravelTimeSeconds,
+    expectedTravelTimeSeconds,
+    rerouteCount,
   })
 
 export const sendGpsPing = (

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Gauge } from 'lucide-react'
 
 interface Props {
@@ -42,16 +42,10 @@ export function SpeedometerWidget({ currentSpeedKmh, speedLimitKmh }: Props) {
 
   return (
     <div className="pointer-events-auto flex items-center gap-2">
-      {/* Speed Limit Sign */}
-      {limit && (
-        <div className={lex h-14 w-14 flex-col items-center justify-center rounded-full border-[3px] transition-all }>
-          <span className="text-[10px] font-bold text-slate-500 leading-none">LIMIT</span>
-          <span className={	ext-lg font-black leading-none }>{limit}</span>
-        </div>
-      )}
+      {/* Speed limit sign removed by user request */}
 
       {/* Current Speed */}
-      <div className={lex h-16 w-16 flex-col items-center justify-center rounded-full shadow-lg transition-all }>
+      <div className={`flex h-16 w-16 flex-col items-center justify-center rounded-full shadow-lg transition-all ${flashRed ? 'bg-red-500 shadow-red-500/50' : 'bg-slate-900 shadow-slate-900/50'}`}>
         <span className="text-2xl font-black leading-none text-white">{speed}</span>
         <span className="text-[8px] font-bold uppercase text-white/70">km/h</span>
       </div>

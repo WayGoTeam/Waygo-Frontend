@@ -17,8 +17,8 @@ import { getDailyPrediction } from '@/api/traffic'
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-lg text-xs">
-      <p className="font-bold text-slate-900 mb-2">{label}:00</p>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-lg text-xs">
+      <p className="font-bold text-slate-900 dark:text-slate-50 mb-2">{label}:00</p>
       {payload.map((p: any, i: number) => (
         <p key={i} style={{ color: p.color }} className="font-medium">
           {p.name}: {p.value}{p.name === 'Sürət' ? ' km/s' : '%'}
@@ -54,9 +54,12 @@ export default function AnalyticsPage() {
   const [dailyData,  setDailyData]  = useState<any[]>([])
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
   const [mounted,    setMounted]    = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   async function fetchAll() {
+    if (isRefreshing) return;
+    setIsRefreshing(true)
     try {
       const da = await getDailyPrediction()
       if (da) {
@@ -67,11 +70,13 @@ export default function AnalyticsPage() {
         }))
         setDailyData(mappedData)
       }
+      await weather.refetch()
       setLastUpdate(new Date())
     } catch(e) {
       console.error(e)
     } finally {
       setMounted(true)
+      setIsRefreshing(false)
     }
   }
 
@@ -85,7 +90,7 @@ export default function AnalyticsPage() {
   const currentHour = new Date().getHours()
 
   return (
-    <div className="relative h-full overflow-y-auto scroll-thin bg-slate-50">
+    <div className="relative h-full overflow-y-auto scroll-thin bg-slate-50 dark:bg-slate-900/50">
       {/* ── Ambient blobs ─────────────────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-400/8 blur-3xl" />
@@ -98,16 +103,17 @@ export default function AnalyticsPage() {
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-slate-900">{s.analyticsPage.title}</h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <h1 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-50">{s.analyticsPage.title}</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               {s.analyticsPage.subtitle}
             </p>
           </div>
           <button
             onClick={fetchAll}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition-colors hover:bg-slate-50"
+            disabled={isRefreshing}
+            className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 shadow-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/50 disabled:opacity-50"
           >
-            <RefreshCw className="h-3.5 w-3.5" />
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Yenilə</span>
             <span className="text-xs text-slate-400">{lastUpdate.toLocaleTimeString(locale === 'en' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}</span>
           </button>
@@ -122,9 +128,9 @@ export default function AnalyticsPage() {
           <div className="xl:col-span-5 flex flex-col">
             <div className="mb-6 flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-brand-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.aiPredictionTitle}</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{s.analyticsPage.aiPredictionTitle}</h2>
             </div>
-            <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm flex-1">
+            <div className="overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 shadow-sm flex-1">
               <AiPredictionPanel />
             </div>
           </div>
@@ -133,12 +139,12 @@ export default function AnalyticsPage() {
           <div className="xl:col-span-7 flex flex-col">
             <div className="mb-6 flex items-center gap-3">
               <BarChart3 className="h-5 w-5 text-sky-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.dailyPeakTitle}</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{s.analyticsPage.dailyPeakTitle}</h2>
             </div>
-            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm flex-1">
+            <div className="rounded-3xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-6 shadow-sm flex-1">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-700">{s.analyticsPage.dailyPeakSubtitle}</p>
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{s.analyticsPage.dailyPeakSubtitle}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{s.analyticsPage.dailyPeakHint}</p>
                 </div>
                 <div className="flex items-center gap-4 text-[11px]">
@@ -198,14 +204,14 @@ export default function AnalyticsPage() {
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CloudRain className="h-4 w-4 text-sky-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">{s.analyticsPage.districtWeatherTitle}</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{s.analyticsPage.districtWeatherTitle}</h2>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
             {weather.loading && !weather.data ? (
               <div className="flex h-48 items-center justify-center gap-3 text-slate-400">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-200 border-t-sky-500" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-200 dark:border-slate-800 border-t-sky-500" />
                 <span className="text-sm">{s.analyticsPage.dataLoading}</span>
               </div>
             ) : weather.error ? (
@@ -213,7 +219,7 @@ export default function AnalyticsPage() {
                 <ErrorState onRetry={weather.refetch} />
               </div>
             ) : weather.data ? (
-              <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 lg:grid-cols-5">
+              <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 dark:divide-slate-800 sm:grid-cols-3 lg:grid-cols-5">
                 {weather.data
                   .sort((a, b) => b.trafficImpactPercent - a.trafficImpactPercent)
                   .slice(0, 5)
@@ -224,30 +230,30 @@ export default function AnalyticsPage() {
                     return (
                       <div
                         key={w.districtId}
-                        className={`relative flex flex-col p-5 transition-colors hover:bg-slate-50 bg-gradient-to-br ${grad}`}
+                        className={`relative flex flex-col p-5 transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/50 bg-gradient-to-br ${grad}`}
                       >
                         <div className="flex items-start gap-2">
                           <span className="text-2xl leading-none">{weatherIcon(w.condition)}</span>
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-bold text-slate-900">{w.districtName}</p>
-                            <p className="truncate text-xs text-slate-500">{condLabel}</p>
+                            <p className="truncate text-sm font-bold text-slate-900 dark:text-slate-50">{w.districtName}</p>
+                            <p className="truncate text-xs text-slate-500 dark:text-slate-400">{condLabel}</p>
                           </div>
                         </div>
 
                         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                           <div>
                             <Thermometer className="mx-auto h-3 w-3 text-orange-400" />
-                            <p className="mt-0.5 text-sm font-bold text-slate-900">{Math.round(w.temperatureC)}°</p>
+                            <p className="mt-0.5 text-sm font-bold text-slate-900 dark:text-slate-50">{Math.round(w.temperatureC)}°</p>
                             <p className="text-[9px] text-slate-400">°C</p>
                           </div>
                           <div>
                             <Wind className="mx-auto h-3 w-3 text-blue-400" />
-                            <p className="mt-0.5 text-sm font-bold text-slate-900">{Math.round(w.windSpeedKmh)}</p>
+                            <p className="mt-0.5 text-sm font-bold text-slate-900 dark:text-slate-50">{Math.round(w.windSpeedKmh)}</p>
                             <p className="text-[9px] text-slate-400">km/s</p>
                           </div>
                           <div>
                             <Droplets className="mx-auto h-3 w-3 text-sky-400" />
-                            <p className="mt-0.5 text-sm font-bold text-slate-900">{w.precipitationMm.toFixed(1)}</p>
+                            <p className="mt-0.5 text-sm font-bold text-slate-900 dark:text-slate-50">{w.precipitationMm.toFixed(1)}</p>
                             <p className="text-[9px] text-slate-400">mm</p>
                           </div>
                         </div>
@@ -259,7 +265,7 @@ export default function AnalyticsPage() {
                               +{w.trafficImpactPercent}%
                             </span>
                           </div>
-                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                             <div
                               className={`h-full rounded-full transition-all duration-700 ${
                                 w.trafficImpactPercent > 20 ? 'bg-red-500' :

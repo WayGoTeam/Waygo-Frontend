@@ -38,7 +38,7 @@ export function AiPredictionPanel() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col rounded-[2rem] bg-white/60 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 backdrop-blur-xl overflow-hidden relative transition-all hover:bg-white/80 duration-500">
+    <div className="w-full h-full flex flex-col rounded-[2rem] bg-white/60 dark:bg-slate-900/60 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white dark:border-slate-700/60 backdrop-blur-xl overflow-hidden relative transition-all hover:bg-white/80 dark:hover:bg-slate-900/80 duration-500">
       {/* Decorative gradient blob */}
       <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl"></div>
       
@@ -47,21 +47,21 @@ export function AiPredictionPanel() {
           <Sparkles className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="font-display text-lg font-bold text-slate-900">{s.aiAnalytics.predictionTitle}</h2>
-          <p className="text-xs text-slate-500">{s.aiAnalytics.predictionSubtitle}</p>
+          <h2 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50">{s.aiAnalytics.predictionTitle}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{s.aiAnalytics.predictionSubtitle}</p>
         </div>
       </div>
 
       <div className="space-y-4 relative z-10">
         {/* Road Segment Select */}
         <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700">
+          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
             <MapPin className="h-3.5 w-3.5 text-slate-400" /> {s.aiAnalytics.road}
           </label>
           <select
             value={segmentId}
             onChange={(e) => setSegmentId(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-500"
           >
             {SEGMENTS.map((s) => (
               <option key={s.id} value={s.id}>{s.name}</option>
@@ -72,13 +72,13 @@ export function AiPredictionPanel() {
         <div className="flex gap-4">
           {/* Day of Week */}
           <div className="flex-1">
-            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
               <Calendar className="h-3.5 w-3.5 text-slate-400" /> {s.aiAnalytics.day}
             </label>
             <select
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(e.target.value as DayOfWeek)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-500"
             >
               {DAYS_OF_WEEK.map((d) => (
                 <option key={d} value={d}>{s.aiAnalytics.days[d]}</option>
@@ -88,13 +88,13 @@ export function AiPredictionPanel() {
 
           {/* Hour */}
           <div className="flex-1">
-            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
               <Clock className="h-3.5 w-3.5 text-slate-400" /> {s.aiAnalytics.hour}
             </label>
             <select
               value={hour}
               onChange={(e) => setHour(Number(e.target.value))}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-500"
             >
               {Array.from({ length: 24 }).map((_, i) => (
                 <option key={i} value={i}>
@@ -108,7 +108,7 @@ export function AiPredictionPanel() {
         <button
           onClick={handlePredict}
           disabled={loading}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-slate-800 disabled:opacity-70"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 dark:bg-slate-100 px-4 py-3 text-sm font-medium text-white dark:text-slate-900 transition-all hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-70"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-brand-400" />}
           {s.aiAnalytics.calculate}
@@ -123,11 +123,11 @@ export function AiPredictionPanel() {
         {/* Forecast Result */}
         {forecast && !loading && (
           <div className="mt-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-4">
               
               <div className="flex justify-between items-end mb-4">
                 <div>
-                  <p className="text-xs font-medium text-slate-500 mb-1">{s.aiAnalytics.predictedSpeed}</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{s.aiAnalytics.predictedSpeed}</p>
                   <div className="flex items-baseline gap-1">
                     <span className={`text-3xl font-display font-bold ${
                       forecast.predictedSpeedKmh > 40 ? 'text-green-600' : 
@@ -135,18 +135,18 @@ export function AiPredictionPanel() {
                     }`}>
                       {Math.round(forecast.predictedSpeedKmh)}
                     </span>
-                    <span className="text-sm text-slate-500 font-medium">km/s</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">km/s</span>
                   </div>
                 </div>
                 
                 <div className="text-right">
-                   <p className="text-xs font-medium text-slate-500 mb-1">{s.aiAnalytics.predictedCongestion}</p>
-                   <span className="text-xl font-bold text-slate-900">{forecast.predictedCongestionLevel}%</span>
+                   <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{s.aiAnalytics.predictedCongestion}</p>
+                   <span className="text-xl font-bold text-slate-900 dark:text-slate-50">{forecast.predictedCongestionLevel}%</span>
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden mb-4">
+              <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden mb-4">
                 <div 
                   className={`h-full rounded-full transition-all duration-1000 ${
                     forecast.predictedCongestionLevel > 70 ? 'bg-red-500' : 
@@ -157,10 +157,10 @@ export function AiPredictionPanel() {
               </div>
 
               {/* AI Explanation */}
-              <div className="flex gap-2 rounded-xl bg-white p-3 border border-slate-100">
+              <div className="flex gap-2 rounded-xl bg-white dark:bg-slate-900 p-3 border border-slate-100 dark:border-slate-800">
                 <Info className="h-4 w-4 text-brand-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  <span className="font-medium text-slate-900 block mb-0.5">Modelin Şərhi:</span>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <span className="font-medium text-slate-900 dark:text-slate-50 block mb-0.5">Modelin Şərhi:</span>
                   {forecast.explanation}
                 </p>
               </div>

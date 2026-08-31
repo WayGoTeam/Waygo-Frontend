@@ -31,3 +31,18 @@ export const sendChatVoiceMessage = async (message: string): Promise<Blob> => {
   return res.blob()
 }
 
+export const fetchTTS = async (text: string, lang: string = 'az'): Promise<Blob> => {
+  const token = localStorage.getItem('waygo_token')
+  const res = await fetch(`${API_BASE}/navigation/tts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'audio/mpeg',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify({ text, lang }),
+  })
+  if (!res.ok) throw new Error('TTS request failed')
+  return res.blob()
+}
+

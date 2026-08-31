@@ -15,12 +15,12 @@ export function IncidentRow({ incident, dense = false }: { incident: RoadInciden
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-sm font-semibold text-slate-800">{typeLabel}</p>
+          <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">{typeLabel}</p>
           <span className="shrink-0 text-[11px] text-slate-400">
             {formatRelativeTime(incident.createdAt, s.common)}
           </span>
         </div>
-        <p className="mt-0.5 line-clamp-2 text-xs text-slate-500">{incident.description}</p>
+        <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{incident.description}</p>
       </div>
     </div>
   )

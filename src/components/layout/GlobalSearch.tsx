@@ -62,20 +62,20 @@ export function GlobalSearch({ placeholder }: { placeholder?: string }) {
         if (!containerRef.current?.contains(e.relatedTarget as Node)) setOpen(false)
       }}
     >
-      <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 shadow-sm focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-100">
+      <div className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 shadow-sm focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-100">
         <Search className="h-4 w-4 shrink-0 text-slate-400" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           placeholder={placeholder ?? s.topbar.searchPlaceholder}
-          className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
+          className="w-full bg-transparent text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none"
         />
         {loading && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-slate-300" />}
       </div>
 
       {open && (results !== null || loading) && (
-        <div className="scroll-thin absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-float animate-fade-up">
+        <div className="scroll-thin absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-80 overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1.5 shadow-float animate-fade-up">
           {results === null && loading && (
             <div className="flex items-center justify-center gap-2 py-4 text-xs text-slate-400">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -95,7 +95,7 @@ export function GlobalSearch({ placeholder }: { placeholder?: string }) {
             >
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
               <span className="min-w-0">
-                <span className="block truncate font-medium text-slate-800">{place.label}</span>
+                <span className="block truncate font-medium text-slate-800 dark:text-slate-200">{place.label}</span>
                 {place.subtitle && (
                   <span className="block truncate text-xs text-slate-400">{place.subtitle}</span>
                 )}

@@ -68,19 +68,19 @@ export function MapZoomControls({
 
   return (
     <div className="pointer-events-auto flex flex-col items-end gap-2">
-      <div className="flex flex-col overflow-hidden rounded-full border border-slate-200 bg-white shadow-float">
+      <div className="flex flex-col overflow-hidden rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-float">
         <button
           aria-label={s.mapControls.zoomIn}
           onClick={() => map.zoomIn()}
-          className="flex h-9 w-9 items-center justify-center text-slate-600 transition hover:text-brand-600 active:scale-95"
+          className="flex h-9 w-9 items-center justify-center text-slate-600 dark:text-slate-400 transition hover:text-brand-600 active:scale-95"
         >
           <Plus className="h-4 w-4" />
         </button>
-        <div className="h-px w-full bg-slate-100" />
+        <div className="h-px w-full bg-slate-100 dark:bg-slate-800" />
         <button
           aria-label={s.mapControls.zoomOut}
           onClick={() => map.zoomOut()}
-          className="flex h-9 w-9 items-center justify-center text-slate-600 transition hover:text-brand-600 active:scale-95"
+          className="flex h-9 w-9 items-center justify-center text-slate-600 dark:text-slate-400 transition hover:text-brand-600 active:scale-95"
         >
           <Minus className="h-4 w-4" />
         </button>

@@ -46,7 +46,7 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-4 py-10 text-center text-slate-400">
       {icon ?? <Inbox className="h-6 w-6" />}
-      <p className="text-sm font-medium text-slate-500">{title}</p>
+      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
       {subtitle && <p className="max-w-xs text-xs text-slate-400">{subtitle}</p>}
     </div>
   )

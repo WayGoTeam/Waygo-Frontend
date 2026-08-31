@@ -7,27 +7,27 @@ export function ProfileModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-xl">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-xl">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+          className="absolute right-4 top-4 rounded-full p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="p-6">
-          <h2 className="font-display text-xl font-bold text-slate-900 mb-6">Profilim</h2>
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50 mb-6">Profilim</h2>
           
           <div className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-slate-500">Ad Soyad</p>
-              <p className="text-slate-900 font-medium">{user.fullName || 'Təyin edilməyib'}</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Ad Soyad</p>
+              <p className="text-slate-900 dark:text-slate-50 font-medium">{user.fullName || 'Təyin edilməyib'}</p>
             </div>
             
             <div>
-              <p className="text-sm font-medium text-slate-500">Email</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Email</p>
               <div className="flex items-center justify-between">
-                <p className="text-slate-900 font-medium">{user.email || 'Təyin edilməyib'}</p>
+                <p className="text-slate-900 dark:text-slate-50 font-medium">{user.email || 'Təyin edilməyib'}</p>
                 {!user.email && (
                   <button onClick={() => alert('Tezliklə əlavə olunacaq!')} className="text-xs font-semibold text-brand-600 hover:underline">
                     Əlavə et
@@ -37,9 +37,9 @@ export function ProfileModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-slate-500">Telefon</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Telefon</p>
               <div className="flex items-center justify-between">
-                <p className="text-slate-900 font-medium">{user.phone || 'Təyin edilməyib'}</p>
+                <p className="text-slate-900 dark:text-slate-50 font-medium">{user.phone || 'Təyin edilməyib'}</p>
                 {!user.phone && (
                   <button onClick={() => alert('Tezliklə əlavə olunacaq!')} className="text-xs font-semibold text-brand-600 hover:underline">
                     Əlavə et
@@ -49,15 +49,15 @@ export function ProfileModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-slate-500">Avtomobil / Texpasport</p>
-              <p className="text-slate-900 font-medium">{user.vehicleType || 'PETROL'} • {user.plateNumber || 'Təyin edilməyib'}</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Avtomobil / Texpasport</p>
+              <p className="text-slate-900 dark:text-slate-50 font-medium">{user.vehicleType || 'PETROL'} • {user.plateNumber || 'Təyin edilməyib'}</p>
             </div>
           </div>
 
-          <div className="mt-8 pt-4 border-t border-slate-100 flex gap-2">
+          <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
             <button
               onClick={onClose}
-              className="flex-1 rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
+              className="flex-1 rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               Bağla
             </button>

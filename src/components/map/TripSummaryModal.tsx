@@ -1,4 +1,4 @@
-import { Leaf, Award, Map, X, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Leaf, Award, Map, X, Sparkles, CheckCircle2, Share2, Instagram } from 'lucide-react'
 import { formatKm } from '@/lib/format'
 
 interface Props {
@@ -13,9 +13,28 @@ interface Props {
 export function TripSummaryModal({ visible, ecoPoints, co2SavedKg, distanceKm, ecoMode, onClose }: Props) {
   if (!visible) return null
 
+  const handleShare = async () => {
+    const text = `🌱 WayGo ilə mənzərəli səfər etdim və təbiətə ${co2SavedKg.toFixed(2)} kq CO₂ qənaət edərək ${ecoPoints} EcoPoints qazandım! 🌍\n\nSiz də mənə qoşulun və "Yaşıl Gələcəyə" addım atın!`
+    const url = 'https://waygo.az'
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Mənim WayGo Eco-Səfərim',
+          text: text,
+          url: url
+        })
+      } catch (e) {
+        console.error('Share failed', e)
+      }
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank')
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm transition-all duration-300">
-      <div className="animate-fade-up relative w-full max-w-sm overflow-hidden rounded-[32px] bg-white shadow-2xl duration-500">
+      <div className="animate-fade-up relative w-full max-w-sm overflow-hidden rounded-[32px] bg-white dark:bg-slate-900 shadow-2xl duration-500">
         
         {/* Header Background */}
         <div className={`relative h-36 w-full ${ecoMode ? 'bg-gradient-to-br from-emerald-400 to-green-600' : 'bg-gradient-to-br from-brand-400 to-brand-600'}`}>
@@ -32,7 +51,7 @@ export function TripSummaryModal({ visible, ecoPoints, co2SavedKg, distanceKm, e
           </button>
           
           {/* Icon Badge */}
-          <div className="absolute -bottom-8 left-1/2 flex -translate-x-1/2 items-center justify-center rounded-3xl bg-white p-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          <div className="absolute -bottom-8 left-1/2 flex -translate-x-1/2 items-center justify-center rounded-3xl bg-white dark:bg-slate-900 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             {ecoMode ? (
               <Leaf className="h-8 w-8 text-emerald-500" />
             ) : (
@@ -43,8 +62,8 @@ export function TripSummaryModal({ visible, ecoPoints, co2SavedKg, distanceKm, e
 
         {/* Content */}
         <div className="px-6 pt-12 pb-6 text-center">
-          <h2 className="font-display text-2xl font-extrabold text-slate-800">Səfər Tamamlandı!</h2>
-          <p className="mt-1.5 text-sm font-medium text-slate-500 leading-relaxed">
+          <h2 className="font-display text-2xl font-extrabold text-slate-800 dark:text-slate-200">Səfər Tamamlandı!</h2>
+          <p className="mt-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed">
             {ecoMode ? 'Eco Marşrut ilə uğurla və təbiətə zərər vurmadan mənzilbaşına çatdınız.' : 'Təyinat nöqtəsinə uğurla çatdınız.'}
           </p>
 
@@ -80,22 +99,31 @@ export function TripSummaryModal({ visible, ecoPoints, co2SavedKg, distanceKm, e
           </div>
 
           {/* Distance */}
-          <div className="mt-6 flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 border border-slate-100">
-            <div className="flex items-center gap-2.5 text-slate-600">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
+          <div className="mt-6 flex items-center justify-between rounded-2xl bg-slate-50 dark:bg-slate-900/50 px-5 py-4 border border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2.5 text-slate-600 dark:text-slate-400">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-slate-900 shadow-sm">
                 <Map className="h-4 w-4 text-slate-400" />
               </div>
               <span className="text-sm font-semibold">Qət edilən məsafə</span>
             </div>
-            <span className="text-base font-bold text-slate-800">{formatKm(distanceKm * 1000)} km</span>
+            <span className="text-base font-bold text-slate-800 dark:text-slate-200">{formatKm(distanceKm * 1000)} km</span>
           </div>
 
-          <button
-            onClick={onClose}
-            className="mt-8 w-full rounded-2xl bg-slate-900 py-3.5 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition hover:bg-slate-800 active:scale-95"
-          >
-            Mükəmməl, Davam Et
-          </button>
+          <div className="mt-8 flex gap-3">
+            <button
+              onClick={onClose}
+              className="flex-1 rounded-2xl bg-slate-100 py-3.5 text-sm font-bold text-slate-700 transition hover:bg-slate-200 active:scale-95 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            >
+              Davam Et
+            </button>
+            <button
+              onClick={handleShare}
+              className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/30 transition hover:from-emerald-600 hover:to-emerald-700 active:scale-95"
+            >
+              <Share2 className="h-4 w-4" />
+              Paylaş
+            </button>
+          </div>
         </div>
       </div>
     </div>

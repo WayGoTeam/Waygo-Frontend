@@ -201,11 +201,11 @@ export function LiveMap({
           icon={incidentIcon('#f59e0b', isRecent(incident.createdAt, 2 * 60_000), incidentSize)}
         >
           <Popup autoPanPaddingTopLeft={[364, 84]} autoPanPaddingBottomRight={[224, 168]}>
-            <p className="flex items-center gap-1.5 font-semibold text-slate-800">
+            <p className="flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200">
               <IncidentTypeIcon type={incident.incidentType} className="h-3.5 w-3.5 text-amber-500" />
               {s.incidentTypes[incident.incidentType] ?? incident.incidentType}
             </p>
-            <p className="mt-1 text-slate-500">{incident.description}</p>
+            <p className="mt-1 text-slate-500 dark:text-slate-400">{incident.description}</p>
           </Popup>
         </Marker>
       ))}

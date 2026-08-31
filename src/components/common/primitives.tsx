@@ -13,7 +13,7 @@ export function Badge({
     brand: 'bg-brand-600 text-white',
     red: 'bg-red-500 text-white',
     green: 'bg-emerald-500 text-white',
-    slate: 'bg-slate-200 text-slate-700',
+    slate: 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300',
     amber: 'bg-amber-500 text-white',
   }
   return (
@@ -36,7 +36,7 @@ export function IconButton({ active, label, className = '', children, ...rest }:
       type="button"
       aria-label={label}
       title={label}
-      className={`flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-float transition hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 active:scale-95 ${
+      className={`flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 shadow-float transition hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 active:scale-95 ${
         active ? 'text-brand-600' : ''
       } ${className}`}
       {...rest}
@@ -67,7 +67,7 @@ export function Toggle({
       }`}
     >
       <span
-        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white dark:bg-slate-900 shadow transition-transform ${
           checked ? 'translate-x-4.5' : 'translate-x-1'
         }`}
         style={{ transform: checked ? 'translateX(18px)' : 'translateX(2px)' }}

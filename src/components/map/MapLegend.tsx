@@ -12,14 +12,14 @@ export function MapLegend() {
   ]
 
   return (
-    <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 rounded-full border border-slate-200 bg-white/95 px-5 py-2 shadow-float backdrop-blur">
+    <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 px-5 py-2 shadow-float backdrop-blur">
       {items.map((item) => (
-        <span key={item.label} className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+        <span key={item.label} className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
           {item.label}
         </span>
       ))}
-      <span className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+      <span className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
         <TriangleAlert className="h-3 w-3" style={{ color: INCIDENT_COLOR }} />
         {s.legend.incident}
       </span>

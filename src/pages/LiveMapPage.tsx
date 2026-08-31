@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 import { finishTrip, sendGpsPing, getAiRoute } from '@/api/navigation'
+import { fetchTTS } from '@/api/chat'
 import type L from 'leaflet'
 import { useTrafficMap } from '@/hooks/useTrafficMap'
 import { useCityStats } from '@/hooks/useCityStats'
@@ -31,7 +32,7 @@ interface FocusState {
 
 export default function LiveMapPage() {
   const location = useLocation()
-  const { s } = useLocale()
+  const { s, locale } = useLocale()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null)
   const [panelVisible, setPanelVisible] = useState(true)
@@ -53,6 +54,8 @@ export default function LiveMapPage() {
   const lastPingTimeRef = useRef<number>(0)
   const wakeLockRef = useRef<any>(null)
   const lastRerouteTimeRef = useRef<number>(0)
+  const rerouteCountRef = useRef<number>(0)
+  const tripStartTimeRef = useRef<number>(0)
 
   const trafficMap = useTrafficMap()
   const cityStats = useCityStats()
@@ -113,6 +116,7 @@ export default function LiveMapPage() {
     // If user is more than 80 meters off the route, auto-reroute (max once per 15 seconds)
     if (deviationMeters > 80 && (now - lastRerouteTimeRef.current > 15000)) {
       lastRerouteTimeRef.current = now
+      rerouteCountRef.current += 1
       
       // Update origin to current location and recalculate
       planner.setOrigin({
@@ -124,23 +128,29 @@ export default function LiveMapPage() {
 
       // Play reroute sound
       try {
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel()
-          const utterance = new SpeechSynthesisUtterance('Marşrut yenidən hesablanır')
-          utterance.rate = 1.1
-          utterance.volume = 0.8
-          window.speechSynthesis.speak(utterance)
-        }
+        const textToSpeak = locale === 'az' ? 'Marşrut yenidən hesablanır' : 'Rerouting'
+        fetchTTS(textToSpeak, locale)
+          .then(blob => {
+             const url = URL.createObjectURL(blob)
+             const audio = new Audio(url)
+             audio.play().catch(e => console.warn('Azure TTS Play failed:', e))
+          })
+          .catch(e => console.error('Azure TTS fetch failed:', e))
       } catch {}
     }
   }, [currentLocation, planner.tripActive, planner.route])
 
 
   useEffect(() => {
-    const state = location.state as FocusState | null
+    const state = location.state as any
     if (state?.focus) {
       setFocus(state.focus)
       setPanelVisible(false)
+    }
+    if (state?.reportingMode) {
+      setReportingMode(true)
+      setPanelVisible(false)
+      fetchCurrentLocationForReport()
     }
   }, [location.state])
 
@@ -278,6 +288,8 @@ export default function LiveMapPage() {
 
     const startGps = () => {
       planner.setTripActive(true)
+      tripStartTimeRef.current = Date.now()
+      rerouteCountRef.current = 0
       requestWakeLock() // Prevent screen from sleeping
       const id = navigator.geolocation.watchPosition(
         (pos) => {
@@ -384,6 +396,9 @@ export default function LiveMapPage() {
     try {
       const distanceKm = planner.route?.distanceMeters ? planner.route.distanceMeters / 1000 : 0
       const savedMinutes = planner.route?.travelTimeSeconds ? (planner.route.travelTimeSeconds / 60) * 0.2 : 0
+      const actualTravelTimeSeconds = Math.floor((Date.now() - tripStartTimeRef.current) / 1000)
+      const expectedTravelTimeSeconds = planner.route?.travelTimeSeconds || 0
+      const rerouteCount = rerouteCountRef.current
       
       const res = await finishTrip(
         planner.route?.tripId || 'anonymous-trip',
@@ -393,7 +408,10 @@ export default function LiveMapPage() {
         finalLocation.lng,
         distanceKm,
         savedMinutes,
-        planner.mode === 'eco'
+        planner.mode === 'eco',
+        actualTravelTimeSeconds,
+        expectedTravelTimeSeconds,
+        rerouteCount
       )
       
       if (res.success) {
@@ -411,7 +429,7 @@ export default function LiveMapPage() {
   }
 
   return (
-    <div ref={wrapperRef} className="relative h-full w-full bg-slate-200">
+    <div ref={wrapperRef} className="relative h-full w-full bg-slate-200 dark:bg-slate-700">
       <LiveMap
         mapConfig={mapConfig}
         segments={segments}
@@ -434,7 +452,7 @@ export default function LiveMapPage() {
                 setRoutePickingMode(null)
                 setPanelVisible(true)
               }}
-              className="rounded-full bg-white/20 px-3 py-1 text-xs transition hover:bg-white/30"
+              className="rounded-full bg-white/20 dark:bg-slate-900/20 px-3 py-1 text-xs transition hover:bg-white/30 dark:hover:bg-slate-900/30"
             >
               {s.common.cancel}
             </button>
@@ -450,7 +468,7 @@ export default function LiveMapPage() {
               onClick={() => {
                 setReportPickingMode(false)
               }}
-              className="rounded-full bg-white/20 px-3 py-1 text-xs transition hover:bg-white/30"
+              className="rounded-full bg-white/20 dark:bg-slate-900/20 px-3 py-1 text-xs transition hover:bg-white/30 dark:hover:bg-slate-900/30"
             >
               {s.common.cancel}
             </button>
@@ -515,10 +533,7 @@ export default function LiveMapPage() {
           </div>
 
           <div className="hidden flex-col items-end gap-3 sm:flex">
-            {/* Speedometer during active trip */}
-            {planner.tripActive && (
-              <SpeedometerWidget currentSpeedKmh={currentSpeed} speedLimitKmh={60} />
-            )}
+            {/* Desktop Speedometer removed by user request */}
 
             {!reportingMode && (
               <>
@@ -534,13 +549,6 @@ export default function LiveMapPage() {
                   <AlertTriangle className="h-4 w-4" />
                   {s.incidentsPage.reportButton}
                 </button>
-                <button
-                  onClick={() => setShowLeaderboard(prev => !prev)}
-                  className="pointer-events-auto flex items-center gap-2 rounded-full border border-transparent bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-float transition hover:bg-amber-600 active:scale-95"
-                >
-                  <Trophy className="h-4 w-4" />
-                  Top Sürücülər
-                </button>
               </>
             )}
             <LayerControlPanel />
@@ -555,37 +563,22 @@ export default function LiveMapPage() {
         </div>
       </div>
 
-      {/* Speedometer for mobile (bottom-right) */}
-      {planner.tripActive && (
-        <div className="absolute bottom-24 right-4 z-[1100] sm:hidden">
-          <SpeedometerWidget currentSpeedKmh={currentSpeed} speedLimitKmh={60} />
-        </div>
-      )}
-
-      {/* Leaderboard Slide-over */}
-      {showLeaderboard && (
-        <div className="absolute right-4 top-20 z-[1100] w-80 max-h-[70vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl animate-fade-up">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-sm font-bold text-slate-800">🏆 Leaderboard</h3>
-            <button onClick={() => setShowLeaderboard(false)} className="text-xs text-slate-400 hover:text-slate-600">✕</button>
-          </div>
-          <LeaderboardPanel />
-        </div>
-      )}
+      {/* Speedometer removed by user request */}
+      {/* Leaderboard removed by user request */}
 
       {dialogInfo && (
         <Modal
           title={dialogInfo.title}
           onClose={() => setDialogInfo(null)}
         >
-          <div className="text-sm text-slate-600 mb-6 whitespace-pre-line">
+          <div className="text-sm text-slate-600 dark:text-slate-400 mb-6 whitespace-pre-line">
             {dialogInfo.content}
           </div>
           <div className="flex justify-end gap-3">
             {dialogInfo.isConfirm && (
               <button
                 onClick={() => setDialogInfo(null)}
-                className="rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                className="rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-900/50"
               >
                 {s.common.cancel || 'Ləğv et'}
               </button>

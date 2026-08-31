@@ -28,15 +28,15 @@ export function LoginForm() {
 
   return (
     <div className="flex h-full items-center justify-center p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
         <div className="flex flex-col items-center gap-2 text-center">
           <LogoMark size={44} />
-          <h1 className="mt-1 font-display text-lg font-bold text-slate-900">{s.adminPage.loginTitle}</h1>
-          <p className="text-sm text-slate-500">{s.adminPage.loginSubtitle}</p>
+          <h1 className="mt-1 font-display text-lg font-bold text-slate-900 dark:text-slate-50">{s.adminPage.loginTitle}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{s.adminPage.loginSubtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-3">
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-100">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-brand-100">
             <User className="h-4 w-4 shrink-0 text-slate-400" />
             <input
               value={username}
@@ -44,10 +44,10 @@ export function LoginForm() {
               placeholder={s.adminPage.username}
               autoComplete="username"
               required
-              className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
+              className="w-full bg-transparent text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none"
             />
           </div>
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-100">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-brand-100">
             <Lock className="h-4 w-4 shrink-0 text-slate-400" />
             <input
               value={password}
@@ -56,7 +56,7 @@ export function LoginForm() {
               type="password"
               autoComplete="current-password"
               required
-              className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
+              className="w-full bg-transparent text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none"
             />
           </div>
 

@@ -15,12 +15,12 @@ export function LayerControlPanel() {
   } = useMapLayers()
 
   return (
-    <div className="pointer-events-auto w-48 rounded-2xl border border-slate-200 bg-white p-2 shadow-float">
-      <div className="mb-2 flex gap-1.5 border-b border-slate-100 pb-2">
+    <div className="pointer-events-auto w-48 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-float">
+      <div className="mb-2 flex gap-1.5 border-b border-slate-100 dark:border-slate-800 pb-2">
         <button
           onClick={() => setBasemap('street')}
           className={`flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-medium transition ${
-            basemap === 'street' ? 'bg-brand-50 text-brand-700' : 'text-slate-400 hover:bg-slate-50'
+            basemap === 'street' ? 'bg-brand-50 text-brand-700' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
           }`}
         >
           <MapIcon className="h-4 w-4" />
@@ -29,7 +29,7 @@ export function LayerControlPanel() {
         <button
           onClick={() => setBasemap('satellite')}
           className={`flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-medium transition ${
-            basemap === 'satellite' ? 'bg-brand-50 text-brand-700' : 'text-slate-400 hover:bg-slate-50'
+            basemap === 'satellite' ? 'bg-brand-50 text-brand-700' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
           }`}
         >
           <Satellite className="h-4 w-4" />
@@ -58,7 +58,7 @@ function LayerRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-xl px-1.5 py-1.5">
-      <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-slate-600">
+      <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
         <Icon className="h-3.5 w-3.5 shrink-0 text-slate-400" />
         <span className="truncate">{label}</span>
       </span>

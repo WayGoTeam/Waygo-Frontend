@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import L from 'leaflet'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { getActiveGps } from '@/api/admin'
@@ -8,7 +8,7 @@ import { Navigation, Loader2 } from 'lucide-react'
 // Custom pulsing marker icon for live users
 const pulseIcon = L.divIcon({
   className: 'waygo-live-user-icon',
-  html: <div style="
+  html: `<div style="
     width: 24px;
     height: 24px;
     background-color: #3b82f6;
@@ -16,7 +16,7 @@ const pulseIcon = L.divIcon({
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
     animation: pulse-ring 2s infinite;
-  "></div>,
+  "></div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 12],
 })
@@ -31,19 +31,19 @@ export function AdminLiveMap() {
     if (!document.getElementById('waygo-live-pulse-style')) {
       const style = document.createElement('style')
       style.id = 'waygo-live-pulse-style'
-      style.innerHTML = 
+      style.innerHTML = `
         @keyframes pulse-ring {
           0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
           70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
           100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
-      
+      `
       document.head.appendChild(style)
     }
 
     const fetchGps = () => {
       getActiveGps()
-        .then(res => setLiveUsers(res.data))
+        .then(res => setLiveUsers(res as any))
         .catch(console.error)
         .finally(() => setLoading(false))
     }
@@ -56,8 +56,8 @@ export function AdminLiveMap() {
 
   if (loading) {
     return (
-      <div className="flex h-[500px] w-full items-center justify-center rounded-2xl border border-slate-200 bg-slate-50">
-        <div className="flex flex-col items-center text-slate-500">
+      <div className="flex h-[500px] w-full items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+        <div className="flex flex-col items-center text-slate-500 dark:text-slate-400">
           <Loader2 className="mb-2 h-8 w-8 animate-spin text-brand-500" />
           <p className="text-sm font-medium">Baku Live Telemetry yüklənir...</p>
         </div>
@@ -69,15 +69,15 @@ export function AdminLiveMap() {
   const center: [number, number] = [40.4093, 49.8671]
 
   return (
-    <div className="relative h-[600px] w-full overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
-      <div className="absolute left-4 top-4 z-[1000] rounded-xl bg-white/90 p-3 shadow-lg backdrop-blur-md">
+    <div className="relative h-[600px] w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="absolute left-4 top-4 z-[1000] rounded-xl bg-white/90 dark:bg-slate-900/90 p-3 shadow-lg backdrop-blur-md">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100">
             <Navigation className="h-4 w-4 text-brand-600" />
           </div>
           <div>
-            <p className="text-xs font-bold uppercase text-slate-500">Live Drivers</p>
-            <p className="text-lg font-black text-slate-900">{liveUsers.length}</p>
+            <p className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Live Drivers</p>
+            <p className="text-lg font-black text-slate-900 dark:text-slate-50">{liveUsers.length}</p>
           </div>
         </div>
       </div>
@@ -102,17 +102,17 @@ export function AdminLiveMap() {
           >
             <Popup className="rounded-xl">
               <div className="p-1">
-                <p className="mb-1 text-xs font-bold text-slate-500">Device ID</p>
-                <p className="mb-2 text-sm font-semibold text-slate-900">{user.deviceId.substring(0, 8)}...</p>
+                <p className="mb-1 text-xs font-bold text-slate-500 dark:text-slate-400">Device ID</p>
+                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-slate-50">{user.deviceId.substring(0, 8)}...</p>
                 
-                <div className="flex items-center gap-4 border-t border-slate-100 pt-2">
+                <div className="flex items-center gap-4 border-t border-slate-100 dark:border-slate-800 pt-2">
                   <div>
                     <p className="text-[10px] font-bold uppercase text-slate-400">Speed</p>
                     <p className="text-sm font-black text-brand-600">{Math.round(user.speed)} km/h</p>
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase text-slate-400">Last Ping</p>
-                    <p className="text-sm font-semibold text-slate-700">
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                       {new Date(user.timestamp).toLocaleTimeString()}
                     </p>
                   </div>

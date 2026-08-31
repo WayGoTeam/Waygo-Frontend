@@ -57,7 +57,7 @@ export function RoutePlannerPanel({
     return (
       <button
         onClick={onReopen}
-        className="pointer-events-auto flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-float transition hover:border-brand-300 hover:text-brand-700"
+        className="pointer-events-auto flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-float transition hover:border-brand-300 hover:text-brand-700"
       >
         <RouteIcon className="h-4 w-4 text-brand-600" />
         {s.routePlanner.reopen}
@@ -66,20 +66,20 @@ export function RoutePlannerPanel({
   }
 
   return (
-    <div className="pointer-events-auto flex max-h-full w-[340px] max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float">
-      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5">
-        <h2 className="font-display text-sm font-bold text-slate-900">{s.routePlanner.title}</h2>
+    <div className="pointer-events-auto flex max-h-full w-[340px] max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-float">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-4 py-3.5">
+        <h2 className="font-display text-sm font-bold text-slate-900 dark:text-slate-50">{s.routePlanner.title}</h2>
         <button
           onClick={onClose}
           aria-label={s.common.close}
-          className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          className="rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-400"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
       <div className="flex-shrink-0 px-4 py-3.5 z-10">
-        <label className="mb-1 block text-xs font-medium text-slate-500">{s.routePlanner.origin}</label>
+        <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">{s.routePlanner.origin}</label>
         <PlaceAutocomplete
           value={origin}
           onChange={setOrigin}
@@ -89,12 +89,12 @@ export function RoutePlannerPanel({
         />
 
         <div className="flex items-center justify-between pt-2.5">
-          <label className="block text-xs font-medium text-slate-500">{s.routePlanner.destination}</label>
+          <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">{s.routePlanner.destination}</label>
           <button
             onClick={onSwap}
             aria-label={s.routePlanner.swap}
             title={s.routePlanner.swap}
-            className="rounded-full border border-slate-200 p-1.5 text-slate-400 transition hover:border-brand-300 hover:text-brand-600"
+            className="rounded-full border border-slate-200 dark:border-slate-800 p-1.5 text-slate-400 transition hover:border-brand-300 hover:text-brand-600"
           >
             <ArrowUpDown className="h-3.5 w-3.5" />
           </button>
@@ -116,7 +116,7 @@ export function RoutePlannerPanel({
             className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition border ${
               mode === 'fastest'
                 ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                : 'bg-slate-50 text-slate-500 border-slate-200 hover:border-slate-400 hover:text-slate-700'
+                : 'bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
             <Zap className="h-3.5 w-3.5" />
@@ -145,7 +145,7 @@ export function RoutePlannerPanel({
 
       <div className="scroll-thin flex-1 overflow-y-auto px-4 pb-3.5">
         {!origin || !destination ? (
-          <p className="rounded-xl bg-slate-50 px-3 py-3 text-center text-xs text-slate-400">
+          <p className="rounded-xl bg-slate-50 dark:bg-slate-900/50 px-3 py-3 text-center text-xs text-slate-400">
             {s.routePlanner.pickBoth}
           </p>
         ) : loading ? (
@@ -162,7 +162,7 @@ export function RoutePlannerPanel({
         )}
       </div>
 
-      <div className="space-y-2 border-t border-slate-100 px-4 py-3.5">
+      <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 px-4 py-3.5">
         {route && !tripActive && (
           <button
             onClick={onStartTrip}
@@ -182,7 +182,7 @@ export function RoutePlannerPanel({
         <button
           disabled={!route}
           onClick={onShowOnMap}
-          className="w-full rounded-xl bg-slate-100 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-sm transition hover:bg-slate-200 dark:hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {s.routePlanner.showOnMap}
         </button>
@@ -245,7 +245,7 @@ function RouteSummary({ route, mode }: { route: RouteResult; mode: RouteMode }) 
 
       <div className="flex items-end justify-between">
         <div className="flex items-baseline gap-1.5">
-          <span className="font-display text-3xl font-extrabold tabular-nums text-slate-900">
+          <span className="font-display text-3xl font-extrabold tabular-nums text-slate-900 dark:text-slate-50">
             {formatMinutes(route.travelTimeSeconds / 60)}
           </span>
           <span className="text-sm font-medium text-slate-400">{s.common.minutes}</span>
@@ -257,7 +257,7 @@ function RouteSummary({ route, mode }: { route: RouteResult; mode: RouteMode }) 
       </p>
 
       <p className="mt-2.5 text-[11px] font-medium text-slate-400">{s.routePlanner.routeLabel[mode] ?? mode}</p>
-      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
         <div
           className={`h-full rounded-full transition-all duration-700 ${mode === 'eco' ? 'bg-emerald-500' : 'bg-brand-500'}`}
           style={{ width: `${efficiencyPct}%` }}
@@ -266,8 +266,8 @@ function RouteSummary({ route, mode }: { route: RouteResult; mode: RouteMode }) 
 
       {route.forecast && (
         <div className="mt-4">
-          <p className="text-xs font-semibold text-slate-600">{s.routePlanner.forecastTitle}</p>
-          <div className="mt-1.5 divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-100">
+          <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">{s.routePlanner.forecastTitle}</p>
+          <div className="mt-1.5 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-xl border border-slate-100 dark:border-slate-800">
             {route.forecast.map((point) => (
               <ForecastRow key={point.offsetMinutes} point={point} baseline={baseline} />
             ))}
@@ -306,8 +306,8 @@ function ForecastRow({ point, baseline }: { point: ForecastPoint; baseline: numb
   const { s } = useLocale()
   const label = point.offsetMinutes === 0 ? s.routePlanner.now : `+${point.offsetMinutes} ${s.routePlanner.min}`
   return (
-    <div className="flex items-center justify-between bg-white px-3 py-2 text-sm">
-      <span className="text-slate-500">{label}</span>
+    <div className="flex items-center justify-between bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+      <span className="text-slate-500 dark:text-slate-400">{label}</span>
       <span className={`font-semibold tabular-nums ${forecastTone(point.minutes, baseline)}`}>
         {formatMinutes(point.minutes)} {s.routePlanner.minutesShort}
       </span>
