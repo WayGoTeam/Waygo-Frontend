@@ -351,7 +351,7 @@ export default function ProfilePage() {
                   onClick={toggleTheme}
                   className="group flex items-center justify-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
                 >
-                  {theme === 'dark' ? '☀️ Gündüz rejimi' : '🌙 Gecə rejimi'}
+                  {theme === 'dark' ? t.profilePage.lightMode : t.profilePage.darkMode}
                 </button>
                 <button
                   onClick={() => setIsLogoutModalOpen(true)}

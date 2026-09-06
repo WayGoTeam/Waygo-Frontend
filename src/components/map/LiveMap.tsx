@@ -5,9 +5,10 @@ import { useMapLayers } from '@/context/MapLayersContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { useLocale } from '@/i18n/LocaleContext'
 import { congestionColor, congestionBand } from '@/lib/congestion'
-import { dotIcon, incidentIcon, pinIcon } from '@/lib/mapIcons'
+import { renderToString } from 'react-dom/server'
+import { dotIcon, dynamicIncidentIcon, pinIcon } from '@/lib/mapIcons'
 import { trafficFlowTileUrl, TRANSPARENT_TILE } from '@/api/maps'
-import { IncidentTypeIcon } from '@/components/incidents/incidentIcons'
+import { IncidentTypeIcon, incidentHexColor } from '@/components/incidents/incidentIcons'
 import type { MapConfig, TrafficMapEntry } from '@/types/api'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
 import type { RouteResult } from '@/hooks/useRoutePlanner'
@@ -194,21 +195,31 @@ export function LiveMap({
       {/* Render mock traffic lines via Martin Vector Tiles */}
       <VectorTrafficLayer url={trafficFlowTileUrl()} visible={showTraffic} />
 
-      {showMarkers && visibleIncidents.map((incident) => (
-        <Marker
-          key={incident.id}
-          position={[incident.latitude as number, incident.longitude as number]}
-          icon={incidentIcon('#f59e0b', isRecent(incident.createdAt, 2 * 60_000), incidentSize)}
-        >
-          <Popup autoPanPaddingTopLeft={[364, 84]} autoPanPaddingBottomRight={[224, 168]}>
-            <p className="flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200">
-              <IncidentTypeIcon type={incident.incidentType} className="h-3.5 w-3.5 text-amber-500" />
-              {s.incidentTypes[incident.incidentType] ?? incident.incidentType}
-            </p>
-            <p className="mt-1 text-slate-500 dark:text-slate-400">{incident.description}</p>
-          </Popup>
-        </Marker>
-      ))}
+      {showMarkers && visibleIncidents.map((incident) => {
+        const hexColor = incidentHexColor(incident.incidentType);
+        const pulse = isRecent(incident.createdAt, 2 * 60_000);
+        const svgHtml = renderToString(<IncidentTypeIcon type={incident.incidentType} size={incidentSize * 0.4} color="white" strokeWidth={2.5} />);
+
+        return (
+          <Marker
+            key={incident.id}
+            position={[incident.latitude as number, incident.longitude as number]}
+            icon={dynamicIncidentIcon(svgHtml, hexColor, pulse, incidentSize)}
+          >
+            <Popup autoPanPaddingTopLeft={[364, 84]} autoPanPaddingBottomRight={[224, 168]}>
+              <p className="flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200">
+                <IncidentTypeIcon type={incident.incidentType} className={`h-3.5 w-3.5`} style={{ color: hexColor }} />
+                {s.incidentTypes[incident.incidentType] ?? incident.incidentType}
+              </p>
+              <p className="mt-1 text-slate-500 dark:text-slate-400">
+                {incident.description.startsWith('Reported: ') || incident.description.startsWith('Reported:')
+                  ? `${s.reportModal.reportedPrefix} ${s.incidentTypes[incident.incidentType] ?? incident.incidentType}`
+                  : incident.description}
+              </p>
+            </Popup>
+          </Marker>
+        );
+      })}
 
       {route && routeLatLngs.length > 1 && (
         <>
@@ -224,7 +235,7 @@ export function LiveMap({
         </Marker>
       )}
       {showMarkers && reportLocation && (
-        <Marker position={[reportLocation.lat, reportLocation.lng]} icon={incidentIcon('#f59e0b', true, incidentSize)} />
+        <Marker position={[reportLocation.lat, reportLocation.lng]} icon={dynamicIncidentIcon(renderToString(<IncidentTypeIcon type="HAZARD" size={incidentSize * 0.4} color="white" strokeWidth={2.5} />), '#f59e0b', true, incidentSize)} />
       )}
       {showMarkers && currentLocation && (
         <Marker position={[currentLocation.lat, currentLocation.lng]} icon={dotIcon('#3b82f6', dotSize)} zIndexOffset={1000} />

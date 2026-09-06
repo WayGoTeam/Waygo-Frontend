@@ -20,7 +20,11 @@ export function IncidentRow({ incident, dense = false }: { incident: RoadInciden
             {formatRelativeTime(incident.createdAt, s.common)}
           </span>
         </div>
-        <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{incident.description}</p>
+        <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">
+          {incident.description.startsWith('Reported: ') || incident.description.startsWith('Reported:')
+            ? `${s.reportModal.reportedPrefix} ${typeLabel}`
+            : incident.description}
+        </p>
       </div>
     </div>
   )

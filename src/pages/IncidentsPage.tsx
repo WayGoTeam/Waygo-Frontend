@@ -92,7 +92,9 @@ export default function IncidentsPage() {
                     </div>
                     
                     <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 font-medium">
-                      {incident.description}
+                      {incident.description.startsWith('Reported: ') || incident.description.startsWith('Reported:')
+                        ? `${s.reportModal.reportedPrefix} ${s.incidentTypes[incident.incidentType] ?? incident.incidentType}`
+                        : incident.description}
                     </p>
                     
                     <div className="mt-5 flex items-center gap-2">

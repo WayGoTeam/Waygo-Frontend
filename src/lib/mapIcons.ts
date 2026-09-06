@@ -23,18 +23,14 @@ export function pinIcon(color: string, size = 34): L.DivIcon {
   })
 }
 
-export function incidentIcon(color: string, pulse: boolean, size = 30): L.DivIcon {
+export function dynamicIncidentIcon(svgHtml: string, color: string, pulse: boolean, size = 30): L.DivIcon {
   return L.divIcon({
     className: 'waygo-pulse-icon',
     html: `
       <span style="position:relative;display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;">
         ${pulse ? `<span class="waygo-pulse-ring" style="position:absolute;inset:0;border-radius:9999px;background:${color};opacity:0.5;"></span>` : ''}
         <span style="position:relative;display:flex;align-items:center;justify-content:center;width:${size * 0.72}px;height:${size * 0.72}px;border-radius:9999px;background:${color};border:2.5px solid white;box-shadow:0 2px 6px rgba(15,23,42,0.35);">
-          <svg width="${size * 0.4}" height="${size * 0.4}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-            <line x1="12" x2="12" y1="9" y2="13"/>
-            <line x1="12" x2="12.01" y1="17" y2="17"/>
-          </svg>
+          ${svgHtml}
         </span>
       </span>`,
     iconSize: [size, size],

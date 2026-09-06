@@ -137,6 +137,7 @@ export interface Strings {
     cancel: string
     success: string
     error: string
+    reportedPrefix: string
   }
   aiAnalytics: {
     pageTitle: string
@@ -270,6 +271,13 @@ export interface Strings {
     badgeCount: string
     achievements: string
     badgesEarned: string
+    ranks: {
+      beginner: string
+      explorer: string
+      guardian: string
+      champion: string
+      legend: string
+    }
   }
   profilePage: {
     loggedOutTitle: string
@@ -288,6 +296,8 @@ export interface Strings {
     plateNumber: string
     ecoDriver: string
     logout: string
+    lightMode: string
+    darkMode: string
     logoutConfirmTitle: string
     logoutConfirmDesc: string
     logoutConfirmYes: string
@@ -465,6 +475,7 @@ export const az: Strings = {
     cancel: 'Ləğv et',
     success: 'Təşəkkürlər! Hesabatınız admin təsdiqini gözləyir.',
     error: 'Hesabat göndərilə bilmədi. Yenidən cəhd edin.',
+    reportedPrefix: 'Bildirildi:',
   },
   aiAnalytics: {
     pageTitle: 'İntellektual Analitika',
@@ -603,9 +614,16 @@ export const az: Strings = {
     totalRoutes: 'Ümumi Marşrut',
     totalDistance: 'Ümumi Məsafə',
     longestStreak: 'Ən Uzun Seriya',
-    badgeCount: 'Badge Sayı',
+    badgeCount: 'Nişan Sayı',
     achievements: 'Nailiyyətlər',
-    badgesEarned: '{0}/{1} badge qazanılmış',
+    badgesEarned: '{0}/{1} nişan qazanılmış',
+    ranks: {
+      beginner: 'Başlanğıc',
+      explorer: 'Kəşfiyyatçı',
+      guardian: 'Mühafizəçi',
+      champion: 'Çempion',
+      legend: 'Əfsanə',
+    }
   },
   profilePage: {
     loggedOutTitle: 'Profilə baxmaq üçün giriş etməlisiniz',
@@ -624,6 +642,8 @@ export const az: Strings = {
     plateNumber: 'Dövlət nömrə nişanı',
     ecoDriver: 'Eco-Sürücü',
     logout: 'Hesabdan çıx',
+    lightMode: '☀️ Gündüz rejimi',
+    darkMode: '🌙 Gecə rejimi',
     logoutConfirmTitle: 'Hesabdan çıxış',
     logoutConfirmDesc: 'Sistemdən çıxmaq istədiyinizə əminsiniz?',
     logoutConfirmYes: 'Bəli, çıx',
@@ -799,8 +819,9 @@ export const en: Strings = {
     submit: 'Submit',
     submitting: 'Submitting...',
     cancel: 'Cancel',
-    success: 'Thanks! Your report is pending admin approval.',
-    error: 'Could not submit the report. Please try again.',
+    success: 'Thank you! Your report is waiting for admin approval.',
+    error: 'Failed to submit report. Please try again.',
+    reportedPrefix: 'Reported:',
   },
   aiAnalytics: {
     pageTitle: 'Intelligent Analytics',
@@ -942,6 +963,13 @@ export const en: Strings = {
     badgeCount: 'Badge Count',
     achievements: 'Achievements',
     badgesEarned: '{0}/{1} badges earned',
+    ranks: {
+      beginner: 'Beginner',
+      explorer: 'Explorer',
+      guardian: 'Guardian',
+      champion: 'Champion',
+      legend: 'Legend',
+    }
   },
   profilePage: {
     loggedOutTitle: 'Please log in to view your profile',
@@ -960,6 +988,8 @@ export const en: Strings = {
     plateNumber: 'Plate number',
     ecoDriver: 'Eco-Driver',
     logout: 'Log out',
+    lightMode: '☀️ Light mode',
+    darkMode: '🌙 Dark mode',
     logoutConfirmTitle: 'Log out',
     logoutConfirmDesc: 'Are you sure you want to log out?',
     logoutConfirmYes: 'Yes, log out',

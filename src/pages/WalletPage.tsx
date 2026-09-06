@@ -21,12 +21,12 @@ const BADGE_META: Record<string, { icon: React.ReactNode; title: string; desc: s
 const ALL_BADGES = Object.keys(BADGE_META)
 
 // ─── Rank tiers ─────────────────────────────────────────────────────────────
-function getRank(pts: number) {
-  if (pts >= 5000) return { label: 'Legend',    color: '#f59e0b', next: Infinity, tier: 4 }
-  if (pts >= 2000) return { label: 'Champion',  color: '#8b5cf6', next: 5000, tier: 3 }
-  if (pts >= 800)  return { label: 'Guardian',  color: '#3b82f6', next: 2000, tier: 2 }
-  if (pts >= 200)  return { label: 'Explorer',  color: '#10b981', next: 800,  tier: 1 }
-  return              { label: 'Beginner',   color: '#6b7280', next: 200,  tier: 0 }
+function getRank(pts: number, t: any) {
+  if (pts >= 5000) return { label: t.walletPage.ranks.legend,    color: '#f59e0b', next: Infinity, tier: 4 }
+  if (pts >= 2000) return { label: t.walletPage.ranks.champion,  color: '#8b5cf6', next: 5000, tier: 3 }
+  if (pts >= 800)  return { label: t.walletPage.ranks.guardian,  color: '#3b82f6', next: 2000, tier: 2 }
+  if (pts >= 200)  return { label: t.walletPage.ranks.explorer,  color: '#10b981', next: 800,  tier: 1 }
+  return              { label: t.walletPage.ranks.beginner,   color: '#6b7280', next: 200,  tier: 0 }
 }
 
 // ─── Tx type icon & color ────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ export default function WalletPage() {
   const streak  = balance?.currentStreak    ?? 0
   const co2     = balance?.totalCo2SavedKg  ?? 0
   const trips   = balance?.totalTripsCount  ?? 0
-  const rank    = getRank(pts)
+  const rank    = getRank(pts, t)
   const nextPts = rank.next === Infinity ? pts : rank.next
   const rankPct = rank.next === Infinity ? 100 : Math.round((pts / nextPts) * 100)
 

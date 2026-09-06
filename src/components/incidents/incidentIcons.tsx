@@ -37,3 +37,21 @@ export function incidentTone(type: string): { text: string; bg: string } {
       return { text: 'text-amber-600', bg: 'bg-amber-50' }
   }
 }
+
+export function incidentHexColor(type: string): string {
+  switch (type) {
+    case 'ACCIDENT':
+    case 'ROAD_CLOSED':
+      return '#ef4444'
+    case 'POLICE':
+      return '#3b82f6'
+    case 'STATISTICAL_ANOMALY':
+      return '#ea580c'
+    case 'ROADWORKS':
+    case 'HAZARD':
+    case 'HEAVY_TRAFFIC':
+    case 'OTHER':
+    default:
+      return '#f59e0b'
+  }
+}
