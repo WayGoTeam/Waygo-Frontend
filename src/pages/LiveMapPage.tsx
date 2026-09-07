@@ -355,6 +355,26 @@ export default function LiveMapPage() {
   }
 
 
+  function handleCancelTripClick() {
+    setDialogInfo({
+      title: 'Səfəri ləğv et',
+      content: 'Səfəri ləğv etmək istədiyinizə əminsiniz?',
+      isConfirm: true,
+      onConfirm: handleCancelTrip
+    })
+  }
+
+  function handleCancelTrip() {
+    setDialogInfo(null)
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current)
+      watchIdRef.current = null
+    }
+    releaseWakeLock()
+    planner.setTripActive(false)
+    setCurrentSpeed(0)
+  }
+
   function handleEndTripClick() {
     setDialogInfo({
       title: 'Səfəri bitir',
@@ -382,7 +402,7 @@ export default function LiveMapPage() {
         navigator.geolocation.getCurrentPosition(
           (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
           (err) => reject(err),
-          { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+          { enableHighAccuracy: true, timeout: 3000, maximumAge: 0 }
         )
       })
       if (finalLocation) {
@@ -392,13 +412,27 @@ export default function LiveMapPage() {
       console.warn('GPS yenilənmədi, köhnə mövqe istifadə olunur.', e)
     }
     
+    // Səfər ləğv ediləndə və ya GPS paylaşılmadıqda xəta çıxarılmır, səfər sakitcə dayandırılır
     if (!planner.destination || !finalLocation) {
-      setDialogInfo({ title: 'Xəta', content: 'Səfər məlumatları tam deyil (Trip data is incomplete).' })
       return
     }
     
     if (!user) {
       setDialogInfo({ title: 'Diqqət', content: 'Eco-Points qazanmaq üçün sistemə daxil olmalısınız!' })
+      return
+    }
+
+    // Check if user has reached destination (< 300 meters)
+    const distanceToDestMeters = haversineKm(
+      { latitude: finalLocation.lat, longitude: finalLocation.lng },
+      { latitude: planner.destination.lat, longitude: planner.destination.lng }
+    ) * 1000
+
+    if (distanceToDestMeters > 300) {
+      setDialogInfo({
+        title: 'Səfər dayandırıldı',
+        content: `Təyinat nöqtəsinə çatmadığınız üçün (${Math.round(distanceToDestMeters)} m qalıb) Eco-Points hesablanmadı.`
+      })
       return
     }
     
@@ -517,6 +551,7 @@ export default function LiveMapPage() {
               tripActive={planner.tripActive}
               onStartTrip={handleStartTrip}
               onEndTrip={handleEndTripClick}
+              onCancelTrip={handleCancelTripClick}
               onPickOrigin={() => {
                 setRoutePickingMode('origin')
                 setPanelVisible(false)

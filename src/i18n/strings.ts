@@ -77,6 +77,7 @@ export interface Strings {
     minutesShort: string
     startTrip: string
     endTrip: string
+    cancelTrip: string
   }
   chat: {
     title: string
@@ -391,6 +392,7 @@ export const az: Strings = {
     minutesShort: 'dəq',
     startTrip: 'Səfərə Başla',
     endTrip: 'Səfəri Bitir',
+    cancelTrip: 'Ləğv et',
   },
   chat: {
     title: 'WayGo AI',
@@ -737,6 +739,7 @@ export const en: Strings = {
     minutesShort: 'min',
     startTrip: 'Start Trip',
     endTrip: 'End Trip',
+    cancelTrip: 'Cancel',
   },
   chat: {
     title: 'WayGo AI',

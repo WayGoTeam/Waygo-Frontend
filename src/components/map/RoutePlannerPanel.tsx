@@ -26,6 +26,7 @@ interface Props {
   tripActive?: boolean
   onStartTrip?: () => void
   onEndTrip?: () => void
+  onCancelTrip?: () => void
   onPickOrigin?: () => void
   onPickDestination?: () => void
 }
@@ -35,7 +36,7 @@ export function RoutePlannerPanel({
   origin, setOrigin, destination, setDestination,
   mode, setMode, route, loading, error,
   onSwap, onClear, onShowOnMap,
-  tripActive, onStartTrip, onEndTrip, onPickOrigin, onPickDestination,
+  tripActive, onStartTrip, onEndTrip, onCancelTrip, onPickOrigin, onPickDestination,
 }: Props) {
   const { s } = useLocale()
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -69,9 +70,22 @@ export function RoutePlannerPanel({
               )}
             </div>
           </div>
-          <button onClick={onEndTrip} className="rounded-xl bg-red-500 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-600 active:scale-95">
-            {s.routePlanner.endTrip ?? 'Bitir'}
-          </button>
+          <div className="flex items-center gap-2">
+            {onCancelTrip && (
+              <button
+                onClick={onCancelTrip}
+                className="rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700/80 px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:text-white transition active:scale-95"
+              >
+                {s.routePlanner.cancelTrip ?? s.common.cancel}
+              </button>
+            )}
+            <button
+              onClick={onEndTrip}
+              className="rounded-xl bg-red-500 hover:bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition active:scale-95"
+            >
+              {s.routePlanner.endTrip ?? 'Bitir'}
+            </button>
+          </div>
         </div>
       </div>
     )
