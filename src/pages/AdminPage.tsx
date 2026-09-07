@@ -9,6 +9,7 @@ import { AdminAnalytics } from '@/components/admin/AdminAnalytics'
 import { AdminLiveMap } from '@/components/admin/AdminLiveMap'
 import { PageHeader } from '@/components/common/PageHeader'
 import { LoadingState } from '@/components/common/States'
+import { simulateTraffic } from '@/api/admin'
 
 type MainTab = 'analytics' | 'live' | 'incidents'
 type IncidentTab = 'pending' | 'active'
@@ -35,13 +36,28 @@ export default function AdminPage() {
         title={s.adminPage.title}
         subtitle={s.adminPage.subtitle}
         action={
-          <button
-            onClick={() => void logout()}
-            className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900/50"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            {s.adminPage.signOut}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  const res = await simulateTraffic(5)
+                  alert(res.message || '5 süni tıxac (anomaliya) yaradıldı.')
+                } catch (e) {
+                  alert('Xəta baş verdi: ' + String(e))
+                }
+              }}
+              className="flex items-center gap-1.5 rounded-full bg-brand-500 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-brand-600 shadow-sm"
+            >
+              Tıxac Simulyasiyası
+            </button>
+            <button
+              onClick={() => void logout()}
+              className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900/50"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              {s.adminPage.signOut}
+            </button>
+          </div>
         }
       />
       <p className="mt-1 mb-6 text-xs text-slate-400">

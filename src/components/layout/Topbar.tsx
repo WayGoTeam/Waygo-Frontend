@@ -1,4 +1,4 @@
-import { Bell, Menu, SlidersHorizontal, LogOut, User } from 'lucide-react'
+import { Bell, SlidersHorizontal, LogOut, User } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocale } from '@/i18n/LocaleContext'
@@ -15,7 +15,7 @@ import { Modal } from '@/components/common/Modal'
 import { useAuth } from '@/context/AuthContext'
 import { OtpLoginModal } from '@/components/auth/OtpLoginModal'
 
-export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
+export function Topbar() {
   const { s, locale, setLocale } = useLocale()
   const navigate = useNavigate()
   const { incidents } = useIncidentsContext()
@@ -30,15 +30,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
 
   return (
     <header className="relative z-[2000] flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 sm:px-6">
-      <button
-        onClick={onMenuClick}
-        aria-label={s.topbar.menu}
-        className="rounded-full p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
-      >
-        <Menu className="h-5 w-5" />
-      </button>
-
-      <GlobalSearch />
+<GlobalSearch />
 
       <Popover
         align="left"

@@ -22,5 +22,11 @@ export const getRoute = (
 export const TRANSPARENT_TILE =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 
-export const trafficFlowTileUrl = () => `http://localhost:3001/mock_traffic/{z}/{x}/{y}`
+export const trafficFlowTileUrl = () => {
+  const customUrl = import.meta.env.VITE_TRAFFIC_TILES_URL
+  if (customUrl) {
+    return customUrl.includes('{z}') ? customUrl : `${customUrl.replace(/\/+$/, '')}/{z}/{x}/{y}`
+  }
+  return `${API_BASE}/traffic/tiles/flow/{z}/{x}/{y}`
+}
 export const trafficIncidentTileUrl = () => `${API_BASE}/traffic/tiles/incidents/{z}/{x}/{y}.png`

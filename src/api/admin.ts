@@ -41,3 +41,4 @@ export const getAdminKpi = () => api.get<AdminAnalyticsKpi>('/admin/analytics/kp
 export const getAdminTimeSeries = (days: number = 30) => api.get<TimeSeriesData[]>(`/admin/analytics/time-series?days=${days}`)
 export const getAdminDemographics = () => api.get<DemographicsData[]>('/admin/analytics/demographics')
 export const getActiveGps = () => api.get<ActiveGpsData[]>('/admin/active-gps')
+export const simulateTraffic = (count: number = 5) => api.post<any>(`/admin/simulate-traffic?count=${count}`)

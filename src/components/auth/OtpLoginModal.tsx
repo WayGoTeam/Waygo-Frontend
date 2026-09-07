@@ -19,6 +19,8 @@ export function OtpLoginModal({ onClose }: Props) {
   const [passwordInput, setPasswordInput] = useState('')
   const [vehicleType, setVehicleType] = useState<VehicleType>('PETROL')
   const [plate, setPlate] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [isNewUser, setIsNewUser] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -31,6 +33,7 @@ export function OtpLoginModal({ onClose }: Props) {
       if (res.exists && res.hasPassword) {
         setStep('PASSWORD')
       } else {
+        setIsNewUser(!res.exists)
         await sendOtp(phone)
         setStep('OTP')
       }
@@ -66,7 +69,11 @@ export function OtpLoginModal({ onClose }: Props) {
     try {
       await verifyOtp(phone, otp)
       await refreshUser()
-      setStep('SET_PASSWORD')
+      if (isNewUser) {
+        setStep('SET_PASSWORD')
+      } else {
+        setStep('SUCCESS')
+      }
     } catch (err: any) {
       if (err?.message) {
         setError(err.message)
@@ -101,7 +108,7 @@ export function OtpLoginModal({ onClose }: Props) {
     setLoading(true)
     setError(null)
     try {
-      await onboarding(vehicleType, plate, '')
+      await onboarding(vehicleType, plate, fullName)
       await refreshUser()
       setStep('SUCCESS')
     } catch {
@@ -313,6 +320,17 @@ export function OtpLoginModal({ onClose }: Props) {
 
           {step === 'ONBOARDING' && (
             <form onSubmit={handleOnboarding} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Ad və Soyad</label>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Məsələn: Əli Əliyev"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Mühərrik Tipi</label>
                 <select

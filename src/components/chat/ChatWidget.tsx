@@ -139,15 +139,15 @@ export function ChatWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label={s.chat.open}
-        className="fixed bottom-24 right-5 z-[1000] flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-float transition hover:bg-brand-700 active:scale-95 sm:right-6"
+        className="fixed bottom-[5.5rem] right-3 z-[1000] flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-white shadow-float transition hover:bg-brand-700 active:scale-95 sm:bottom-24 sm:right-6 sm:h-14 sm:w-14"
       >
-        <MessageCircle className="h-6 w-6" />
+        <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
     )
   }
 
   return (
-    <div className="fixed bottom-24 right-5 z-[1000] flex h-[min(30rem,70vh)] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-float animate-fade-up sm:right-6">
+    <div className="fixed bottom-[5.5rem] right-3 z-[1000] flex h-[min(30rem,60vh)] w-[min(23rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-float animate-fade-up sm:bottom-24 sm:right-6 sm:h-[min(30rem,70vh)]">
       <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 px-4 py-3.5">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white">
           <Bot className="h-4.5 w-4.5" />

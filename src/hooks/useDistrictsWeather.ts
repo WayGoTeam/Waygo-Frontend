@@ -36,17 +36,34 @@ export function useDistrictsWeather() {
   const fetchDistrictsWeather = async () => {
     try {
       setLoading(true)
-      const promises = DISTRICTS_COORDS.map(async (d) => {
-        const snapshot = await getWeather(d.lat, d.lng)
-        return {
-          ...snapshot,
-          districtId: d.id,
-          districtName: d.name
+      // Batch requests 4 at a time to avoid rate limiting (Nginx: 30r/m)
+      const BATCH_SIZE = 4
+      const results: DistrictWeather[] = []
+      for (let i = 0; i < DISTRICTS_COORDS.length; i += BATCH_SIZE) {
+        const batch = DISTRICTS_COORDS.slice(i, i + BATCH_SIZE)
+        const settled = await Promise.allSettled(
+          batch.map(async (d) => {
+            const snapshot = await getWeather(d.lat, d.lng)
+            return { ...snapshot, districtId: d.id, districtName: d.name }
+          })
+        )
+        for (const result of settled) {
+          if (result.status === 'fulfilled') {
+            results.push(result.value)
+          }
+          // silently ignore individual district fetch failures
         }
-      })
-      const results = await Promise.all(promises)
-      setData(results)
-      setError(null)
+        // Small delay between batches to stay within rate limits
+        if (i + BATCH_SIZE < DISTRICTS_COORDS.length) {
+          await new Promise((r) => setTimeout(r, 300))
+        }
+      }
+      if (results.length > 0) {
+        setData(results)
+        setError(null)
+      } else {
+        setError(new Error('Failed to fetch districts weather'))
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch districts weather'))
     } finally {

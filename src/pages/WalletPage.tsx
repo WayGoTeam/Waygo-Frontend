@@ -132,10 +132,10 @@ export default function WalletPage() {
           <div className="rounded-xl bg-red-50 p-4 text-sm text-red-600">{error}</div>
         )}
 
-        {/* ── 1. HERO STATS (3 cards) ──────────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-5">
+        {/* ── 1. HERO STATS ──────────────────────────────────── */}
+        <div className="hidden sm:grid sm:grid-cols-3 gap-5">
           {/* XP Balance */}
-          <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-brand-500/30 sm:col-span-1">
+          <div className="group relative overflow-hidden rounded-[32px] bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-brand-500/30">
             <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10 dark:bg-slate-900/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
             <div className="relative">
               <div className="flex items-center gap-2.5 text-brand-100">
@@ -150,7 +150,7 @@ export default function WalletPage() {
           </div>
 
           {/* Streak */}
-          <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-orange-400 to-red-500 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-orange-500/30 sm:col-span-1">
+          <div className="group relative overflow-hidden rounded-[32px] bg-gradient-to-br from-orange-400 to-red-500 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-orange-500/30">
             <div className="absolute -right-8 -bottom-8 h-40 w-40 rounded-full bg-white/10 dark:bg-slate-900/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
             <div className="relative flex h-full flex-col justify-between">
               <div className="flex items-center gap-2.5 text-orange-100">
@@ -167,7 +167,7 @@ export default function WalletPage() {
           </div>
 
           {/* CO₂ */}
-          <div className="group relative col-span-3 overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-400 to-teal-600 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-emerald-500/30 sm:col-span-1">
+          <div className="group relative overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-400 to-teal-600 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-emerald-500/30">
             <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-white/10 dark:bg-slate-900/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
             <div className="relative flex h-full flex-col justify-between">
               <div className="flex items-center gap-2.5 text-teal-100">
@@ -179,6 +179,55 @@ export default function WalletPage() {
               <div>
                 <p className="mt-5 font-display text-5xl font-black">{Number(co2).toFixed(1)}</p>
                 <p className="mt-1 text-sm font-semibold text-teal-100">{t.walletPage.co2SavedKg}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── MOBILE HERO STATS ──────────────────────────────────── */}
+        <div className="sm:hidden flex flex-col gap-3">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-white shadow-lg shadow-brand-500/30">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+            <div className="relative">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <Leaf className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-brand-100">Eco XP</span>
+                </div>
+                <span className="rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm" style={{ color: rank.color }}>
+                  {rank.label}
+                </span>
+              </div>
+              
+              <div className="mt-4 flex items-end gap-2">
+                <p className="font-display text-4xl font-black tracking-tight">{pts.toLocaleString()}</p>
+                <p className="pb-1 text-xs font-semibold text-brand-200">XP {t.walletPage.ecoXpTotal.replace('Eco XP ', '').toLowerCase()}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 p-4 text-white shadow-sm">
+              <div className="absolute -right-6 -bottom-6 h-20 w-20 rounded-full bg-white/10 blur-xl" />
+              <div className="relative flex items-center justify-between">
+                <div>
+                   <p className="font-display text-2xl font-black">{streak}</p>
+                   <p className="text-[10px] font-semibold text-orange-100 uppercase tracking-wide">{t.walletPage.streakDays}</p>
+                </div>
+                <Flame className="h-6 w-6 text-orange-100/50" />
+              </div>
+            </div>
+            
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 p-4 text-white shadow-sm">
+              <div className="absolute -left-6 -top-6 h-20 w-20 rounded-full bg-white/10 blur-xl" />
+              <div className="relative flex items-center justify-between">
+                <div>
+                   <p className="font-display text-2xl font-black">{Number(co2).toFixed(1)}</p>
+                   <p className="text-[10px] font-semibold text-teal-100 uppercase tracking-wide">KQ CO₂</p>
+                </div>
+                <Shield className="h-6 w-6 text-teal-100/50" />
               </div>
             </div>
           </div>

@@ -56,7 +56,7 @@ function isRecent(iso: string, withinMs: number): boolean {
 
 function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean }) {
   const map = useMap()
-  
+
   useEffect(() => {
     if (!visible) return
     let layer: any = null
@@ -64,7 +64,7 @@ function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean })
 
     // Inject L to window for vectorgrid
     if (typeof window !== 'undefined') {
-      ;(window as any).L = L
+      ; (window as any).L = L
     }
 
     // Dynamically import vectorgrid to avoid SSR/Vite hoisting issues
@@ -80,7 +80,7 @@ function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean })
             let color = '#22c55e' // Green (Light)
             if (level === 3) color = '#f59e0b' // Orange (Moderate)
             if (level >= 4) color = '#ef4444' // Red (Heavy)
-            
+
             return {
               weight: 5,
               color,
@@ -92,9 +92,9 @@ function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean })
         interactive: true,
         minZoom: 10,
       })
-      
+
       layer.addTo(map)
-      
+
       layer.on('click', (e: any) => {
         const p = e.layer.properties
         L.popup()
@@ -105,7 +105,7 @@ function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean })
     }).catch(err => {
       console.error("Failed to load leaflet.vectorgrid", err)
     })
-    
+
     return () => {
       isMounted = false
       if (layer && map) {
@@ -113,7 +113,7 @@ function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean })
       }
     }
   }, [map, url, visible])
-  
+
   return null
 }
 
@@ -174,7 +174,16 @@ export function LiveMap({
   const showMarkers = currentZoom >= 9
 
   return (
-    <MapContainer center={center} zoom={zoom} className="h-full w-full" zoomControl={false} attributionControl>
+    <MapContainer
+      center={center}
+      zoom={zoom}
+      minZoom={3}
+      maxBounds={[[-90, -180], [90, 180]]}
+      maxBoundsViscosity={1.0}
+      className="h-full w-full"
+      zoomControl={false}
+      attributionControl
+    >
       <MapReadyBridge onReady={onMapReady} />
       <ZoomTracker onZoom={setCurrentZoom} />
       <MapEventHandler onClick={onMapClick} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { User, Mail, Phone, Plus, Car, Fuel, Zap, Leaf, MapPin, Star, LogOut, CheckCircle, ArrowRight, Loader2, ShieldCheck, X } from 'lucide-react'
+import { User, Mail, Phone, Plus, Car, Fuel, Zap, Leaf, MapPin, Star, LogOut, CheckCircle, ArrowRight, Loader2, ShieldCheck, X, ChevronRight } from 'lucide-react'
 import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/i18n/LocaleContext'
@@ -355,7 +355,7 @@ export default function ProfilePage() {
                 </button>
                 <button
                   onClick={() => setIsLogoutModalOpen(true)}
-                  className="group flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-900 px-5 py-2.5 text-sm font-bold text-brand-600 shadow-sm border border-brand-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 hover:shadow transition-all dark:bg-slate-800 dark:border-brand-900/50 dark:hover:bg-slate-800/80"
+                  className="group flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-800 px-5 py-2.5 text-sm font-bold text-brand-600 shadow-sm border border-brand-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 hover:shadow transition-all dark:border-slate-700 dark:hover:bg-slate-700"
                 >
                   <LogOut className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
                   {t.profilePage.logout}
@@ -363,10 +363,10 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Stats */}
+            {/* Stats - Desktop */}
             {!isAdmin && (
-              <div className="mt-8 grid grid-cols-3 gap-5">
-                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-blue-500 to-blue-700 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/30">
+              <div className="hidden sm:grid mt-8 grid-cols-3 gap-5">
+                <div className="group relative col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-blue-500 to-blue-700 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/30">
                   <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-white/10 dark:bg-slate-900/10 blur-2xl transition-transform duration-500 group-hover:scale-150" />
                   <div className="relative mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
                     <MapPin className="h-5 w-5 text-blue-50" />
@@ -377,7 +377,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-400 to-teal-600 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/30">
+                <div className="group relative col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-400 to-teal-600 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/30">
                   <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-white/10 dark:bg-slate-900/10 blur-2xl transition-transform duration-500 group-hover:scale-150" />
                   <div className="relative mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
                     <Leaf className="h-5 w-5 text-emerald-50" />
@@ -388,7 +388,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="group relative col-span-3 sm:col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-brand-500 to-brand-700 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/30">
+                <div className="group relative col-span-1 overflow-hidden rounded-[32px] bg-gradient-to-br from-brand-500 to-brand-700 p-7 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/30">
                   <div className="absolute right-0 top-0 -mr-4 -mt-4 h-32 w-32 rounded-full bg-white/10 dark:bg-slate-900/10 blur-2xl transition-transform duration-700 group-hover:scale-150" />
                   <div className="relative mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
                     <Star className="h-5 w-5 text-brand-50" fill="currentColor" />
@@ -400,10 +400,48 @@ export default function ProfilePage() {
                 </div>
               </div>
             )}
-
-            {/* Contact & Vehicle grid */}
+            
+            {/* Stats - Mobile */}
             {!isAdmin && (
-              <div className="mt-8 grid gap-8 sm:grid-cols-2">
+              <div className="sm:hidden mt-6 grid grid-cols-2 gap-3">
+                <div className="col-span-2 relative overflow-hidden rounded-[20px] bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-white shadow-md">
+                   <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+                   <div className="relative flex items-center justify-between">
+                     <div>
+                       <p className="text-[10px] font-extrabold uppercase tracking-widest text-brand-100">{t.profilePage.ecoPoints}</p>
+                       <p className="font-display text-3xl font-black tracking-tight text-white mt-1">{balance?.ecoPointsBalance?.toLocaleString() ?? 0}</p>
+                     </div>
+                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-inner">
+                       <Star className="h-6 w-6 text-brand-50" fill="currentColor" />
+                     </div>
+                   </div>
+                </div>
+                <div className="col-span-1 relative overflow-hidden rounded-[20px] bg-gradient-to-br from-blue-500 to-blue-700 p-4 text-white shadow-md">
+                   <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-white/10 blur-xl" />
+                   <div className="relative flex flex-col justify-between h-full">
+                     <MapPin className="h-5 w-5 text-blue-100/80 mb-3" />
+                     <div>
+                       <p className="font-display text-2xl font-black text-white">{balance?.totalDistanceKm?.toLocaleString() ?? 0}</p>
+                       <p className="text-[9px] font-extrabold uppercase tracking-widest text-blue-100">{t.profilePage.totalKm}</p>
+                     </div>
+                   </div>
+                </div>
+                <div className="col-span-1 relative overflow-hidden rounded-[20px] bg-gradient-to-br from-emerald-400 to-teal-600 p-4 text-white shadow-md">
+                   <div className="absolute -left-6 -top-6 h-24 w-24 rounded-full bg-white/10 blur-xl" />
+                   <div className="relative flex flex-col justify-between h-full">
+                     <Leaf className="h-5 w-5 text-emerald-100/80 mb-3" />
+                     <div>
+                       <p className="font-display text-2xl font-black text-white">{balance?.totalCo2SavedKg?.toLocaleString(undefined, { maximumFractionDigits: 1 }) ?? 0} <span className="text-sm font-bold opacity-70">kg</span></p>
+                       <p className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-100">{t.profilePage.totalCo2}</p>
+                     </div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Contact & Vehicle grid - Desktop */}
+            {!isAdmin && (
+              <div className="hidden sm:grid mt-8 gap-8 sm:grid-cols-2">
                 {/* Contact info */}
                 <div className="space-y-4">
                   <h4 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50 dark:text-white">{t.profilePage.contactInfo}</h4>
@@ -502,17 +540,95 @@ export default function ProfilePage() {
                 </div>
               </div>
             )}
+            
+            {/* Contact & Vehicle grid - Mobile (Settings style) */}
+            {!isAdmin && (
+              <div className="sm:hidden mt-8 space-y-6">
+                
+                {/* Contact Section */}
+                <div className="space-y-2">
+                  <h4 className="px-4 text-[13px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{t.profilePage.contactInfo}</h4>
+                  <div className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+                    {/* Phone */}
+                    <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                          <Phone className="h-4 w-4" />
+                        </div>
+                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.profilePage.phone}</span>
+                      </div>
+                      {user.phone ? (
+                        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{user.phone}</span>
+                      ) : (
+                        <button onClick={(e) => { e.stopPropagation(); setAddPhoneOpen(true) }} className="flex items-center gap-1 text-sm font-bold text-brand-600">
+                          <Plus className="h-3.5 w-3.5" /> {t.profilePage.add}
+                        </button>
+                      )}
+                    </div>
+                    {/* Email */}
+                    <div className="flex items-center justify-between p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                          <Mail className="h-4 w-4" />
+                        </div>
+                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.profilePage.email}</span>
+                      </div>
+                      {user.email ? (
+                        <span className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[120px]">{user.email}</span>
+                      ) : (
+                        <button onClick={(e) => { e.stopPropagation(); setAddEmailOpen(true) }} className="flex items-center gap-1 text-sm font-bold text-brand-600">
+                          <Plus className="h-3.5 w-3.5" /> {t.profilePage.add}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-            {/* Mobile Logout */}
-            <div className="mt-8 block sm:hidden">
-              <button
-                onClick={() => setIsLogoutModalOpen(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-900 px-5 py-3 text-sm font-bold text-brand-600 shadow-sm border border-brand-100 hover:bg-brand-50 transition-all"
-              >
-                <LogOut className="h-4 w-4" />
-                {t.profilePage.logout}
-              </button>
-            </div>
+                {/* Vehicle Section */}
+                <div className="space-y-2">
+                  <h4 className="px-4 text-[13px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{t.profilePage.vehicleInfo}</h4>
+                  <div className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+                    <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
+                          <VehicleIcon className="h-4 w-4" />
+                        </div>
+                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.profilePage.engineType}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{config.label}</span>
+                        <span className="rounded bg-brand-50 dark:bg-brand-900/20 px-1.5 py-0.5 text-[10px] font-bold text-brand-600 dark:text-brand-400">{config.multiplier}</span>
+                      </div>
+                    </div>
+                    {user.plateNumber && (
+                      <div className="flex items-center justify-between p-4">
+                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.profilePage.plateNumber}</span>
+                        <span className="font-mono text-sm font-bold uppercase text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">{user.plateNumber}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Mobile Settings (Theme & Logout) */}
+                <div className="space-y-2 pt-4">
+                  <div className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+                    <button onClick={toggleTheme} className="w-full flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 p-4 active:bg-slate-50 dark:active:bg-slate-800 transition-colors">
+                      <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{theme === 'dark' ? t.profilePage.lightMode : t.profilePage.darkMode}</span>
+                      <div className="rounded-full bg-slate-100 dark:bg-slate-800 p-1.5">
+                        <ChevronRight className="h-4 w-4 text-slate-500" />
+                      </div>
+                    </button>
+                    <button onClick={() => setIsLogoutModalOpen(true)} className="w-full flex items-center justify-between p-4 active:bg-slate-50 dark:active:bg-slate-800 transition-colors">
+                      <span className="text-sm font-semibold text-red-500">{t.profilePage.logout}</span>
+                      <div className="rounded-full bg-red-50 dark:bg-red-900/20 p-1.5">
+                        <LogOut className="h-4 w-4 text-red-500" />
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            )}
 
           </div>
         </div>

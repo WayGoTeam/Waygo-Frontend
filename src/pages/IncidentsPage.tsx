@@ -15,12 +15,12 @@ export default function IncidentsPage() {
   return (
     <div className="relative h-full overflow-hidden bg-slate-50 dark:bg-slate-950 flex flex-col">
       {/* Header */}
-      <div className="shrink-0 bg-white dark:bg-slate-900 px-6 pt-12 pb-6 shadow-sm border-b border-slate-200 dark:border-slate-800">
+      <div className="shrink-0 bg-white dark:bg-slate-900 px-4 pt-6 pb-4 sm:px-6 sm:pt-12 sm:pb-6 shadow-sm border-b border-slate-200 dark:border-slate-800">
         <div className="mx-auto max-w-4xl flex items-center justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-50 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400">
-                <AlertTriangle className="h-5 w-5" />
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2 sm:gap-3">
+              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400">
+                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               {s.incidentsPage.title}
             </h1>
@@ -59,54 +59,95 @@ export default function IncidentsPage() {
           ) : !incidents || incidents.length === 0 ? (
             <div className="mt-10"><EmptyState title={s.incidentsPage.empty} subtitle={s.incidentsPage.emptyHint} /></div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {incidents.map((incident) => {
-                const tone = incidentTone(incident.incidentType)
-                const typeLabel = s.incidentTypes[incident.incidentType] ?? incident.incidentType
-                
-                return (
-                  <button
-                    key={incident.id}
-                    onClick={() =>
-                      incident.latitude !== null && incident.longitude !== null
-                        ? navigate('/', { state: { focus: { lat: incident.latitude, lng: incident.longitude } } })
-                        : undefined
-                    }
-                    className="group flex flex-col text-left overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700"
-                  >
-                    <div className="flex w-full items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${tone.bg} shadow-sm border border-white/50 dark:border-white/5`}>
-                          <IncidentTypeIcon type={incident.incidentType} className={`h-6 w-6 ${tone.text}`} strokeWidth={2} />
+            <>
+              {/* Desktop Layout */}
+              <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {incidents.map((incident) => {
+                  const tone = incidentTone(incident.incidentType)
+                  const typeLabel = s.incidentTypes[incident.incidentType] ?? incident.incidentType
+                  
+                  return (
+                    <button
+                      key={incident.id}
+                      onClick={() =>
+                        incident.latitude !== null && incident.longitude !== null
+                          ? navigate('/', { state: { focus: { lat: incident.latitude, lng: incident.longitude } } })
+                          : undefined
+                      }
+                      className="group flex flex-col text-left overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700"
+                    >
+                      <div className="flex w-full items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${tone.bg} shadow-sm border border-white/50 dark:border-white/5`}>
+                            <IncidentTypeIcon type={incident.incidentType} className={`h-6 w-6 ${tone.text}`} strokeWidth={2} />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-slate-900 dark:text-slate-50 text-base">{typeLabel}</h3>
+                            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                              {formatRelativeTime(incident.createdAt, s.common)}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-bold text-slate-900 dark:text-slate-50 text-base">{typeLabel}</h3>
-                          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
-                            {formatRelativeTime(incident.createdAt, s.common)}
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 opacity-0 scale-75 transition-all group-hover:opacity-100 group-hover:scale-100">
+                          <ChevronRight className="h-4 w-4" />
+                        </div>
+                      </div>
+                      
+                      <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 font-medium">
+                        {incident.description.startsWith('Reported: ') || incident.description.startsWith('Reported:')
+                          ? `${s.reportModal.reportedPrefix} ${s.incidentTypes[incident.incidentType] ?? incident.incidentType}`
+                          : incident.description}
+                      </p>
+                      
+                      <div className="mt-5 flex items-center gap-2">
+                        <span className="flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-[11px] font-bold tracking-wide text-slate-600 dark:text-slate-300 uppercase transition-colors group-hover:bg-brand-50 dark:group-hover:bg-brand-900/30 group-hover:text-brand-700 dark:group-hover:text-brand-300">
+                          <MapPin className="h-3.5 w-3.5" />
+                          Xəritədə bax
+                        </span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              
+              {/* Mobile Layout */}
+              <div className="flex flex-col gap-2.5 sm:hidden px-1">
+                {incidents.map((incident) => {
+                  const tone = incidentTone(incident.incidentType)
+                  const typeLabel = s.incidentTypes[incident.incidentType] ?? incident.incidentType
+                  return (
+                    <button
+                      key={incident.id}
+                      onClick={() =>
+                        incident.latitude !== null && incident.longitude !== null
+                          ? navigate('/', { state: { focus: { lat: incident.latitude, lng: incident.longitude } } })
+                          : undefined
+                      }
+                      className="group flex flex-col text-left overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 shadow-sm transition-all active:scale-[0.98]"
+                    >
+                      <div className="flex items-start gap-3 w-full">
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${tone.bg} border border-white/50 dark:border-white/5`}>
+                          <IncidentTypeIcon type={incident.incidentType} className={`h-5 w-5 ${tone.text}`} strokeWidth={2} />
+                        </div>
+                        <div className="flex-1 min-w-0 pt-0.5">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-slate-900 dark:text-slate-50 text-[13px] truncate pr-2">{typeLabel}</h3>
+                            <span className="text-[10px] font-semibold text-slate-400 whitespace-nowrap">
+                              {formatRelativeTime(incident.createdAt, s.common)}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 line-clamp-1 text-[11px] text-slate-500 dark:text-slate-400">
+                            {incident.description.startsWith('Reported: ') || incident.description.startsWith('Reported:')
+                              ? `${s.reportModal.reportedPrefix} ${s.incidentTypes[incident.incidentType] ?? incident.incidentType}`
+                              : incident.description}
                           </p>
                         </div>
                       </div>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 opacity-0 scale-75 transition-all group-hover:opacity-100 group-hover:scale-100">
-                        <ChevronRight className="h-4 w-4" />
-                      </div>
-                    </div>
-                    
-                    <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 font-medium">
-                      {incident.description.startsWith('Reported: ') || incident.description.startsWith('Reported:')
-                        ? `${s.reportModal.reportedPrefix} ${s.incidentTypes[incident.incidentType] ?? incident.incidentType}`
-                        : incident.description}
-                    </p>
-                    
-                    <div className="mt-5 flex items-center gap-2">
-                      <span className="flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-[11px] font-bold tracking-wide text-slate-600 dark:text-slate-300 uppercase transition-colors group-hover:bg-brand-50 dark:group-hover:bg-brand-900/30 group-hover:text-brand-700 dark:group-hover:text-brand-300">
-                        <MapPin className="h-3.5 w-3.5" />
-                        Xəritədə bax
-                      </span>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
