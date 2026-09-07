@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowUpDown, Loader2, Route as RouteIcon, X, Leaf, ShieldCheck, Zap, ChevronDown, ChevronUp, Navigation } from 'lucide-react'
+import { ArrowUpDown, Loader2, Route as RouteIcon, X, Leaf, ShieldCheck, Zap, ChevronDown, ChevronUp, Navigation, Info } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import { PlaceAutocomplete } from './PlaceAutocomplete'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
@@ -24,6 +24,7 @@ interface Props {
   onClear: () => void
   onShowOnMap: () => void
   tripActive?: boolean
+  isEcoIdentical?: boolean
   onStartTrip?: () => void
   onEndTrip?: () => void
   onCancelTrip?: () => void
@@ -36,7 +37,7 @@ export function RoutePlannerPanel({
   origin, setOrigin, destination, setDestination,
   mode, setMode, route, loading, error,
   onSwap, onClear, onShowOnMap,
-  tripActive, onStartTrip, onEndTrip, onCancelTrip, onPickOrigin, onPickDestination,
+  tripActive, isEcoIdentical, onStartTrip, onEndTrip, onCancelTrip, onPickOrigin, onPickDestination,
 }: Props) {
   const { s } = useLocale()
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -83,7 +84,7 @@ export function RoutePlannerPanel({
               onClick={onEndTrip}
               className="rounded-xl bg-red-500 hover:bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition active:scale-95"
             >
-              {s.routePlanner.endTrip ?? 'Bitir'}
+              {s.routePlanner.endTrip ?? 'Bitdi'}
             </button>
           </div>
         </div>
@@ -124,14 +125,24 @@ export function RoutePlannerPanel({
                 <ArrowUpDown className="h-4 w-4" />
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-2 pt-2">
+            {isEcoIdentical && (
+              <div className="mt-2 flex items-start gap-2 rounded-xl bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 p-2.5 text-xs text-blue-700 dark:text-blue-300">
+                <Info className="h-4 w-4 shrink-0 mt-0.5 text-blue-500" />
+                <p className="font-medium leading-relaxed">
+                  {s.routePlanner.routesIdenticalMessage}
+                </p>
+              </div>
+            )}
+            <div className={`grid ${isEcoIdentical ? 'grid-cols-1' : 'grid-cols-2'} gap-2 pt-2`}>
               <button onClick={() => setMode('fastest')} className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-semibold transition border ${mode === 'fastest' ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 shadow-md' : 'bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400'}`}>
                 <Zap className="h-4 w-4" />{s.routePlanner.fastest}
               </button>
-              <button onClick={() => setMode('eco')} className={`relative flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-semibold transition border ${mode === 'eco' ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400'}`}>
-                <Leaf className="h-4 w-4" />{s.routePlanner.eco ?? 'Eco'}
-                {mode !== 'eco' && <span className="absolute -top-1.5 -right-1.5 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm leading-none">+XP</span>}
-              </button>
+              {!isEcoIdentical && (
+                <button onClick={() => setMode('eco')} className={`relative flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-semibold transition border ${mode === 'eco' ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400'}`}>
+                  <Leaf className="h-4 w-4" />{s.routePlanner.eco ?? 'Eco'}
+                  {mode !== 'eco' && <span className="absolute -top-1.5 -right-1.5 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm leading-none">+XP</span>}
+                </button>
+              )}
             </div>
           </div>
           {!origin || !destination ? (
@@ -200,14 +211,25 @@ export function RoutePlannerPanel({
           </div>
           <PlaceAutocomplete value={destination} onChange={setDestination} placeholder={s.routePlanner.destinationPlaceholder} dotColor="#ef4444" onPickOnMap={onPickDestination} />
           
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          {isEcoIdentical && (
+            <div className="mt-3 flex items-start gap-2.5 rounded-xl bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 p-3 text-xs text-blue-700 dark:text-blue-300 shadow-sm animate-fade-in">
+              <Info className="h-4 w-4 shrink-0 mt-0.5 text-blue-500" />
+              <p className="font-medium leading-relaxed">
+                {s.routePlanner.routesIdenticalMessage}
+              </p>
+            </div>
+          )}
+
+          <div className={`mt-3 grid ${isEcoIdentical ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}>
             <button onClick={() => setMode('fastest')} className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition border ${mode === 'fastest' ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 shadow-sm' : 'bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400'}`}>
               <Zap className="h-3.5 w-3.5" />{s.routePlanner.fastest}
             </button>
-            <button onClick={() => setMode('eco')} className={`relative flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition border ${mode === 'eco' ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400'}`}>
-              <Leaf className="h-3.5 w-3.5" />{s.routePlanner.eco ?? 'Eco'}
-              {mode !== 'eco' && <span className="absolute -top-1.5 -right-1 rounded-full bg-emerald-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">+XP</span>}
-            </button>
+            {!isEcoIdentical && (
+              <button onClick={() => setMode('eco')} className={`relative flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition border ${mode === 'eco' ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400'}`}>
+                <Leaf className="h-3.5 w-3.5" />{s.routePlanner.eco ?? 'Eco'}
+                {mode !== 'eco' && <span className="absolute -top-1.5 -right-1 rounded-full bg-emerald-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">+XP</span>}
+              </button>
+            )}
           </div>
         </div>
 

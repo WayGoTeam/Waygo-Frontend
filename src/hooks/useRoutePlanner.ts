@@ -37,6 +37,28 @@ export interface RouteResult {
   maneuvers?: Maneuver[]
 }
 
+function areRoutesIdentical(fastestTrip: any, ecoTrip: any): boolean {
+  if (!fastestTrip || !ecoTrip) return false
+
+  const fShape = fastestTrip.legs?.[0]?.shape
+  const eShape = ecoTrip.legs?.[0]?.shape
+  if (fShape && eShape && fShape === eShape) {
+    return true
+  }
+
+  const fLen = fastestTrip.summary?.length ?? 0
+  const eLen = ecoTrip.summary?.length ?? 0
+  const fTime = fastestTrip.summary?.time ?? 0
+  const eTime = ecoTrip.summary?.time ?? 0
+
+  // If distance difference is < 50 meters and travel time difference is < 5 seconds
+  if (Math.abs(fLen - eLen) < 0.05 && Math.abs(fTime - eTime) < 5) {
+    return true
+  }
+
+  return false
+}
+
 export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
   const [origin, setOrigin] = useState<PlaceResult | null>(null)
   const [destination, setDestination] = useState<PlaceResult | null>(null)
@@ -45,6 +67,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [tripActive, setTripActive] = useState(false)
+  const [isEcoIdentical, setIsEcoIdentical] = useState(false)
   const requestId = useRef(0)
   const { user } = useAuth()
 
@@ -83,49 +106,66 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     setLoading(true)
     setError(null)
     try {
-      let trip: any = null
-      let ecoPointsEarned: number | undefined
-      let verraHash: string | undefined
-      let co2SavedKg: number | undefined
-      let tripId: string | undefined
-      let inCooldown: boolean | undefined
+      let fastestTrip: any = null
+      let ecoTrip: any = null
+      let fastestRaw: any = null
+      let ecoRaw: any = null
 
       if (user) {
-        const raw = await getAiRoute(o.lat, o.lng, d.lat, d.lng, m, user.vehicleType)
-        if (id !== requestId.current) return // a newer request has since started — drop this one
-        const valhallaData = raw.routeJson ? JSON.parse(raw.routeJson) : {}
-
-        // For eco mode: the main trip already has avoid_polygons applied (traffic-free route).
-        // For fastest mode: use main trip (direct route). Alternates are secondary options.
-        if (m === 'eco') {
-          // Eco: use the main trip (which was calculated with avoid_polygons)
-          trip = valhallaData.trip
-          // If Valhalla returned alternates, pick the one that differs most (longer distance = truly avoids traffic)
-          if (!trip && valhallaData.alternates?.length > 0) {
-            trip = valhallaData.alternates[0]?.trip
-          }
-        } else {
-          // Fastest: use main trip (direct/fastest route)
-          trip = valhallaData.trip ?? valhallaData.alternates?.[0]?.trip
-        }
-
-        ecoPointsEarned = raw.ecoPointsEarned
-        verraHash = raw.verraAuditHash ?? raw.verraHash
-        co2SavedKg = raw.co2SavedKg
-        tripId = raw.tripId
-        inCooldown = raw.inCooldown
-      } else {
-        const raw = await getRoute(o.lat, o.lng, d.lat, d.lng, m)
+        const [fRes, eRes] = await Promise.all([
+          getAiRoute(o.lat, o.lng, d.lat, d.lng, 'fastest', user.vehicleType),
+          getAiRoute(o.lat, o.lng, d.lat, d.lng, 'eco', user.vehicleType),
+        ])
         if (id !== requestId.current) return
-        const valhallaData = raw as any
-        trip = valhallaData.trip
+        fastestRaw = fRes
+        ecoRaw = eRes
+
+        const fValhalla = fRes.routeJson ? JSON.parse(fRes.routeJson) : {}
+        const eValhalla = eRes.routeJson ? JSON.parse(eRes.routeJson) : {}
+
+        fastestTrip = fValhalla.trip ?? fValhalla.alternates?.[0]?.trip
+        ecoTrip = eValhalla.trip
+        if (!ecoTrip && eValhalla.alternates?.length > 0) {
+          ecoTrip = eValhalla.alternates[0]?.trip
+        }
+      } else {
+        const [fRes, eRes] = await Promise.all([
+          getRoute(o.lat, o.lng, d.lat, d.lng, 'fastest'),
+          getRoute(o.lat, o.lng, d.lat, d.lng, 'eco'),
+        ])
+        if (id !== requestId.current) return
+        fastestRaw = fRes
+        ecoRaw = eRes
+        fastestTrip = (fRes as any)?.trip
+        ecoTrip = (eRes as any)?.trip
       }
-      
-      if (!trip) {
+
+      const identical = areRoutesIdentical(fastestTrip, ecoTrip)
+      setIsEcoIdentical(identical)
+
+      let effectiveMode = m
+      if (identical) {
+        effectiveMode = 'fastest'
+        if (m === 'eco') {
+          setMode('fastest')
+        }
+      }
+
+      const selectedTrip = (effectiveMode === 'eco' && !identical) ? (ecoTrip ?? fastestTrip) : (fastestTrip ?? ecoTrip)
+      const selectedRaw = (effectiveMode === 'eco' && !identical) ? ecoRaw : fastestRaw
+
+      if (!selectedTrip) {
         setRoute(null)
         setError('no-route')
         return
       }
+
+      const trip = selectedTrip
+      const ecoPointsEarned = (effectiveMode === 'eco' && !identical) ? selectedRaw?.ecoPointsEarned : 0
+      const verraHash = selectedRaw?.verraAuditHash ?? selectedRaw?.verraHash
+      const co2SavedKg = (effectiveMode === 'eco' && !identical) ? selectedRaw?.co2SavedKg : 0
+      const tripId = selectedRaw?.tripId
+      const inCooldown = selectedRaw?.inCooldown
       
       const points = decodePolyline6(trip.legs[0].shape)
 
@@ -162,7 +202,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
         verraHash,
         co2SavedKg,
         tripId,
-        ecoMode: m === 'eco',
+        ecoMode: effectiveMode === 'eco' && !identical,
         inCooldown,
         maneuvers: trip.legs[0]?.maneuvers ?? [],
       })
@@ -193,6 +233,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     setRoute(null)
     setError(null)
     setTripActive(false)
+    setIsEcoIdentical(false)
     fetchCurrentLocation()
   }
 
@@ -210,5 +251,6 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     clear,
     tripActive,
     setTripActive,
+    isEcoIdentical,
   }
 }

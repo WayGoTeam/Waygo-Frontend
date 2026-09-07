@@ -78,6 +78,7 @@ export interface Strings {
     startTrip: string
     endTrip: string
     cancelTrip: string
+    routesIdenticalMessage: string
   }
   chat: {
     title: string
@@ -391,8 +392,9 @@ export const az: Strings = {
     error: 'Marşrut hesablana bilmədi. Yenidən cəhd edin.',
     minutesShort: 'dəq',
     startTrip: 'Səfərə Başla',
-    endTrip: 'Səfəri Bitir',
+    endTrip: 'Bitdi',
     cancelTrip: 'Ləğv et',
+    routesIdenticalMessage: 'Hazırda yolda problem yoxdur, Eco-Points qazana bilmirsiniz, yollar təmizdir.',
   },
   chat: {
     title: 'WayGo AI',
@@ -738,8 +740,9 @@ export const en: Strings = {
     error: 'Could not calculate the route. Please try again.',
     minutesShort: 'min',
     startTrip: 'Start Trip',
-    endTrip: 'End Trip',
+    endTrip: 'Finish',
     cancelTrip: 'Cancel',
+    routesIdenticalMessage: 'Currently no traffic issues on the road. Eco-Points cannot be earned as roads are clear.',
   },
   chat: {
     title: 'WayGo AI',

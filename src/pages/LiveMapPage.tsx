@@ -287,7 +287,15 @@ export default function LiveMapPage() {
     }
   }
 
-  const [dialogInfo, setDialogInfo] = useState<{ title: string; content: React.ReactNode; isConfirm?: boolean; onConfirm?: () => void } | null>(null)
+  const [dialogInfo, setDialogInfo] = useState<{
+    title: string
+    content: React.ReactNode
+    isConfirm?: boolean
+    confirmText?: string
+    cancelText?: string
+    variant?: 'warning' | 'danger' | 'info'
+    onConfirm?: () => void
+  } | null>(null)
 
   function handleStartTrip() {
     if (!navigator.geolocation) {
@@ -360,6 +368,9 @@ export default function LiveMapPage() {
       title: 'Səfəri ləğv et',
       content: 'Səfəri ləğv etmək istədiyinizə əminsiniz?',
       isConfirm: true,
+      confirmText: 'Bəli, ləğv et',
+      cancelText: 'Davam et',
+      variant: 'warning',
       onConfirm: handleCancelTrip
     })
   }
@@ -380,6 +391,9 @@ export default function LiveMapPage() {
       title: 'Səfəri bitir',
       content: 'Səfəri bitirmək istədiyinizə əminsiniz?',
       isConfirm: true,
+      confirmText: 'Bəli, bitir',
+      cancelText: 'Xeyr, davam et',
+      variant: 'warning',
       onConfirm: handleEndTrip
     })
   }
@@ -552,6 +566,7 @@ export default function LiveMapPage() {
               onStartTrip={handleStartTrip}
               onEndTrip={handleEndTripClick}
               onCancelTrip={handleCancelTripClick}
+              isEcoIdentical={planner.isEcoIdentical}
               onPickOrigin={() => {
                 setRoutePickingMode('origin')
                 setPanelVisible(false)
@@ -615,8 +630,15 @@ export default function LiveMapPage() {
           title={dialogInfo.title}
           onClose={() => setDialogInfo(null)}
         >
-          <div className="text-sm text-slate-600 dark:text-slate-400 mb-6 whitespace-pre-line">
-            {dialogInfo.content}
+          <div className="flex items-start gap-3 mb-6">
+            {dialogInfo.variant === 'warning' && (
+              <div className="rounded-full bg-amber-100 dark:bg-amber-900/30 p-2 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+            )}
+            <div className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-line leading-relaxed">
+              {dialogInfo.content}
+            </div>
           </div>
           <div className="flex justify-end gap-3">
             {dialogInfo.isConfirm && (
@@ -624,7 +646,7 @@ export default function LiveMapPage() {
                 onClick={() => setDialogInfo(null)}
                 className="rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-900/50"
               >
-                {s.common.cancel || 'Ləğv et'}
+                {dialogInfo.cancelText || s.common.cancel || 'Ləğv et'}
               </button>
             )}
             <button
@@ -635,9 +657,13 @@ export default function LiveMapPage() {
                   setDialogInfo(null)
                 }
               }}
-              className="rounded-full bg-brand-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-brand-700"
+              className={`rounded-full px-5 py-2 text-sm font-medium text-white transition ${
+                dialogInfo.variant === 'warning'
+                  ? 'bg-amber-600 hover:bg-amber-700'
+                  : 'bg-brand-600 hover:bg-brand-700'
+              }`}
             >
-              OK
+              {dialogInfo.confirmText || 'OK'}
             </button>
           </div>
         </Modal>
