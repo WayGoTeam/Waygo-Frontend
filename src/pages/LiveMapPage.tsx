@@ -22,7 +22,7 @@ import { AlertTriangle, Trophy } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/i18n/LocaleContext'
 import { submitReport } from '@/api/reports'
-import { haversineKm } from '@/lib/geo'
+import { haversineKm, centroid } from '@/lib/geo'
 import type { ReportType } from '@/types/api'
 import type { Maneuver } from '@/hooks/useRoutePlanner'
 
@@ -285,9 +285,9 @@ export default function LiveMapPage() {
     let bestDist = Infinity
     let bestId = segments[0].segmentId
     for (const seg of segments) {
-      const midLat = (seg.startLat + seg.endLat) / 2
-      const midLng = (seg.startLng + seg.endLng) / 2
-      const d = (midLat - loc.lat) ** 2 + (midLng - loc.lng) ** 2
+      if (!seg.coordinates || seg.coordinates.length === 0) continue
+      const c = centroid(seg.coordinates)
+      const d = (c.latitude - loc.lat) ** 2 + (c.longitude - loc.lng) ** 2
       if (d < bestDist) {
         bestDist = d
         bestId = seg.segmentId
