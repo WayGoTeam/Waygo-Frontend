@@ -117,7 +117,7 @@ function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void; onSuccess:
                   value={phone}
                   onChange={(e) => { setPhone(e.target.value); setError(null) }}
                   placeholder="+994 50 123 45 67"
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <button
@@ -144,7 +144,7 @@ function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void; onSuccess:
                   value={otp}
                   onChange={(e) => { setOtp(e.target.value.replace(/\D/g, '')); setError(null) }}
                   placeholder="------"
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-center tracking-[0.5em] text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-center tracking-[0.5em] text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <button

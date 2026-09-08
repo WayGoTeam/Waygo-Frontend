@@ -36,7 +36,7 @@ export function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-3">
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-brand-100">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 focus-within:border-brand-300 dark:focus-within:border-brand-500 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-brand-100 dark:focus-within:ring-brand-900/40 transition-colors">
             <User className="h-4 w-4 shrink-0 text-slate-400" />
             <input
               value={username}
@@ -47,7 +47,7 @@ export function LoginForm() {
               className="w-full bg-transparent text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none"
             />
           </div>
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 focus-within:border-brand-300 focus-within:bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-brand-100">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2.5 focus-within:border-brand-300 dark:focus-within:border-brand-500 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-brand-100 dark:focus-within:ring-brand-900/40 transition-colors">
             <Lock className="h-4 w-4 shrink-0 text-slate-400" />
             <input
               value={password}

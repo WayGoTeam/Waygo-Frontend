@@ -67,6 +67,19 @@
   .scroll-thin::-webkit-scrollbar-track {
     background: transparent;
   }
+
+  /* WebKit Autofill dark mode fix to prevent browser from forcing white background */
+  html.dark input:-webkit-autofill,
+  html.dark input:-webkit-autofill:hover,
+  html.dark input:-webkit-autofill:focus,
+  html.dark input:-webkit-autofill:active,
+  html.dark textarea:-webkit-autofill,
+  html.dark select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
+    caret-color: #f1f5f9 !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 @layer utilities {

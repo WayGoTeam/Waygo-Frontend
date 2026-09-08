@@ -62,7 +62,7 @@ export function GlobalSearch({ placeholder }: { placeholder?: string }) {
         if (!containerRef.current?.contains(e.relatedTarget as Node)) setOpen(false)
       }}
     >
-      <div className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 shadow-sm focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-100">
+      <div className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 shadow-sm focus-within:border-brand-300 dark:focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100 dark:focus-within:ring-brand-900/40">
         <Search className="h-4 w-4 shrink-0 text-slate-400" />
         <input
           value={query}

@@ -191,7 +191,7 @@ export function OtpLoginModal({ onClose }: Props) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+994 50 123 45 67"
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <button
@@ -226,7 +226,7 @@ export function OtpLoginModal({ onClose }: Props) {
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
                   placeholder="******"
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <button
@@ -264,7 +264,7 @@ export function OtpLoginModal({ onClose }: Props) {
                   onChange={(e) => setOtp(e.target.value)}
                   placeholder="123456"
                   maxLength={6}
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-center text-2xl tracking-widest text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-center text-2xl tracking-widest text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <a 
@@ -297,7 +297,7 @@ export function OtpLoginModal({ onClose }: Props) {
                   onChange={(e) => setPasswordInput(e.target.value)}
                   placeholder="Ən azı 6 simvol"
                   minLength={6}
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <button
@@ -328,7 +328,7 @@ export function OtpLoginModal({ onClose }: Props) {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Məsələn: Əli Əliyev"
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -336,7 +336,7 @@ export function OtpLoginModal({ onClose }: Props) {
                 <select
                   value={vehicleType}
                   onChange={(e) => setVehicleType(e.target.value as VehicleType)}
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 >
                   <option value="EV">Elektrik (EV)</option>
                   <option value="HYBRID">Hibrid (HYBRID)</option>
@@ -352,7 +352,7 @@ export function OtpLoginModal({ onClose }: Props) {
                   value={plate}
                   onChange={(e) => setPlate(e.target.value)}
                   placeholder="99-XX-999"
-                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-slate-900 dark:text-slate-50 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <button

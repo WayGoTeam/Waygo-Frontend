@@ -44,7 +44,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
               <p className="font-display text-lg font-extrabold leading-none text-slate-900 dark:text-slate-50">
                 {s.brand.name}
               </p>
-              <p className="mt-0.5 text-[11px] font-semibold text-brand-600">{s.brand.tagline}</p>
+              <p className="mt-0.5 text-[11px] font-semibold text-brand-600 dark:text-brand-400">{s.brand.tagline}</p>
             </div>
           </div>
           <button
