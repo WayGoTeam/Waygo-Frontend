@@ -93,6 +93,17 @@ export default function LiveMapPage() {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [planner.tripActive, requestWakeLock])
 
+  // Cleanup GPS watcher and wake lock on unmount (F19)
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current)
+        watchIdRef.current = null
+      }
+      releaseWakeLock()
+    }
+  }, [releaseWakeLock])
+
   // ─── Auto-Rerouting: Detect deviation from route and recalculate ───
   useEffect(() => {
     if (!planner.tripActive || !planner.route || !currentLocation || !planner.destination || !planner.origin) return
@@ -218,8 +229,22 @@ export default function LiveMapPage() {
   }
 
   function handleClosePanel() {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current)
+      watchIdRef.current = null
+    }
+    releaseWakeLock()
     planner.clear()
     setPanelVisible(false)
+  }
+
+  function handleClearPlanner() {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current)
+      watchIdRef.current = null
+    }
+    releaseWakeLock()
+    planner.clear()
   }
 
   function handleMapClick(lat: number, lng: number) {
@@ -255,23 +280,59 @@ export default function LiveMapPage() {
     });
   };
 
+  const findClosestSegmentId = (loc: { lat: number; lng: number }): string => {
+    if (!segments || segments.length === 0) return generateSafeUUID()
+    let bestDist = Infinity
+    let bestId = segments[0].segmentId
+    for (const seg of segments) {
+      const midLat = (seg.startLat + seg.endLat) / 2
+      const midLng = (seg.startLng + seg.endLng) / 2
+      const d = (midLat - loc.lat) ** 2 + (midLng - loc.lng) ** 2
+      if (d < bestDist) {
+        bestDist = d
+        bestId = seg.segmentId
+      }
+    }
+    return bestId
+  }
+
   async function handleSubmitReport(type: ReportType, description: string) {
     if (!reportLocation) return
+    if (!user) {
+      setDialogInfo({
+        title: 'Giriş Tələb Olunur',
+        content: 'Yol hadisəsi hesabatı göndərmək üçün lütfən sistemə daxil olun.',
+        variant: 'info'
+      })
+      return
+    }
+
     const finalDescription = description.trim() || `Reported: ${type}`
     try {
+      const segmentId = findClosestSegmentId(reportLocation)
       await submitReport({
-        userId: generateSafeUUID(),
         type,
         description: finalDescription,
         latitude: reportLocation.lat,
         longitude: reportLocation.lng,
-        segmentId: segments[0]?.segmentId || generateSafeUUID(),
+        segmentId,
         createdAt: new Date().toISOString()
       })
       setReportingMode(false)
       setReportLocation(null)
-    } catch (error) {
+      setDialogInfo({
+        title: 'Təşəkkür edirik!',
+        content: 'Hesabatınız qeydə alındı və moderator təsdiqinə göndərildi.',
+        variant: 'info'
+      })
+    } catch (error: any) {
       console.error('Failed to submit report', error)
+      const errorMsg = error?.response?.data?.error || error?.message || 'Hesabat göndərilərkən xəta baş verdi.'
+      setDialogInfo({
+        title: 'Xəta',
+        content: errorMsg,
+        variant: 'danger'
+      })
     }
   }
 
@@ -560,7 +621,7 @@ export default function LiveMapPage() {
               loading={planner.loading}
               error={planner.error}
               onSwap={planner.swap}
-              onClear={planner.clear}
+              onClear={handleClearPlanner}
               onShowOnMap={showOnMap}
               tripActive={planner.tripActive}
               onStartTrip={handleStartTrip}

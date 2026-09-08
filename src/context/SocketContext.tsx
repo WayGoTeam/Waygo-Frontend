@@ -3,9 +3,9 @@ import type { ReactNode } from 'react'
 import { Client } from '@stomp/stompjs'
 import type { IncidentEvent, UserReport } from '@/types/api'
 
-// Since WebSocket runs on the same port as the main backend, default to current host via nginx proxy
+// Since WebSocket runs on the same port as the main backend, default to current host via nginx/vite proxy
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const SOCKET_URL = `${protocol}//${window.location.host}/ws`
+const SOCKET_URL = (import.meta.env.VITE_WS_URL as string | undefined) || `${protocol}//${window.location.host}/ws`;
 const MAX_RECENT_EVENTS = 30
 
 interface SocketContextValue {
@@ -30,8 +30,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [unseenCount, setUnseenCount] = useState(0)
 
   useEffect(() => {
+    const token = localStorage.getItem('access_token')
     const client = new Client({
       brokerURL: SOCKET_URL,
+      connectHeaders: token ? { Authorization: `Bearer ${token}` } : {},
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -46,12 +48,19 @@ export function SocketProvider({ children }: { children: ReactNode }) {
           }
         })
 
-        client.subscribe('/topic/reports', (message) => {
-          if (message.body) {
-            const payload = JSON.parse(message.body) as UserReport
-            setRecentReports((prev) => [payload, ...prev].slice(0, MAX_RECENT_EVENTS))
+        // Subscribe to /topic/reports only if user has a token (protected by backend ROLE_ADMIN)
+        if (token) {
+          try {
+            client.subscribe('/topic/reports', (message) => {
+              if (message.body) {
+                const payload = JSON.parse(message.body) as UserReport
+                setRecentReports((prev) => [payload, ...prev].slice(0, MAX_RECENT_EVENTS))
+              }
+            })
+          } catch (e) {
+            console.warn('Could not subscribe to /topic/reports:', e)
           }
-        })
+        }
       },
       onDisconnect: () => {
         setConnected(false)

@@ -216,8 +216,13 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
   }
 
   useEffect(() => {
-    if (origin && destination) void compute(origin, destination, mode)
-    else requestId.current++ // invalidate any in-flight request now that a point was cleared
+    if (origin && destination) {
+      void compute(origin, destination, mode)
+    } else {
+      requestId.current++ // invalidate any in-flight request now that a point was cleared
+      setLoading(false)
+      setError(null)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [origin, destination, mode])
 
@@ -232,6 +237,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
     setDestination(null)
     setRoute(null)
     setError(null)
+    setLoading(false)
     setTripActive(false)
     setIsEcoIdentical(false)
     fetchCurrentLocation()

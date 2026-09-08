@@ -2,7 +2,7 @@ import { api } from './client'
 import type { ReportType, UserReport } from '@/types/api'
 
 export interface SubmitReportInput {
-  userId: string
+  userId?: string
   segmentId: string
   type: ReportType
   description: string
