@@ -3,7 +3,9 @@ import { getRoute } from '@/api/maps'
 import { getAiRoute } from '@/api/navigation'
 import { calculateSmartEta } from '@/api/traffic'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/i18n/LocaleContext'
 import { pickNearestSegments, decodePolyline6 } from '@/lib/geo'
+import { estimateTrafficDelay } from '@/lib/trafficDelay'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
 import type { Coordinate, RouteMode, TrafficMapEntry } from '@/types/api'
 
@@ -24,9 +26,19 @@ export interface Maneuver {
 export interface RouteResult {
   points: Coordinate[]
   distanceMeters: number
+  /** ETA shown to the user: free-flow time plus the live delay when it is known. */
   travelTimeSeconds: number
-  trafficDelaySeconds: number
+  /**
+   * Extra seconds caused by live traffic, derived from the segments the route
+   * crosses. `null` = no live traffic measurement covers this route, in which
+   * case `travelTimeSeconds` is a statistical (free-flow) estimate only.
+   */
+  trafficDelaySeconds: number | null
   freeFlowTravelTimeSeconds: number | null
+  /** Fraction (0–1) of the route covered by segments with live data. */
+  trafficCoverage: number
+  /** When the underlying traffic snapshot was generated (ISO), if known. */
+  trafficGeneratedAt: string | null
   forecast: ForecastPoint[] | null
   ecoPointsEarned?: number
   verraHash?: string
@@ -59,7 +71,7 @@ function areRoutesIdentical(fastestTrip: any, ecoTrip: any): boolean {
   return false
 }
 
-export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
+export function useRoutePlanner(segments: TrafficMapEntry[] | null, segmentsGeneratedAt: string | null = null) {
   const [origin, setOrigin] = useState<PlaceResult | null>(null)
   const [destination, setDestination] = useState<PlaceResult | null>(null)
   const [mode, setMode] = useState<RouteMode>('fastest')
@@ -70,6 +82,7 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
   const [isEcoIdentical, setIsEcoIdentical] = useState(false)
   const requestId = useRef(0)
   const { user } = useAuth()
+  const { s } = useLocale()
 
   const fetchCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -78,8 +91,8 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
           setOrigin((prev) => {
             if (prev) return prev
             return {
-              label: 'Mənim konumum',
-              subtitle: 'Cari Koordinat',
+              label: s.routePlanner.myLocation,
+              subtitle: s.routePlanner.currentCoordinate,
               lat: pos.coords.latitude,
               lng: pos.coords.longitude,
             }
@@ -191,12 +204,21 @@ export function useRoutePlanner(segments: TrafficMapEntry[] | null) {
       }
 
       if (id !== requestId.current) return
+
+      // Valhalla returns a free-flow time. Derive the live delay from the traffic
+      // segments this route actually crosses; if none carry a measurement we
+      // report "no traffic data" rather than a fabricated green label (L02).
+      const freeFlowSeconds: number = trip.summary.time
+      const delay = estimateTrafficDelay(points, segments, freeFlowSeconds, segmentsGeneratedAt)
+
       setRoute({
         points,
         distanceMeters: trip.summary.length * 1000,
-        travelTimeSeconds: trip.summary.time,
-        trafficDelaySeconds: 0,
-        freeFlowTravelTimeSeconds: trip.summary.time,
+        travelTimeSeconds: freeFlowSeconds + (delay?.delaySeconds ?? 0),
+        trafficDelaySeconds: delay ? delay.delaySeconds : null,
+        freeFlowTravelTimeSeconds: freeFlowSeconds,
+        trafficCoverage: delay?.coverage ?? 0,
+        trafficGeneratedAt: delay?.generatedAt ?? null,
         forecast,
         ecoPointsEarned,
         verraHash,

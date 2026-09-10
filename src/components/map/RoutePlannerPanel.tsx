@@ -65,7 +65,7 @@ export function RoutePlannerPanel({
           <div className="flex items-center gap-3">
             <div className={`h-2.5 w-2.5 rounded-full ${mode === 'eco' ? 'bg-emerald-400' : 'bg-brand-400'} animate-pulse`} />
             <div>
-              <p className="text-xs font-bold text-white">{mode === 'eco' ? '🌿 Eco Marsrut' : 'Sürətli Marsrut'}</p>
+              <p className="text-xs font-bold text-white">{mode === 'eco' ? `🌿 ${s.routePlanner.ecoRouteShort}` : s.routePlanner.fastestRouteShort}</p>
               {route && (
                 <p className="text-[10px] text-white/60">{formatKm(route.distanceMeters)} km · {formatMinutes(route.travelTimeSeconds / 60)} {s.common.minutes}</p>
               )}
@@ -100,7 +100,7 @@ export function RoutePlannerPanel({
           <div className="mx-1 mb-2 flex items-center justify-between rounded-2xl bg-emerald-600 px-4 py-2 shadow-lg animate-fade-up">
             <div className="flex items-center gap-2">
               <Leaf className="h-4 w-4 text-white" />
-              <span className="text-sm font-bold text-white">Eco Marsrut aktiv</span>
+              <span className="text-sm font-bold text-white">{s.routePlanner.ecoRouteActive}</span>
             </div>
             <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-extrabold text-white">+{estimatedEcoPoints} XP</span>
           </div>
@@ -111,8 +111,14 @@ export function RoutePlannerPanel({
           </div>
           <div className="flex items-center justify-between px-4 pt-2 pb-3">
             <h2 className="font-display text-sm font-bold text-slate-900 dark:text-slate-50">{s.routePlanner.title}</h2>
-            <button onClick={onClose} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-              <X className="h-4 w-4" />
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={s.common.close}
+              title={s.common.close}
+              className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
           <div className="px-4 space-y-2 pb-3">
@@ -121,8 +127,14 @@ export function RoutePlannerPanel({
               <div className="flex-1">
                 <PlaceAutocomplete value={destination} onChange={setDestination} placeholder={s.routePlanner.destinationPlaceholder} dotColor="#ef4444" onPickOnMap={onPickDestination} />
               </div>
-              <button onClick={onSwap} className="shrink-0 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2 text-slate-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600">
-                <ArrowUpDown className="h-4 w-4" />
+              <button
+                type="button"
+                onClick={onSwap}
+                aria-label={s.routePlanner.swap}
+                title={s.routePlanner.swap}
+                className="shrink-0 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2 text-slate-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >
+                <ArrowUpDown className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
             {isEcoIdentical && (
@@ -162,8 +174,8 @@ export function RoutePlannerPanel({
                   </p>
                   <p className="text-xs text-slate-400 mt-0.5">{formatKm(route.distanceMeters)} {s.common.km}</p>
                 </div>
-                <button onClick={() => setDetailsOpen(v => !v)} className="flex items-center gap-1 rounded-lg bg-white dark:bg-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition active:scale-95">
-                  {detailsOpen ? 'Bağla' : 'Ətraflı'}{detailsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                <button type="button" onClick={() => setDetailsOpen(v => !v)} aria-expanded={detailsOpen} className="flex items-center gap-1 rounded-lg bg-white dark:bg-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition active:scale-95">
+                  {detailsOpen ? s.common.close : s.routePlanner.details}{detailsOpen ? <ChevronUp className="h-4 w-4" aria-hidden="true" /> : <ChevronDown className="h-4 w-4" aria-hidden="true" />}
                 </button>
               </div>
               {detailsOpen && (
@@ -196,8 +208,14 @@ export function RoutePlannerPanel({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-4 py-3.5 relative">
           <h2 className="font-display text-sm font-bold text-slate-900 dark:text-slate-50">{s.routePlanner.title}</h2>
-          <button onClick={onClose} className="rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-            <X className="h-4 w-4" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={s.common.close}
+            title={s.common.close}
+            className="rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
         
@@ -205,8 +223,14 @@ export function RoutePlannerPanel({
         <div className="flex-none px-4 py-4 relative">
           <PlaceAutocomplete value={origin} onChange={setOrigin} placeholder={s.routePlanner.originPlaceholder} dotColor="#22c55e" onPickOnMap={onPickOrigin} />
           <div className="my-2 flex justify-end pr-2">
-            <button onClick={onSwap} className="shrink-0 rounded-full border border-slate-200 dark:border-slate-700 p-1.5 text-slate-400 transition hover:border-brand-300 hover:text-brand-600">
-              <ArrowUpDown className="h-3.5 w-3.5" />
+            <button
+              type="button"
+              onClick={onSwap}
+              aria-label={s.routePlanner.swap}
+              title={s.routePlanner.swap}
+              className="shrink-0 rounded-full border border-slate-200 dark:border-slate-700 p-1.5 text-slate-400 transition hover:border-brand-300 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
           <PlaceAutocomplete value={destination} onChange={setDestination} placeholder={s.routePlanner.destinationPlaceholder} dotColor="#ef4444" onPickOnMap={onPickDestination} />
@@ -292,10 +316,14 @@ export function RoutePlannerPanel({
 }
 
 function trafficTone(route: RouteResult, s: ReturnType<typeof useLocale>['s']) {
+  // No live measurement along this route -> say so instead of implying "light traffic" (L02).
+  if (route.trafficDelaySeconds === null) {
+    return { label: s.routePlanner.trafficUnknown, className: 'text-slate-500 dark:text-slate-400', known: false }
+  }
   const ratio = route.trafficDelaySeconds / Math.max(1, route.travelTimeSeconds)
-  if (ratio < 0.08) return { label: s.routePlanner.trafficLight, className: 'text-emerald-600' }
-  if (ratio < 0.22) return { label: s.routePlanner.trafficModerate, className: 'text-amber-600' }
-  return { label: s.routePlanner.trafficHeavy, className: 'text-red-600' }
+  if (ratio < 0.08) return { label: s.routePlanner.trafficLight, className: 'text-emerald-600', known: true }
+  if (ratio < 0.22) return { label: s.routePlanner.trafficModerate, className: 'text-amber-600', known: true }
+  return { label: s.routePlanner.trafficHeavy, className: 'text-red-600', known: true }
 }
 
 function forecastTone(minutes: number, baseline: number): string {
@@ -308,9 +336,9 @@ function forecastTone(minutes: number, baseline: number): string {
 function RouteSummaryDetails({ route, mode }: { route: RouteResult; mode: RouteMode }) {
   const { s } = useLocale()
   const tone = trafficTone(route, s)
-  const efficiencyPct = route.freeFlowTravelTimeSeconds
+  const efficiencyPct = tone.known && route.freeFlowTravelTimeSeconds
     ? clamp((route.freeFlowTravelTimeSeconds / Math.max(1, route.travelTimeSeconds)) * 100, 8, 100)
-    : 85
+    : 100
   const baseline = route.forecast?.[0]?.minutes ?? route.travelTimeSeconds / 60
 
   return (
@@ -319,9 +347,21 @@ function RouteSummaryDetails({ route, mode }: { route: RouteResult; mode: RouteM
         <span className="text-slate-500 dark:text-slate-400">{s.routePlanner.routeLabel?.[mode] ?? mode}</span>
         <span className={`font-semibold ${tone.className}`}>{tone.label}</span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
-        <div className={`h-full rounded-full transition-all duration-700 ${mode === 'eco' ? 'bg-emerald-500' : 'bg-brand-500'}`} style={{ width: `${efficiencyPct}%` }} />
-      </div>
+      {tone.known ? (
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+          <div className={`h-full rounded-full transition-all duration-700 ${mode === 'eco' ? 'bg-emerald-500' : 'bg-brand-500'}`} style={{ width: `${efficiencyPct}%` }} />
+        </div>
+      ) : (
+        <p className="flex items-start gap-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 px-2.5 py-2 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+          <Info className="mt-px h-3.5 w-3.5 shrink-0" />
+          <span>{s.routePlanner.statisticalEtaHint}</span>
+        </p>
+      )}
+      {tone.known && route.trafficDelaySeconds !== null && route.trafficDelaySeconds > 0 && (
+        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+          {s.routePlanner.trafficDelayLabel}: +{formatMinutes(route.trafficDelaySeconds / 60)} {s.routePlanner.minutesShort}
+        </p>
+      )}
       {route.forecast && (
         <div>
           <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">{s.routePlanner.forecastTitle}</p>
@@ -339,7 +379,7 @@ function RouteSummaryDetails({ route, mode }: { route: RouteResult; mode: RouteM
             <span className="text-sm font-semibold text-green-800 dark:text-green-300">+{route.ecoPointsEarned} Eco-Points</span>
           </div>
           {route.co2SavedKg != null && (
-            <p className="mt-1 text-xs text-green-700 dark:text-green-400">{route.co2SavedKg.toFixed(2)} kq CO2 qənaəti</p>
+            <p className="mt-1 text-xs text-green-700 dark:text-green-400">{route.co2SavedKg.toFixed(2)} {s.routePlanner.co2SavedSuffix}</p>
           )}
           {route.verraHash && (
             <div className="mt-2 flex items-center gap-1.5 opacity-60">

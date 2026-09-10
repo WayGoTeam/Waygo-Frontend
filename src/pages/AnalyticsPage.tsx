@@ -12,43 +12,29 @@ import { useDistrictsWeather } from '@/hooks/useDistrictsWeather'
 import { ErrorState } from '@/components/common/States'
 import { AiPredictionPanel } from '@/components/traffic/AiPredictionPanel'
 import { getDailyPrediction } from '@/api/traffic'
+import { weatherEmoji } from '@/components/weather/WeatherIcon'
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
-function ChartTooltip({ active, payload, label }: any) {
+// Series are keyed by dataKey ("speed"/"congestion"), never by translated names,
+// so the unit suffix cannot break when the locale changes (L07).
+function ChartTooltip({ active, payload, label, speedUnitLabel }: any) {
   if (!active || !payload?.length) return null
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-lg text-xs">
       <p className="font-bold text-slate-900 dark:text-slate-50 mb-2">{label}:00</p>
       {payload.map((p: any, i: number) => (
         <p key={i} style={{ color: p.color }} className="font-medium">
-          {p.name}: {p.value}{p.name === 'Sürət' ? ' km/s' : '%'}
+          {p.name}: {p.value}{p.dataKey === 'speed' ? ` ${speedUnitLabel}` : '%'}
         </p>
       ))}
     </div>
   )
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-function weatherIcon(cond: string) {
-  const c = cond?.toLowerCase() ?? ''
-  if (c.includes('rain') || c.includes('yağ')) return '🌧️'
-  if (c.includes('cloud') || c.includes('bulud')) return '⛅'
-  if (c.includes('storm') || c.includes('fırt')) return '⛈️'
-  if (c.includes('snow') || c.includes('qar')) return '❄️'
-  if (c.includes('fog') || c.includes('duman')) return '🌫️'
-  return '☀️'
-}
-
-function weatherGradient(cond: string, impact: number) {
-  if (impact > 25) return 'from-violet-500/10 to-violet-600/5 border-violet-200'
-  if (impact > 15) return 'from-orange-400/10 to-orange-500/5 border-orange-200'
-  if (impact > 8)  return 'from-sky-400/10 to-sky-500/5 border-sky-200'
-  return 'from-emerald-400/10 to-emerald-500/5 border-emerald-200'
-}
-
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function AnalyticsPage() {
   const { s, locale } = useLocale()
+  const speedUnitLabel = s.common.kmh
   const weather = useDistrictsWeather()
 
   const [dailyData,  setDailyData]  = useState<any[]>([])
@@ -109,10 +95,11 @@ export default function AnalyticsPage() {
           <button
             onClick={fetchAll}
             disabled={isRefreshing}
+            aria-label={s.cityBar.refresh}
             className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 shrink-0"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Yenilə</span>
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" />
+            <span className="hidden sm:inline">{s.cityBar.refresh}</span>
             <span className="text-slate-400">{lastUpdate.toLocaleTimeString(locale === 'en' ? 'en-US' : 'az-AZ', { hour: '2-digit', minute: '2-digit' })}</span>
           </button>
         </div>
@@ -128,7 +115,7 @@ export default function AnalyticsPage() {
               </div>
               <div className="flex items-center gap-3 text-[11px] text-slate-400">
                 <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-brand-500 opacity-80 inline-block" />{s.analyticsPage.congestionColumn}%</span>
-                <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-emerald-500 opacity-80 inline-block" />{s.analyticsPage.speedColumn} km/s</span>
+                <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-emerald-500 opacity-80 inline-block" />{s.analyticsPage.speedColumn} {speedUnitLabel}</span>
               </div>
             </div>
             {mounted && (
@@ -148,15 +135,15 @@ export default function AnalyticsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                     <XAxis dataKey="t" tick={{ fontSize: 9, fill: '#94a3b8' }} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}:00`} />
                     <YAxis tick={{ fontSize: 9, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Area type="monotone" dataKey="congestion" name="Tıxac" stroke="#6366f1" strokeWidth={2} fill="url(#gradCong)"
+                    <Tooltip content={<ChartTooltip speedUnitLabel={speedUnitLabel} />} />
+                    <Area type="monotone" dataKey="congestion" name={s.analyticsPage.congestionColumn} stroke="#6366f1" strokeWidth={2} fill="url(#gradCong)"
                       dot={(props: any) => {
                         const { cx, cy, payload } = props
                         if (parseInt(payload.t) !== currentHour) return <></>
                         return <circle key="now" cx={cx} cy={cy} r={4} fill="#6366f1" stroke="white" strokeWidth={2} />
                       }}
                     />
-                    <Area type="monotone" dataKey="speed" name="Sürət" stroke="#10b981" strokeWidth={2} fill="url(#gradSpeed)" />
+                    <Area type="monotone" dataKey="speed" name={s.analyticsPage.speedColumn} stroke="#10b981" strokeWidth={2} fill="url(#gradSpeed)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -208,7 +195,7 @@ export default function AnalyticsPage() {
                           <p className="truncate text-xs font-bold text-slate-900 dark:text-slate-50">{w.districtName}</p>
                           <p className="truncate text-[10px] text-slate-400">{condLabel}</p>
                         </div>
-                        <span className="text-xl leading-none shrink-0 ml-1">{weatherIcon(w.condition)}</span>
+                        <span className="text-xl leading-none shrink-0 ml-1" aria-hidden="true">{weatherEmoji(w.condition)}</span>
                       </div>
                       <div className="grid grid-cols-3 gap-1 text-center">
                         <div>
@@ -217,7 +204,7 @@ export default function AnalyticsPage() {
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-900 dark:text-slate-50">{Math.round(w.windSpeedKmh)}</p>
-                          <p className="text-[9px] text-slate-400">km/s</p>
+                          <p className="text-[9px] text-slate-400">{speedUnitLabel}</p>
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-900 dark:text-slate-50">{w.precipitationMm.toFixed(1)}</p>

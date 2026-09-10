@@ -1,8 +1,16 @@
 import { useState } from 'react'
 import { predictTraffic } from '@/api/traffic'
 import type { TrafficForecast, DayOfWeek } from '@/types/api'
-import { Sparkles, Clock, Calendar, MapPin, Loader2, Info } from 'lucide-react'
+import { Sparkles, Clock, Calendar, MapPin, Loader2, Info, AlertTriangle, Cpu } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
+import { formatBakuClock } from '@/lib/format'
+
+/** A forecast is "degraded" when the backend says so, or (older backends) when its explanation is the known fallback text. */
+function isFallbackForecast(f: TrafficForecast): boolean {
+  if (typeof f.degraded === 'boolean') return f.degraded
+  if (f.predictionSource) return f.predictionSource !== 'CATBOOST_ML'
+  return /fallback|seeded/i.test(f.explanation ?? '')
+}
 
 // Hardcoded segments matching SampleDataSeeder.java for demo
 const SEGMENTS = [
@@ -31,11 +39,13 @@ export function AiPredictionPanel() {
       const data = await predictTraffic(segmentId, dayOfWeek, hour)
       setForecast(data)
     } catch (err: any) {
-      setError(err?.message || 'Proqnoz alınarkən xəta baş verdi.')
+      setError(err?.message || s.aiAnalytics.predictionError)
     } finally {
       setLoading(false)
     }
   }
+
+  const fallback = forecast ? isFallbackForecast(forecast) : false
 
   return (
     <div className="w-full h-full flex flex-col rounded-[2rem] bg-white/60 dark:bg-slate-900/60 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white dark:border-slate-700/60 backdrop-blur-xl overflow-hidden relative transition-all hover:bg-white/80 dark:hover:bg-slate-900/80 duration-500">
@@ -48,7 +58,10 @@ export function AiPredictionPanel() {
         </div>
         <div>
           <h2 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50">{s.aiAnalytics.predictionTitle}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{s.aiAnalytics.predictionSubtitle}</p>
+          {/* Do not advertise CatBoost while showing a statistical fallback result (L03). */}
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {forecast && fallback ? s.aiAnalytics.predictionSubtitleFallback : s.aiAnalytics.predictionSubtitle}
+          </p>
         </div>
       </div>
 
@@ -124,6 +137,37 @@ export function AiPredictionPanel() {
         {forecast && !loading && (
           <div className="mt-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-4">
+
+              {/* Source badge: model vs. fallback must be visibly distinct (L03) */}
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span
+                  data-testid="prediction-source"
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                    fallback
+                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
+                      : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
+                  }`}
+                >
+                  {fallback ? <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" /> : <Cpu className="h-3.5 w-3.5" aria-hidden="true" />}
+                  {fallback ? s.aiAnalytics.sourceFallback : s.aiAnalytics.sourceModel}
+                </span>
+                {forecast.modelVersion && (
+                  <span className="text-[10px] text-slate-400" title={s.aiAnalytics.modelVersion}>
+                    {forecast.modelVersion}
+                  </span>
+                )}
+                {forecast.generatedAt && (
+                  <span className="ml-auto text-[10px] text-slate-400">
+                    {s.aiAnalytics.generatedAt}: {formatBakuClock(forecast.generatedAt)}
+                  </span>
+                )}
+              </div>
+
+              {fallback && (
+                <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] leading-snug text-amber-800 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-200">
+                  {s.aiAnalytics.fallbackNotice}
+                </p>
+              )}
               
               <div className="flex justify-between items-end mb-4">
                 <div>
@@ -135,7 +179,7 @@ export function AiPredictionPanel() {
                     }`}>
                       {Math.round(forecast.predictedSpeedKmh)}
                     </span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">km/s</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">{s.common.kmh}</span>
                   </div>
                 </div>
                 
@@ -160,7 +204,7 @@ export function AiPredictionPanel() {
               <div className="flex gap-2 rounded-xl bg-white dark:bg-slate-900 p-3 border border-slate-100 dark:border-slate-800">
                 <Info className="h-4 w-4 text-brand-500 shrink-0 mt-0.5" />
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  <span className="font-medium text-slate-900 dark:text-slate-50 block mb-0.5">Modelin Şərhi:</span>
+                  <span className="font-medium text-slate-900 dark:text-slate-50 block mb-0.5">{s.aiAnalytics.modelExplanation}:</span>
                   {forecast.explanation}
                 </p>
               </div>

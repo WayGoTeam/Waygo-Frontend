@@ -7,7 +7,7 @@ import { SocketProvider } from '@/context/SocketContext'
 import { AuthProvider } from '@/context/AuthContext'
 import { MapLayersProvider } from '@/context/MapLayersContext'
 import { IncidentsProvider } from '@/context/IncidentsContext'
-import { GoogleOAuthProvider } from '@react-oauth/google'
+import { GoogleAuthProvider } from '@/context/GoogleAuthProvider'
 import { ThemeProvider } from '@/context/ThemeContext'
 import './index.css'
 
@@ -20,9 +20,9 @@ createRoot(document.getElementById('root')!).render(
           <AuthProvider>
             <MapLayersProvider>
               <IncidentsProvider>
-                <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy'}>
+                <GoogleAuthProvider>
                   <App />
-                </GoogleOAuthProvider>
+                </GoogleAuthProvider>
               </IncidentsProvider>
             </MapLayersProvider>
           </AuthProvider>

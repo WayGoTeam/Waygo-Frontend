@@ -79,6 +79,22 @@ export interface Strings {
     endTrip: string
     cancelTrip: string
     routesIdenticalMessage: string
+    trafficUnknown: string
+    statisticalEtaHint: string
+    trafficDelayLabel: string
+    details: string
+    ecoRouteShort: string
+    fastestRouteShort: string
+    ecoRouteActive: string
+    co2SavedSuffix: string
+    myLocation: string
+    currentCoordinate: string
+  }
+  trafficLayer: {
+    unavailable: string
+    roadLabel: string
+    congestionLabel: string
+    levelLabel: string
   }
   chat: {
     title: string
@@ -93,6 +109,9 @@ export interface Strings {
     open: string
     close: string
     clear: string
+    voiceInput: string
+    voiceUnsupported: string
+    send: string
   }
   cityBar: {
     citywideStatus: string
@@ -123,6 +142,8 @@ export interface Strings {
     emptyHint: string
     reportButton: string
     liveBadge: string
+    currentTitle: string
+    viewOnMap: string
   }
   reportModal: {
     title: string
@@ -133,6 +154,7 @@ export interface Strings {
     location: string
     locationHint: string
     useMapPin: string
+    locationPicked: string
     segment: string
     submit: string
     submitting: string
@@ -140,6 +162,92 @@ export interface Strings {
     success: string
     error: string
     reportedPrefix: string
+    loginRequiredTitle: string
+    loginRequiredDesc: string
+    successTitle: string
+    successDesc: string
+    errorTitle: string
+  }
+  liveMapDialogs: {
+    attention: string
+    noGps: string
+    guestTitle: string
+    guestDesc: string
+    cooldownTitle: string
+    cooldownDesc: string
+    cancelTripTitle: string
+    cancelTripDesc: string
+    cancelTripYes: string
+    cancelTripNo: string
+    endTripTitle: string
+    endTripDesc: string
+    endTripYes: string
+    endTripNo: string
+    tripStoppedTitle: string
+    tripStoppedDesc: string
+    loginForPoints: string
+    currentPosition: string
+    recalculating: string
+    errorTitle: string
+    genericError: string
+  }
+  notFound: {
+    title: string
+    description: string
+    goHome: string
+    goBack: string
+  }
+  login: {
+    titlePhone: string
+    titlePassword: string
+    titleOtp: string
+    titleSetPassword: string
+    titleOnboarding: string
+    titleSuccess: string
+    subtitlePhone: string
+    subtitlePassword: string
+    subtitleOtpPrefix: string
+    subtitleOtpSuffix: string
+    subtitleSetPassword: string
+    subtitleOnboarding: string
+    subtitleSuccess: string
+    phoneLabel: string
+    continueButton: string
+    or: string
+    passwordLabel: string
+    loginButton: string
+    forgotPassword: string
+    otpLabel: string
+    openTelegram: string
+    verify: string
+    newPasswordLabel: string
+    newPasswordPlaceholder: string
+    verifyAndContinue: string
+    skipPassword: string
+    fullNameLabel: string
+    fullNamePlaceholder: string
+    engineTypeLabel: string
+    plateLabel: string
+    complete: string
+    readyTitle: string
+    readyDesc: string
+    goToMap: string
+    errors: {
+      generic: string
+      wrongPassword: string
+      otpInvalid: string
+      passwordTooShort: string
+      passwordSetFailed: string
+      onboardingFailed: string
+      googleFailed: string
+      googleError: string
+    }
+    vehicle: {
+      EV: string
+      HYBRID: string
+      PETROL: string
+      DIESEL: string
+    }
   }
   aiAnalytics: {
     pageTitle: string
@@ -172,6 +280,14 @@ export interface Strings {
     predictedSpeed: string
     predictedCongestion: string
     modelConfidence: string
+    modelExplanation: string
+    sourceModel: string
+    sourceFallback: string
+    fallbackNotice: string
+    predictionSubtitleFallback: string
+    generatedAt: string
+    modelVersion: string
+    predictionError: string
     days: Record<string, string>
   }
   analyticsPage: {
@@ -237,6 +353,8 @@ export interface Strings {
     cancel: string
     save: string
     minutes: string
+    hoursShort: string
+    daysShort: string
     km: string
     kmh: string
     vehicles: string
@@ -244,6 +362,10 @@ export interface Strings {
     justNow: string
     pickOnMap: string
     pickingOnMapHint: string
+    login: string
+    logout: string
+    user: string
+    ok: string
   }
   walletPage: {
     loggedOutTitle: string
@@ -395,6 +517,22 @@ export const az: Strings = {
     endTrip: 'Bitdi',
     cancelTrip: 'Ləğv et',
     routesIdenticalMessage: 'Hazırda yolda problem yoxdur, Eco-Points qazana bilmirsiniz, yollar təmizdir.',
+    trafficUnknown: 'Trafik məlumatı yoxdur',
+    statisticalEtaHint: 'Bu marşrut üçün canlı trafik ölçüsü yoxdur; göstərilən vaxt statistik (sərbəst axın) hesablamadır.',
+    trafficDelayLabel: 'Trafik gecikməsi',
+    details: 'Ətraflı',
+    ecoRouteShort: 'Eco Marşrut',
+    fastestRouteShort: 'Sürətli Marşrut',
+    ecoRouteActive: 'Eco Marşrut aktiv',
+    co2SavedSuffix: 'kq CO₂ qənaəti',
+    myLocation: 'Mənim konumum',
+    currentCoordinate: 'Cari koordinat',
+  },
+  trafficLayer: {
+    unavailable: 'Trafik qatı yüklənə bilmədi — tile servisi əlçatan deyil.',
+    roadLabel: 'Yol',
+    congestionLabel: 'Tıxac',
+    levelLabel: 'Səviyyə',
   },
   chat: {
     title: 'WayGo AI',
@@ -409,6 +547,9 @@ export const az: Strings = {
     open: 'WayGo AI-ı aç',
     close: 'Bağla',
     clear: 'Söhbəti təmizlə',
+    voiceInput: 'Səsli daxil et',
+    voiceUnsupported: 'Sizin brauzeriniz səsli daxil etməni dəstəkləmir (Chrome istifadə edin).',
+    send: 'Göndər',
   },
   cityBar: {
     citywideStatus: 'Şəhər üzrə vəziyyət',
@@ -463,6 +604,8 @@ export const az: Strings = {
     emptyHint: 'Yeni hadisələr avtomatik olaraq burada görünəcək',
     reportButton: 'Hadisə bildir',
     liveBadge: 'CANLI',
+    currentTitle: 'Cari hadisələr',
+    viewOnMap: 'Xəritədə bax',
   },
   reportModal: {
     title: 'Yol hadisəsini bildir',
@@ -470,9 +613,10 @@ export const az: Strings = {
     type: 'Hadisə növü',
     description: 'Təsvir',
     descriptionPlaceholder: 'Nə baş verdiyini qısaca izah edin...',
-    location: 'Yol seqmenti',
-    locationHint: 'Hesabatın aid olduğu yol seqmentini seçin',
-    useMapPin: 'Koordinatları özüm daxil edim',
+    location: 'Məkan',
+    locationHint: 'Hadisənin yerini xəritədə seçin',
+    useMapPin: 'Xəritədə seç',
+    locationPicked: 'Xəritədən seçildi (Dəyişdir)',
     segment: 'Seqment',
     submit: 'Göndər',
     submitting: 'Göndərilir...',
@@ -480,6 +624,92 @@ export const az: Strings = {
     success: 'Təşəkkürlər! Hesabatınız admin təsdiqini gözləyir.',
     error: 'Hesabat göndərilə bilmədi. Yenidən cəhd edin.',
     reportedPrefix: 'Bildirildi:',
+    loginRequiredTitle: 'Giriş tələb olunur',
+    loginRequiredDesc: 'Yol hadisəsi hesabatı göndərmək üçün lütfən sistemə daxil olun.',
+    successTitle: 'Təşəkkür edirik!',
+    successDesc: 'Hesabatınız qeydə alındı və moderator təsdiqinə göndərildi.',
+    errorTitle: 'Xəta',
+  },
+  liveMapDialogs: {
+    attention: 'Diqqət',
+    noGps: 'Brauzeriniz GPS dəstəkləmir.',
+    guestTitle: 'Qonaq rejimi',
+    guestDesc: 'Hesaba daxil olmadan səfərə başlayırsınız.\nSəfər sonu heç bir xal (Eco-Points) qazanmayacaqsınız. Yenə də davam etmək istəyirsiniz?',
+    cooldownTitle: 'Cooldown aktivdir',
+    cooldownDesc: 'Siz artıq yaxın zamanda xal qazanmısınız.\nNövbəti 5 dəqiqə ərzində bitən səfərlər üçün xal verilməyəcək. Yenə də davam etmək istəyirsiniz?',
+    cancelTripTitle: 'Səfəri ləğv et',
+    cancelTripDesc: 'Səfəri ləğv etmək istədiyinizə əminsiniz?',
+    cancelTripYes: 'Bəli, ləğv et',
+    cancelTripNo: 'Davam et',
+    endTripTitle: 'Səfəri bitir',
+    endTripDesc: 'Səfəri bitirmək istədiyinizə əminsiniz?',
+    endTripYes: 'Bəli, bitir',
+    endTripNo: 'Xeyr, davam et',
+    tripStoppedTitle: 'Səfər dayandırıldı',
+    tripStoppedDesc: 'Təyinat nöqtəsinə çatmadığınız üçün ({0} m qalıb) Eco-Points hesablanmadı.',
+    loginForPoints: 'Eco-Points qazanmaq üçün sistemə daxil olmalısınız!',
+    currentPosition: 'Cari mövqe',
+    recalculating: 'Yenidən hesablanır...',
+    errorTitle: 'Xəta',
+    genericError: 'Xəta baş verdi.',
+  },
+  notFound: {
+    title: 'Səhifə tapılmadı',
+    description: 'Axtardığınız ünvan mövcud deyil və ya köçürülüb.',
+    goHome: 'Canlı xəritəyə qayıt',
+    goBack: 'Geri',
+  },
+  login: {
+    titlePhone: 'Giriş və ya Qeydiyyat',
+    titlePassword: 'Şifrənizi daxil edin',
+    titleOtp: 'Kodu təsdiqləyin',
+    titleSetPassword: 'Şifrə təyin edin',
+    titleOnboarding: 'Avtomobil profiliniz',
+    titleSuccess: 'Uğurlu!',
+    subtitlePhone: 'Davam etmək üçün mobil nömrənizi daxil edin.',
+    subtitlePassword: 'Hesabınıza daxil olmaq üçün parolunuzu yazın.',
+    subtitleOtpPrefix: 'Kodu almaq üçün Telegram-da',
+    subtitleOtpSuffix: 'botuna keçid edin və nömrənizi paylaşın.',
+    subtitleSetPassword: 'Növbəti dəfə rahat giriş etmək üçün yeni şifrə təyin edin.',
+    subtitleOnboarding: 'Eko-Xal qazanmaq üçün avtomobilinizi qeyd edin.',
+    subtitleSuccess: 'Siz artıq sistemə daxil olmusunuz.',
+    phoneLabel: 'Mobil nömrə',
+    continueButton: 'Davam et',
+    or: 'və ya',
+    passwordLabel: 'Şifrə',
+    loginButton: 'Giriş',
+    forgotPassword: 'Şifrəni unutmusunuz? (Telegram ilə giriş)',
+    otpLabel: 'Telegram-dan gələn 6 rəqəmli kod',
+    openTelegram: 'Telegram-ı aç',
+    verify: 'Təsdiqlə',
+    newPasswordLabel: 'Yeni şifrə',
+    newPasswordPlaceholder: 'Ən azı 6 simvol',
+    verifyAndContinue: 'Təsdiqlə və davam et',
+    skipPassword: 'Şifrə təyin etmədən davam et',
+    fullNameLabel: 'Ad və soyad',
+    fullNamePlaceholder: 'Məsələn: Əli Əliyev',
+    engineTypeLabel: 'Mühərrik tipi',
+    plateLabel: 'Dövlət nişanı (Texpasport nömrəsi)',
+    complete: 'Tamamla',
+    readyTitle: 'Hazırdır!',
+    readyDesc: 'Artıq eko-marşrutlardan istifadə edə bilərsiniz.',
+    goToMap: 'Xəritəyə keçid',
+    errors: {
+      generic: 'Sistem xətası baş verdi.',
+      wrongPassword: 'Parol yanlışdır.',
+      otpInvalid: 'OTP yanlışdır və ya müddəti bitib.',
+      passwordTooShort: 'Parol ən azı 6 simvol olmalıdır',
+      passwordSetFailed: 'Parol təyin edilərkən xəta baş verdi.',
+      onboardingFailed: 'Məlumatlar yadda saxlanılmadı.',
+      googleFailed: 'Google ilə giriş uğursuz oldu.',
+      googleError: 'Google giriş xətası',
+    },
+    vehicle: {
+      EV: 'Elektrik (EV)',
+      HYBRID: 'Hibrid',
+      PETROL: 'Benzin',
+      DIESEL: 'Dizel',
+    },
   },
   aiAnalytics: {
     pageTitle: 'İntellektual Analitika',
@@ -512,6 +742,14 @@ export const az: Strings = {
     predictedSpeed: 'Təxmin Edilən Sürət',
     predictedCongestion: 'Sıxlıq Dərəcəsi',
     modelConfidence: 'Model Güvəni (Confidence)',
+    modelExplanation: 'Modelin şərhi',
+    sourceModel: 'CatBoost ML modeli',
+    sourceFallback: 'Statistik ehtiyat rejimi',
+    fallbackNotice: 'AI modeli əlçatan olmadı; bu nəticə tarixi statistika əsasında hesablanıb və CatBoost proqnozu deyil.',
+    predictionSubtitleFallback: 'Statistik ehtiyat rejimi — AI modeli hazırda əlçatan deyil',
+    generatedAt: 'Hesablanma vaxtı',
+    modelVersion: 'Model versiyası',
+    predictionError: 'Proqnoz alınarkən xəta baş verdi.',
     days: {
       MONDAY: 'Bazar ertəsi',
       TUESDAY: 'Çərşənbə axşamı',
@@ -585,29 +823,35 @@ export const az: Strings = {
     cancel: 'Ləğv et',
     save: 'Yadda saxla',
     minutes: 'dəq',
+    hoursShort: 'saat',
+    daysShort: 'gün',
     km: 'km',
-    kmh: 'km/s',
+    kmh: 'km/saat',
     vehicles: 'vasitə',
     ago: 'əvvəl',
     justNow: 'indicə',
     pickOnMap: 'Xəritədə seç',
     pickingOnMapHint: 'Xəritədə nöqtəni seçin',
+    login: 'Giriş',
+    logout: 'Çıxış',
+    user: 'İstifadəçi',
+    ok: 'OK',
   },
   walletPage: {
     loggedOutTitle: 'Eko-Cüzdana baxmaq üçün giriş etməlisiniz',
-    loggedOutDesc: 'Təbiətə verdiyiniz töhfələri izləmək, yığdığınız Eco-Points balansını görmək və topladığınız xalları SOCAR yanacaq vaoçerinə çevirmək üçün zəhmət olmasa sistemə daxil olun.',
+    loggedOutDesc: 'Təbiətə verdiyiniz töhfələri izləmək, yığdığınız Eco-Points balansını görmək və topladığınız xalları yanacaq və enerji vaoçerinə çevirmək üçün zəhmət olmasa sistemə daxil olun.',
     title: 'Eko-Cüzdan',
-    subtitle: 'Təbiətə verdiyiniz töhfələr və qazandığınız SOCAR vaoçerləri.',
+    subtitle: 'Təbiətə verdiyiniz töhfələr və qazandığınız vaoçerlər.',
     errorLoad: 'Balans yüklənərkən xəta baş verdi.',
     errorVoucher: 'Vaoçer yaradılarkən xəta baş verdi.',
     balanceTitle: 'Eco-Points Balansı',
     totalCo2: 'Ümumi CO₂ Qənaəti',
-    monetizationTitle: 'SOCAR Vaoçeri',
-    monetizationDesc: '1000 XP = 10 AZN Yanacaq Vaoçeri',
+    monetizationTitle: 'E-Vaoçer',
+    monetizationDesc: '1000 XP = 10 AZN Yanacaq və Enerji Vaoçeri',
     progress: 'Tərəqqi',
     generateVoucher: 'Vaoçer Yarat',
     myVouchers: 'Aktiv Vaoçerlərim',
-    fuelCard: 'SOCAR Yanacaq Kartı',
+    fuelCard: 'Yanacaq və Enerji Kartı',
     issuedAt: 'Yaradıldı',
     ecoXpTotal: 'ümumi xal',
     streakDays: 'gün seriyası',
@@ -743,6 +987,22 @@ export const en: Strings = {
     endTrip: 'Finish',
     cancelTrip: 'Cancel',
     routesIdenticalMessage: 'Currently no traffic issues on the road. Eco-Points cannot be earned as roads are clear.',
+    trafficUnknown: 'No traffic data',
+    statisticalEtaHint: 'No live traffic measurement covers this route; the time shown is a statistical (free-flow) estimate.',
+    trafficDelayLabel: 'Traffic delay',
+    details: 'Details',
+    ecoRouteShort: 'Eco Route',
+    fastestRouteShort: 'Fastest Route',
+    ecoRouteActive: 'Eco Route active',
+    co2SavedSuffix: 'kg CO₂ saved',
+    myLocation: 'My location',
+    currentCoordinate: 'Current coordinate',
+  },
+  trafficLayer: {
+    unavailable: 'Traffic layer could not be loaded — tile service unavailable.',
+    roadLabel: 'Road',
+    congestionLabel: 'Congestion',
+    levelLabel: 'Level',
   },
   chat: {
     title: 'WayGo AI',
@@ -757,6 +1017,9 @@ export const en: Strings = {
     open: 'Open WayGo AI',
     close: 'Close',
     clear: 'Clear chat',
+    voiceInput: 'Voice input',
+    voiceUnsupported: 'Speech recognition is not supported in this browser (use Chrome).',
+    send: 'Send',
   },
   cityBar: {
     citywideStatus: 'Citywide status',
@@ -811,6 +1074,8 @@ export const en: Strings = {
     emptyHint: 'New incidents will appear here automatically',
     reportButton: 'Report an incident',
     liveBadge: 'LIVE',
+    currentTitle: 'Current incidents',
+    viewOnMap: 'View on map',
   },
   reportModal: {
     title: 'Report a road incident',
@@ -818,9 +1083,10 @@ export const en: Strings = {
     type: 'Incident type',
     description: 'Description',
     descriptionPlaceholder: 'Briefly describe what happened...',
-    location: 'Road segment',
-    locationHint: 'Choose which road segment this report is about',
-    useMapPin: "I'll enter coordinates myself",
+    location: 'Location',
+    locationHint: 'Pick the incident location on the map',
+    useMapPin: 'Pick on map',
+    locationPicked: 'Picked on map (Change)',
     segment: 'Segment',
     submit: 'Submit',
     submitting: 'Submitting...',
@@ -828,6 +1094,92 @@ export const en: Strings = {
     success: 'Thank you! Your report is waiting for admin approval.',
     error: 'Failed to submit report. Please try again.',
     reportedPrefix: 'Reported:',
+    loginRequiredTitle: 'Sign-in required',
+    loginRequiredDesc: 'Please sign in to submit an incident report.',
+    successTitle: 'Thank you!',
+    successDesc: 'Your report was recorded and sent for moderator approval.',
+    errorTitle: 'Error',
+  },
+  liveMapDialogs: {
+    attention: 'Attention',
+    noGps: 'Your browser does not support GPS.',
+    guestTitle: 'Guest mode',
+    guestDesc: 'You are starting a trip without signing in.\nNo Eco-Points will be awarded at the end of the trip. Continue anyway?',
+    cooldownTitle: 'Cooldown active',
+    cooldownDesc: 'You earned points very recently.\nTrips finished within the next 5 minutes will not earn points. Continue anyway?',
+    cancelTripTitle: 'Cancel trip',
+    cancelTripDesc: 'Are you sure you want to cancel the trip?',
+    cancelTripYes: 'Yes, cancel',
+    cancelTripNo: 'Continue',
+    endTripTitle: 'Finish trip',
+    endTripDesc: 'Are you sure you want to finish the trip?',
+    endTripYes: 'Yes, finish',
+    endTripNo: 'No, continue',
+    tripStoppedTitle: 'Trip stopped',
+    tripStoppedDesc: 'Eco-Points were not calculated because you did not reach the destination ({0} m left).',
+    loginForPoints: 'Sign in to earn Eco-Points!',
+    currentPosition: 'Current position',
+    recalculating: 'Recalculating...',
+    errorTitle: 'Error',
+    genericError: 'Something went wrong.',
+  },
+  notFound: {
+    title: 'Page not found',
+    description: "The address you requested doesn't exist or has moved.",
+    goHome: 'Back to live map',
+    goBack: 'Go back',
+  },
+  login: {
+    titlePhone: 'Log in or Sign up',
+    titlePassword: 'Enter your password',
+    titleOtp: 'Confirm the code',
+    titleSetPassword: 'Set a password',
+    titleOnboarding: 'Your vehicle profile',
+    titleSuccess: 'Success!',
+    subtitlePhone: 'Enter your mobile number to continue.',
+    subtitlePassword: 'Type your password to access your account.',
+    subtitleOtpPrefix: 'To receive the code, open the Telegram bot',
+    subtitleOtpSuffix: 'and share your phone number.',
+    subtitleSetPassword: 'Set a new password for easier sign-in next time.',
+    subtitleOnboarding: 'Register your vehicle to earn Eco-Points.',
+    subtitleSuccess: 'You are now signed in.',
+    phoneLabel: 'Mobile number',
+    continueButton: 'Continue',
+    or: 'or',
+    passwordLabel: 'Password',
+    loginButton: 'Log in',
+    forgotPassword: 'Forgot your password? (Log in via Telegram)',
+    otpLabel: '6-digit code from Telegram',
+    openTelegram: 'Open Telegram',
+    verify: 'Verify',
+    newPasswordLabel: 'New password',
+    newPasswordPlaceholder: 'At least 6 characters',
+    verifyAndContinue: 'Confirm and continue',
+    skipPassword: 'Continue without setting a password',
+    fullNameLabel: 'Full name',
+    fullNamePlaceholder: 'e.g. John Smith',
+    engineTypeLabel: 'Engine type',
+    plateLabel: 'Plate number (vehicle registration)',
+    complete: 'Complete',
+    readyTitle: 'All set!',
+    readyDesc: 'You can now use eco routes.',
+    goToMap: 'Go to the map',
+    errors: {
+      generic: 'A system error occurred.',
+      wrongPassword: 'Incorrect password.',
+      otpInvalid: 'The code is invalid or has expired.',
+      passwordTooShort: 'Password must be at least 6 characters',
+      passwordSetFailed: 'Failed to set the password.',
+      onboardingFailed: 'Your details could not be saved.',
+      googleFailed: 'Google sign-in failed.',
+      googleError: 'Google sign-in error',
+    },
+    vehicle: {
+      EV: 'Electric (EV)',
+      HYBRID: 'Hybrid',
+      PETROL: 'Petrol',
+      DIESEL: 'Diesel',
+    },
   },
   aiAnalytics: {
     pageTitle: 'Intelligent Analytics',
@@ -860,6 +1212,14 @@ export const en: Strings = {
     predictedSpeed: 'Predicted Speed',
     predictedCongestion: 'Congestion Level',
     modelConfidence: 'Model Confidence',
+    modelExplanation: 'Model explanation',
+    sourceModel: 'CatBoost ML model',
+    sourceFallback: 'Statistical fallback',
+    fallbackNotice: 'The AI model was unavailable; this result is computed from historical statistics and is not a CatBoost forecast.',
+    predictionSubtitleFallback: 'Statistical fallback mode — AI model currently unavailable',
+    generatedAt: 'Generated',
+    modelVersion: 'Model version',
+    predictionError: 'Failed to fetch the forecast.',
     days: {
       MONDAY: 'Monday',
       TUESDAY: 'Tuesday',
@@ -933,6 +1293,8 @@ export const en: Strings = {
     cancel: 'Cancel',
     save: 'Save',
     minutes: 'min',
+    hoursShort: 'h',
+    daysShort: 'd',
     km: 'km',
     kmh: 'km/h',
     vehicles: 'vehicles',
@@ -940,22 +1302,26 @@ export const en: Strings = {
     justNow: 'just now',
     pickOnMap: 'Pick on map',
     pickingOnMapHint: 'Select a point on the map',
+    login: 'Log in',
+    logout: 'Log out',
+    user: 'User',
+    ok: 'OK',
   },
   walletPage: {
     loggedOutTitle: 'Please log in to view Eco-Wallet',
-    loggedOutDesc: 'Log in to track your contributions to nature, see your Eco-Points balance, and convert your points into a SOCAR fuel voucher.',
+    loggedOutDesc: 'Log in to track your contributions to nature, see your Eco-Points balance, and convert your points into a fuel & energy voucher.',
     title: 'Eco-Wallet',
-    subtitle: 'Your contributions to nature and earned SOCAR vouchers.',
+    subtitle: 'Your contributions to nature and earned vouchers.',
     errorLoad: 'An error occurred while loading the balance.',
     errorVoucher: 'An error occurred while generating the voucher.',
     balanceTitle: 'Eco-Points Balance',
     totalCo2: 'Total CO₂ Saved',
-    monetizationTitle: 'SOCAR Voucher',
-    monetizationDesc: '1000 XP = 10 AZN Fuel Voucher',
+    monetizationTitle: 'E-Voucher',
+    monetizationDesc: '1000 XP = 10 AZN Fuel & Energy Voucher',
     progress: 'Progress',
     generateVoucher: 'Generate Voucher',
     myVouchers: 'My Active Vouchers',
-    fuelCard: 'SOCAR Fuel Card',
+    fuelCard: 'Fuel & Energy Card',
     issuedAt: 'Issued',
     ecoXpTotal: 'total xp',
     streakDays: 'day streak',

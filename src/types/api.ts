@@ -38,6 +38,8 @@ export type DayOfWeek =
   | 'SATURDAY'
   | 'SUNDAY'
 
+export type PredictionSource = 'CATBOOST_ML' | 'STATISTICAL_FALLBACK'
+
 export interface TrafficForecast {
   segmentId: string
   segmentName: string
@@ -47,6 +49,14 @@ export interface TrafficForecast {
   predictedCongestionLevel: number
   reliabilityScore: number
   explanation: string
+  /** Which engine produced the number (audit L03). Older backends may omit it. */
+  predictionSource?: PredictionSource
+  /** True when the ML service was unavailable and a statistical fallback answered. */
+  degraded?: boolean
+  /** ISO timestamp of when the forecast was computed. */
+  generatedAt?: string
+  /** Model/engine version string, e.g. "catboost-1.2" or "statistical-v1". */
+  modelVersion?: string
 }
 
 export type AnomalyStatus = 'ACTIVE' | 'RESOLVED'

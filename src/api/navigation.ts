@@ -53,6 +53,29 @@ export const finishTrip = (
     rerouteCount,
   })
 
+const DEVICE_ID_KEY = 'waygo_device_id'
+
+/**
+ * Stable per-browser device id for GPS pings. Guests previously all shared the literal
+ * 'anonymous-device', so the backend's per-device throttle (1 ping / 5 s) rejected every
+ * other guest's pings with 429.
+ */
+export function getDeviceId(username?: string | null): string {
+  if (username) return username
+  try {
+    let id = localStorage.getItem(DEVICE_ID_KEY)
+    if (!id) {
+      id = typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? `guest-${crypto.randomUUID()}`
+        : `guest-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+      localStorage.setItem(DEVICE_ID_KEY, id)
+    }
+    return id
+  } catch {
+    return `guest-${Date.now().toString(36)}`
+  }
+}
+
 export const sendGpsPing = (
   deviceId: string,
   latitude: number,

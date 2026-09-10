@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AlertTriangle, Check, X } from 'lucide-react'
+import { AlertTriangle, Check, MapPin, X } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import type { ReportType } from '@/types/api'
 
@@ -64,13 +64,20 @@ export function ReportIncidentPanel({ onCancel, onSubmit, hasLocation, onPickOnM
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{s.reportModal.location || 'Məkan'}</label>
+        {/* Label + button text describe exactly what happens: a point is picked on the map (L10). */}
+        <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{s.reportModal.location}</label>
         <button
+          type="button"
           onClick={onPickOnMap}
-          className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          aria-describedby="report-location-hint"
+          className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         >
-          {hasLocation ? 'Xəritədən seçildi (Dəyişdir)' : s.reportModal.useMapPin || 'Xəritədə klikləyərək məkanı seçin'}
+          <span className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            {hasLocation ? s.reportModal.locationPicked : s.reportModal.useMapPin}
+          </span>
         </button>
+        <p id="report-location-hint" className="text-[11px] text-slate-400">{s.reportModal.locationHint}</p>
       </div>
 
       <button

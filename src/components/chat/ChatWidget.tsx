@@ -55,7 +55,7 @@ export function ChatWidget() {
 
   const toggleRecording = () => {
     if (!recognitionRef.current) {
-      alert(locale === 'az' ? "Sizin brauzeriniz səsli daxil etməni dəstəkləmir (Chrome istifadə edin)." : "Speech recognition not supported in this browser.")
+      alert(s.chat.voiceUnsupported)
       return
     }
     
@@ -84,7 +84,7 @@ export function ChatWidget() {
         ...prev,
         { id: msgId, role: 'assistant', text: '', createdAt: Date.now() },
       ])
-      const res = await sendChatMessageStream(trimmed)
+      const res = await sendChatMessageStream(trimmed, locale)
       if (!res.ok) throw new Error('Stream failed')
       const reader = res.body?.getReader()
       if (!reader) throw new Error('No reader')
@@ -218,7 +218,8 @@ export function ChatWidget() {
           type="button"
           onClick={toggleRecording}
           disabled={sending}
-          aria-label="Send as Voice"
+          aria-label={s.chat.voiceInput}
+          aria-pressed={isRecording}
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition disabled:cursor-not-allowed disabled:opacity-40 ${
             isRecording 
               ? 'bg-red-500 text-white hover:bg-red-600 animate-pulse' 
@@ -230,10 +231,10 @@ export function ChatWidget() {
         <button
           type="submit"
           disabled={!input.trim() || sending}
-          aria-label={s.chat.title}
+          aria-label={s.chat.send}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-4 w-4" aria-hidden="true" />
         </button>
       </form>
     </div>

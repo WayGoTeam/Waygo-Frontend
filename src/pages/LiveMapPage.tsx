@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
-import { finishTrip, sendGpsPing, getAiRoute } from '@/api/navigation'
+import { finishTrip, sendGpsPing, getAiRoute, getDeviceId } from '@/api/navigation'
 import { fetchTTS } from '@/api/chat'
 import type L from 'leaflet'
 import { useTrafficMap } from '@/hooks/useTrafficMap'
@@ -61,7 +61,7 @@ export default function LiveMapPage() {
   const cityStats = useCityStats()
   const { data: mapConfig } = useMapConfig()
   const segments = trafficMap.data?.segments ?? []
-  const planner = useRoutePlanner(segments)
+  const planner = useRoutePlanner(segments, trafficMap.data?.generatedAt ?? null)
 
   const [tripSummary, setTripSummary] = useState<{ecoPoints: number, co2SavedKg: number, distanceKm: number, ecoMode: boolean} | null>(null)
 
@@ -131,8 +131,8 @@ export default function LiveMapPage() {
       
       // Update origin to current location and recalculate
       planner.setOrigin({
-        label: 'Cari mövqe',
-        subtitle: 'Yenidən hesablanır...',
+        label: s.liveMapDialogs.currentPosition,
+        subtitle: s.liveMapDialogs.recalculating,
         lat: currentLocation.lat,
         lng: currentLocation.lng,
       })
@@ -300,8 +300,8 @@ export default function LiveMapPage() {
     if (!reportLocation) return
     if (!user) {
       setDialogInfo({
-        title: 'Giriş Tələb Olunur',
-        content: 'Yol hadisəsi hesabatı göndərmək üçün lütfən sistemə daxil olun.',
+        title: s.reportModal.loginRequiredTitle,
+        content: s.reportModal.loginRequiredDesc,
         variant: 'info'
       })
       return
@@ -321,15 +321,15 @@ export default function LiveMapPage() {
       setReportingMode(false)
       setReportLocation(null)
       setDialogInfo({
-        title: 'Təşəkkür edirik!',
-        content: 'Hesabatınız qeydə alındı və moderator təsdiqinə göndərildi.',
+        title: s.reportModal.successTitle,
+        content: s.reportModal.successDesc,
         variant: 'info'
       })
     } catch (error: any) {
       console.error('Failed to submit report', error)
-      const errorMsg = error?.response?.data?.error || error?.message || 'Hesabat göndərilərkən xəta baş verdi.'
+      const errorMsg = error?.response?.data?.error || error?.message || s.reportModal.error
       setDialogInfo({
-        title: 'Xəta',
+        title: s.reportModal.errorTitle,
         content: errorMsg,
         variant: 'danger'
       })
@@ -360,7 +360,7 @@ export default function LiveMapPage() {
 
   function handleStartTrip() {
     if (!navigator.geolocation) {
-      setDialogInfo({ title: 'Diqqət', content: 'Brauzeriniz GPS dəstəkləmir.' })
+      setDialogInfo({ title: s.liveMapDialogs.attention, content: s.liveMapDialogs.noGps })
       return
     }
 
@@ -382,7 +382,7 @@ export default function LiveMapPage() {
           const now = Date.now()
           if (now - lastPingTimeRef.current > 10000) {
             lastPingTimeRef.current = now
-            const deviceId = user?.username ?? 'anonymous-device'
+            const deviceId = getDeviceId(user?.username)
             sendGpsPing(deviceId, lat, lng, new Date().toISOString(), speedKmh).catch(() => {})
           }
         },
@@ -396,8 +396,8 @@ export default function LiveMapPage() {
 
     if (!user) {
       setDialogInfo({
-        title: 'Qonaq Rejimi',
-        content: 'Hesaba daxil olmadan səfərə başlayırsınız.\nSəfər sonu heç bir xal (Eco-Points) qazanmayacaqsınız. Yenə də davam etmək istəyirsiniz?',
+        title: s.liveMapDialogs.guestTitle,
+        content: s.liveMapDialogs.guestDesc,
         isConfirm: true,
         onConfirm: () => {
           setDialogInfo(null)
@@ -409,8 +409,8 @@ export default function LiveMapPage() {
 
     if (planner.route?.inCooldown) {
       setDialogInfo({
-        title: 'Cooldown Aktivdir',
-        content: 'Siz artıq yaxın zamanda xal qazanmısınız.\nNövbəti 5 dəqiqə ərzində bitən səfərlər üçün xal verilməyəcək. Yenə də davam etmək istəyirsiniz?',
+        title: s.liveMapDialogs.cooldownTitle,
+        content: s.liveMapDialogs.cooldownDesc,
         isConfirm: true,
         onConfirm: () => {
           setDialogInfo(null)
@@ -426,11 +426,11 @@ export default function LiveMapPage() {
 
   function handleCancelTripClick() {
     setDialogInfo({
-      title: 'Səfəri ləğv et',
-      content: 'Səfəri ləğv etmək istədiyinizə əminsiniz?',
+      title: s.liveMapDialogs.cancelTripTitle,
+      content: s.liveMapDialogs.cancelTripDesc,
       isConfirm: true,
-      confirmText: 'Bəli, ləğv et',
-      cancelText: 'Davam et',
+      confirmText: s.liveMapDialogs.cancelTripYes,
+      cancelText: s.liveMapDialogs.cancelTripNo,
       variant: 'warning',
       onConfirm: handleCancelTrip
     })
@@ -449,11 +449,11 @@ export default function LiveMapPage() {
 
   function handleEndTripClick() {
     setDialogInfo({
-      title: 'Səfəri bitir',
-      content: 'Səfəri bitirmək istədiyinizə əminsiniz?',
+      title: s.liveMapDialogs.endTripTitle,
+      content: s.liveMapDialogs.endTripDesc,
       isConfirm: true,
-      confirmText: 'Bəli, bitir',
-      cancelText: 'Xeyr, davam et',
+      confirmText: s.liveMapDialogs.endTripYes,
+      cancelText: s.liveMapDialogs.endTripNo,
       variant: 'warning',
       onConfirm: handleEndTrip
     })
@@ -493,7 +493,7 @@ export default function LiveMapPage() {
     }
     
     if (!user) {
-      setDialogInfo({ title: 'Diqqət', content: 'Eco-Points qazanmaq üçün sistemə daxil olmalısınız!' })
+      setDialogInfo({ title: s.liveMapDialogs.attention, content: s.liveMapDialogs.loginForPoints })
       return
     }
 
@@ -505,8 +505,8 @@ export default function LiveMapPage() {
 
     if (distanceToDestMeters > 300) {
       setDialogInfo({
-        title: 'Səfər dayandırıldı',
-        content: `Təyinat nöqtəsinə çatmadığınız üçün (${Math.round(distanceToDestMeters)} m qalıb) Eco-Points hesablanmadı.`
+        title: s.liveMapDialogs.tripStoppedTitle,
+        content: s.liveMapDialogs.tripStoppedDesc.replace('{0}', String(Math.round(distanceToDestMeters)))
       })
       return
     }
@@ -541,8 +541,8 @@ export default function LiveMapPage() {
         })
       }
     } catch (e: any) {
-      const msg = e.message || 'Xəta baş verdi.'
-      setDialogInfo({ title: 'Xəta', content: msg })
+      const msg = e.message || s.liveMapDialogs.genericError
+      setDialogInfo({ title: s.liveMapDialogs.errorTitle, content: msg })
     }
   }
 
@@ -707,7 +707,7 @@ export default function LiveMapPage() {
                 onClick={() => setDialogInfo(null)}
                 className="rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-900/50"
               >
-                {dialogInfo.cancelText || s.common.cancel || 'Ləğv et'}
+                {dialogInfo.cancelText || s.common.cancel}
               </button>
             )}
             <button
@@ -724,7 +724,7 @@ export default function LiveMapPage() {
                   : 'bg-brand-600 hover:bg-brand-700'
               }`}
             >
-              {dialogInfo.confirmText || 'OK'}
+              {dialogInfo.confirmText || s.common.ok}
             </button>
           </div>
         </Modal>

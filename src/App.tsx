@@ -11,6 +11,7 @@ const AdminPage = lazy(() => import('@/pages/AdminPage'))
 const WalletPage = lazy(() => import('@/pages/WalletPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
 const WeatherPage = lazy(() => import('@/pages/WeatherPage'))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 function PageFallback() {
   return (
@@ -72,6 +73,15 @@ export default function App() {
             element={
               <Suspense fallback={<PageFallback />}>
                 <ProfilePage />
+              </Suspense>
+            }
+          />
+          {/* Catch-all: unknown URLs get an explicit 404 page instead of a blank outlet. */}
+          <Route
+            path="*"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <NotFoundPage />
               </Suspense>
             }
           />

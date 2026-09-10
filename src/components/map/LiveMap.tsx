@@ -4,10 +4,10 @@ import * as L from 'leaflet'
 import { useMapLayers } from '@/context/MapLayersContext'
 import { useIncidentsContext } from '@/context/IncidentsContext'
 import { useLocale } from '@/i18n/LocaleContext'
-import { congestionColor, congestionBand } from '@/lib/congestion'
 import { renderToString } from 'react-dom/server'
+import { AlertTriangle } from 'lucide-react'
 import { dotIcon, dynamicIncidentIcon, pinIcon } from '@/lib/mapIcons'
-import { trafficFlowTileUrl, TRANSPARENT_TILE } from '@/api/maps'
+import { trafficFlowTileUrl, tileUrlFor } from '@/api/maps'
 import { IncidentTypeIcon, incidentHexColor } from '@/components/incidents/incidentIcons'
 import type { MapConfig, TrafficMapEntry } from '@/types/api'
 import type { PlaceResult } from '@/components/layout/GlobalSearch'
@@ -54,64 +54,133 @@ function isRecent(iso: string, withinMs: number): boolean {
   return Date.now() - new Date(iso).getTime() < withinMs
 }
 
-function VectorTrafficLayer({ url, visible }: { url: string; visible: boolean }) {
+/** Web-Mercator tile indices for a lat/lng at zoom `z` (used only to probe one tile). */
+function tileXY(lat: number, lng: number, z: number): { x: number; y: number } {
+  const n = 2 ** z
+  const x = Math.floor(((lng + 180) / 360) * n)
+  const latRad = (lat * Math.PI) / 180
+  const y = Math.floor(((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n)
+  return { x, y }
+}
+
+export type TrafficLayerStatus = 'idle' | 'loading' | 'ready' | 'error'
+
+function VectorTrafficLayer({
+  url,
+  visible,
+  onStatus,
+}: {
+  url: string
+  visible: boolean
+  onStatus?: (status: TrafficLayerStatus) => void
+}) {
   const map = useMap()
+  const { s } = useLocale()
 
   useEffect(() => {
-    if (!visible) return
+    if (!visible) {
+      onStatus?.('idle')
+      return
+    }
     let layer: any = null
     let isMounted = true
+    let reportedError = false
+    const abort = new AbortController()
+
+    const fail = (reason: unknown) => {
+      if (!isMounted || reportedError) return
+      reportedError = true
+      console.error('[WayGo] Traffic tiles unavailable:', reason)
+      onStatus?.('error')
+    }
+
+    onStatus?.('loading')
 
     // Inject L to window for vectorgrid
     if (typeof window !== 'undefined') {
       ; (window as any).L = L
     }
 
-    // Dynamically import vectorgrid to avoid SSR/Vite hoisting issues
-    import('leaflet.vectorgrid').then(() => {
-      if (!isMounted) return
+    // 1) Probe a single tile at the current view first. This turns a dead tile
+    //    host / proxy (404, 5xx, network error) into an explicit UI error state
+    //    instead of dozens of silent "Failed to fetch" console messages (L01).
+    const center = map.getCenter()
+    const probeZoom = Math.max(10, Math.min(14, Math.round(map.getZoom())))
+    const { x, y } = tileXY(center.lat, center.lng, probeZoom)
+    const probeUrl = tileUrlFor(url, probeZoom, x, y)
 
-      // Create vector grid layer pointing to Martin MVT
-      const L_global = (window as any).L
-      layer = L_global.vectorGrid.protobuf(url, {
-        vectorTileLayerStyles: {
-          mock_traffic: (properties: any) => {
-            const level = properties.congestion_level || 1
-            let color = '#22c55e' // Green (Light)
-            if (level === 3) color = '#f59e0b' // Orange (Moderate)
-            if (level >= 4) color = '#ef4444' // Red (Heavy)
+    fetch(probeUrl, { signal: abort.signal, cache: 'no-store' })
+      .then((res) => {
+        if (!res.ok && res.status !== 204) throw new Error(`HTTP ${res.status} for ${probeUrl}`)
+        // 2) Only load the (heavy) vectorgrid bundle once we know tiles are served.
+        return import('leaflet.vectorgrid')
+      })
+      .then(() => {
+        if (!isMounted) return
 
-            return {
-              weight: 5,
-              color,
-              opacity: 0.8,
-              fill: false,
-            }
+        // Create vector grid layer pointing to Martin MVT
+        const L_global = (window as any).L
+        layer = L_global.vectorGrid.protobuf(url, {
+          vectorTileLayerStyles: {
+            mock_traffic: (properties: any) => {
+              const level = properties.congestion_level || 1
+              let color = '#22c55e' // Green (Light)
+              if (level === 3) color = '#f59e0b' // Orange (Moderate)
+              if (level >= 4) color = '#ef4444' // Red (Heavy)
+
+              return {
+                weight: 5,
+                color,
+                opacity: 0.8,
+                fill: false,
+              }
+            },
           },
-        },
-        interactive: true,
-        minZoom: 10,
-      })
+          interactive: true,
+          minZoom: 10,
+        })
 
-      layer.addTo(map)
+        // VectorGrid swallows non-OK responses and lets network errors reject an
+        // un-awaited promise. Wrap its tile loader so failures reach the UI.
+        const originalLoader = layer._getVectorTilePromise?.bind(layer)
+        if (originalLoader) {
+          layer._getVectorTilePromise = (...args: unknown[]) =>
+            Promise.resolve()
+              .then(() => originalLoader(...args))
+              .catch((err: unknown) => {
+                fail(err)
+                return { layers: [] }
+              })
+        }
 
-      layer.on('click', (e: any) => {
-        const p = e.layer.properties
-        L.popup()
-          .setContent(`<strong>Yol:</strong> ${p.name || 'N/A'}<br/><strong>Tıxac:</strong> Səviyyə ${p.congestion_level}`)
-          .setLatLng(e.latlng)
-          .openOn(map)
+        layer.addTo(map)
+        onStatus?.('ready')
+
+        layer.on('click', (e: any) => {
+          const p = e.layer.properties
+          const road = p.name || 'N/A'
+          const level = p.congestion_level ?? '—'
+          L.popup()
+            .setContent(
+              `<strong>${s.trafficLayer.roadLabel}:</strong> ${road}<br/><strong>${s.trafficLayer.congestionLabel}:</strong> ${s.trafficLayer.levelLabel} ${level}`,
+            )
+            .setLatLng(e.latlng)
+            .openOn(map)
+        })
       })
-    }).catch(err => {
-      console.error("Failed to load leaflet.vectorgrid", err)
-    })
+      .catch((err) => {
+        if (abort.signal.aborted) return
+        fail(err)
+      })
 
     return () => {
       isMounted = false
+      abort.abort()
       if (layer && map) {
         map.removeLayer(layer)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, url, visible])
 
   return null
@@ -141,12 +210,14 @@ export function LiveMap({
   currentLocation?: { lat: number; lng: number } | null
 }) {
   const { s } = useLocale()
-  const { basemap, showTraffic, showIncidents } = useMapLayers()
+  const { basemap, showTraffic, showIncidents, showLiveIncidents } = useMapLayers()
   const { incidents } = useIncidentsContext()
 
   const center: [number, number] = mapConfig ? [mapConfig.centerLat, mapConfig.centerLng] : BAKU_CENTER
   const zoom = mapConfig?.defaultZoom ?? 12
   const [currentZoom, setCurrentZoom] = useState(zoom)
+  const [trafficStatus, setTrafficStatus] = useState<TrafficLayerStatus>('idle')
+  const trafficTileUrl = useMemo(() => trafficFlowTileUrl(), [])
 
   // Use OSM for standard map, Esri for satellite
   const basemapUrl =
@@ -161,12 +232,15 @@ export function LiveMap({
 
   const visibleIncidents = useMemo(() => {
     if (!incidents) return []
-    // "Hadisələr" shows user-reported incidents
+    // Two independent filters (L14):
+    //   "Hadisələr"        -> user-reported incidents      (source USER_REPORT)
+    //   "Canlı hadisələr"  -> system-detected anomalies    (source ANOMALY_DETECTION / anything else)
     return incidents.filter((i) => {
       if (!i.active || i.latitude === null || i.longitude === null) return false
-      return showIncidents
+      const isUserReport = i.source === 'USER_REPORT'
+      return isUserReport ? showIncidents : showLiveIncidents
     })
-  }, [incidents, showIncidents])
+  }, [incidents, showIncidents, showLiveIncidents])
 
   const incidentSize = currentZoom < 10 ? 12 : currentZoom < 12 ? 20 : currentZoom < 14 ? 26 : 30
   const pinSize = currentZoom < 10 ? 16 : currentZoom < 12 ? 24 : currentZoom < 14 ? 30 : 34
@@ -174,6 +248,18 @@ export function LiveMap({
   const showMarkers = currentZoom >= 9
 
   return (
+    <>
+    {showTraffic && trafficStatus === 'error' && (
+      <div
+        role="alert"
+        className="pointer-events-none absolute left-1/2 top-4 z-[1150] -translate-x-1/2 sm:top-20"
+      >
+        <div className="flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-50/95 px-4 py-2 text-xs font-semibold text-amber-800 shadow-float backdrop-blur dark:border-amber-500/40 dark:bg-amber-950/90 dark:text-amber-200">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>{s.trafficLayer.unavailable}</span>
+        </div>
+      </div>
+    )}
     <MapContainer
       center={center}
       zoom={zoom}
@@ -201,8 +287,8 @@ export function LiveMap({
         />
       )}
 
-      {/* Render mock traffic lines via Martin Vector Tiles */}
-      <VectorTrafficLayer url={trafficFlowTileUrl()} visible={showTraffic} />
+      {/* Render traffic lines via Martin Vector Tiles (same-origin /tiles proxy) */}
+      <VectorTrafficLayer url={trafficTileUrl} visible={showTraffic} onStatus={setTrafficStatus} />
 
       {showMarkers && visibleIncidents.map((incident) => {
         const hexColor = incidentHexColor(incident.incidentType);
@@ -250,5 +336,6 @@ export function LiveMap({
         <Marker position={[currentLocation.lat, currentLocation.lng]} icon={dotIcon('#3b82f6', dotSize)} zIndexOffset={1000} />
       )}
     </MapContainer>
+    </>
   )
 }

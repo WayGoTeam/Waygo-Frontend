@@ -45,7 +45,7 @@ export default function IncidentsPage() {
         <div className="mx-auto max-w-4xl">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
-              Cari Hadisələr 
+              {s.incidentsPage.currentTitle}
               <span className="ml-2 rounded-full bg-slate-200 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
                 {incidents?.length || 0}
               </span>
@@ -101,8 +101,8 @@ export default function IncidentsPage() {
                       
                       <div className="mt-5 flex items-center gap-2">
                         <span className="flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-[11px] font-bold tracking-wide text-slate-600 dark:text-slate-300 uppercase transition-colors group-hover:bg-brand-50 dark:group-hover:bg-brand-900/30 group-hover:text-brand-700 dark:group-hover:text-brand-300">
-                          <MapPin className="h-3.5 w-3.5" />
-                          Xəritədə bax
+                          <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+                          {s.incidentsPage.viewOnMap}
                         </span>
                       </div>
                     </button>

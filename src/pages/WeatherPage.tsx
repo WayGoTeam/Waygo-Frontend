@@ -1,19 +1,10 @@
-import { CloudRain, Thermometer, Wind, Droplets } from 'lucide-react'
+import { Thermometer, Wind, Droplets } from 'lucide-react'
 import { useLocale } from '@/i18n/LocaleContext'
 import { useDistrictsWeather } from '@/hooks/useDistrictsWeather'
-import { LoadingState, ErrorState } from '@/components/common/States'
+import { ErrorState } from '@/components/common/States'
+import { weatherEmoji } from '@/components/weather/WeatherIcon'
 
-function weatherIcon(cond: string) {
-  const c = cond?.toLowerCase() ?? ''
-  if (c.includes('rain') || c.includes('yağ')) return '🌧️'
-  if (c.includes('cloud') || c.includes('bulud')) return '⛅'
-  if (c.includes('storm') || c.includes('fırt')) return '⛈️'
-  if (c.includes('snow') || c.includes('qar')) return '❄️'
-  if (c.includes('fog') || c.includes('duman')) return '🌫️'
-  return '☀️'
-}
-
-function weatherGradient(cond: string, impact: number) {
+function weatherGradient(_cond: string, impact: number) {
   if (impact > 25) return 'from-violet-500/10 to-violet-600/5 border-violet-200'
   if (impact > 15) return 'from-orange-400/10 to-orange-500/5 border-orange-200'
   if (impact > 8)  return 'from-sky-400/10 to-sky-500/5 border-sky-200'
@@ -69,7 +60,7 @@ export default function WeatherPage() {
                       >
                         <div className="flex items-start gap-4">
                           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/60 dark:bg-slate-900/60 shadow-sm backdrop-blur-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-                            <span className="text-3xl leading-none drop-shadow-sm">{weatherIcon(w.condition)}</span>
+                            <span className="text-3xl leading-none drop-shadow-sm">{weatherEmoji(w.condition)}</span>
                           </div>
                           <div className="min-w-0 pt-1">
                             <p className="truncate font-display text-lg font-black text-slate-900 dark:text-slate-50">{w.districtName}</p>
@@ -80,7 +71,7 @@ export default function WeatherPage() {
                         <div className="mt-8 grid grid-cols-3 gap-3 rounded-[24px] bg-white/60 dark:bg-slate-900/60 p-4 backdrop-blur-md shadow-sm border border-white dark:border-slate-700/80 transition-all group-hover:bg-white/80 dark:group-hover:hover:bg-slate-900/80">
                           <div className="text-center">
                             <Thermometer className="mx-auto h-5 w-5 text-orange-500" />
-                            <p className="mt-2 font-display text-base font-bold text-slate-900 dark:text-slate-50">{Math.round(w.temperatureC)}°</p>
+                            <p className="mt-2 font-display text-base font-bold text-slate-900 dark:text-slate-50">{Math.round(w.temperatureC)}В°</p>
                           </div>
                           <div className="text-center">
                             <Wind className="mx-auto h-5 w-5 text-blue-500" />
@@ -128,7 +119,7 @@ export default function WeatherPage() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-                              <span className="text-2xl leading-none drop-shadow-sm">{weatherIcon(w.condition)}</span>
+                              <span className="text-2xl leading-none drop-shadow-sm">{weatherEmoji(w.condition)}</span>
                             </div>
                             <div>
                               <h3 className="font-display font-black text-slate-900 dark:text-slate-50 text-base">{w.districtName}</h3>
@@ -145,12 +136,12 @@ export default function WeatherPage() {
                         <div className="flex items-center justify-around border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
                            <div className="flex items-center gap-1.5">
                              <Thermometer className="h-4 w-4 text-orange-500" />
-                             <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{Math.round(w.temperatureC)}°</span>
+                             <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{Math.round(w.temperatureC)}В°</span>
                            </div>
                            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
                            <div className="flex items-center gap-1.5">
                              <Wind className="h-4 w-4 text-blue-500" />
-                             <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{Math.round(w.windSpeedKmh)} km/h</span>
+                             <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{Math.round(w.windSpeedKmh)} {s.common.kmh}</span>
                            </div>
                            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
                            <div className="flex items-center gap-1.5">
