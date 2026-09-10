@@ -388,7 +388,7 @@ export default function WalletPage() {
           </div>
         )}
 
-        {/* ── 6. SOCAR VOUCHER ─────────────────────────────────────────── */}
+        {/* ── 6. E-VOUCHER ─────────────────────────────────────────── */}
         <div className="rounded-3xl bg-white dark:bg-slate-900 p-7 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
